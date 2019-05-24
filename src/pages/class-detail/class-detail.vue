@@ -87,7 +87,7 @@
           </div>
         </div>
         <div class="form-btn form-btn-clear">
-          <button @click="edit">修改</button>
+          <button @click="edit" v-if="showEidt()">修改</button>
           <button @click="deleteConfirm">删除</button>
         </div>
       </div>
@@ -155,6 +155,10 @@
       // 进入修改页面
       edit() {
         this.$router.push(`/class/edit/${this.$route.params.code}`);
+      },
+      showEidt() {
+        let status = this.detail && this.detail.uploadStatus || '';
+        return status !== '3' && status !== '4' && status !== '5';
       },
       ...mapActions([
         'deleteClassInfo'
