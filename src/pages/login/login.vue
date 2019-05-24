@@ -28,8 +28,10 @@
   </div>
 </template>
 <script>
-  import { login } from 'api/user';
-  import { setUser } from 'common/js/util';
+  import { mapMutations } from 'vuex';
+  import { SET_USER } from 'store/mutation-types';
+  import { getUser, login } from 'api/user';
+  import { setUser, setProjectCode } from 'common/js/util';
   import { directiveMixin } from 'common/js/mixin';
   import FullLoading from 'base/full-loading/full-loading';
 
@@ -49,6 +51,10 @@
             this.loadFlag = true;
             login(this.loginName, this.loginPwd).then((data) => {
               setUser(data);
+              return getUser();
+            }).then((data) => {
+              setProjectCode(data.projectCode);
+              this.setUser(data);
               this.loadFlag = false;
               let url = this.$route.query.redirect || '/home';
               this.$router.replace(url);
@@ -57,7 +63,10 @@
             });
           }
         });
-      }
+      },
+      ...mapMutations({
+        'setUser': SET_USER
+      })
     },
     components: {
       FullLoading

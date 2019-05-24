@@ -10,7 +10,7 @@ export const commonMixin = {
     },
     formatDate(date, format = 'yyyy-MM-dd') {
       if (!date) {
-        return '--';
+        return '-';
       }
       return formatDate(date, format);
     },

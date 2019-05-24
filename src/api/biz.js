@@ -1,5 +1,5 @@
 import fetch from 'common/js/fetch';
-import { getUserId } from 'common/js/util';
+import { getUserId, getProjectCode } from 'common/js/util';
 import { LIMIT } from './config';
 
 /**
@@ -22,6 +22,40 @@ export function getPageClass(start = 1, limit = LIMIT) {
 export function getClassDetail(code) {
   return fetch(631666, {
     code,
+    userId: getUserId()
+  });
+}
+
+/**
+ * 新增班组
+ * @param {object} params
+ */
+export function addClassInfo(params) {
+  return fetch(631650, {
+    ...params,
+    projectCode: getProjectCode(),
+    userId: getUserId()
+  });
+}
+
+/**
+ * 修改班组
+ * @param {object} params
+ */
+export function editClassInfo(params) {
+  return fetch(631652, {
+    ...params,
+    projectCode: getProjectCode(),
+    userId: getUserId()
+  });
+}
+
+/**
+ * 列表查询某个项目下的参建单位列表
+ */
+export function getCropList() {
+  return fetch(631647, {
+    projectCode: getProjectCode(),
     userId: getUserId()
   });
 }

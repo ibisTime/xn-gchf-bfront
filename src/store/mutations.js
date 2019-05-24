@@ -24,6 +24,9 @@ const mutations = {
     user.realName = realName;
     user.idNo = idNo;
     state.user = user;
+  },
+  [types.SET_CLASS_LIST](state, list) {
+    state.classList = list;
   }
 };
 

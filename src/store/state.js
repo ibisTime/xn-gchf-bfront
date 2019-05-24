@@ -1,5 +1,7 @@
+
 const state = {
-  user: null
+  user: null,
+  classList: []
 };
 
 export default state;

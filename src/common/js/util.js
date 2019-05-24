@@ -35,7 +35,16 @@ export function getUserId() {
 export function setUser(data) {
   setCookie('userId', data.userId);
   setCookie('token', data.token);
-  setCookie('projectCode', data.projectCode);
+}
+
+// 设置用户项目编号
+export function setProjectCode(projectCode) {
+  setCookie('projectCode', projectCode);
+}
+
+// 获取用户项目编号
+export function getProjectCode() {
+  return getCookie('projectCode') || '';
 }
 
 // 删除用户登录信息
@@ -47,7 +56,7 @@ export function clearUser() {
 
 // 是否登录
 export function isLogin() {
-  return !!getUserId();
+  return !!(getUserId() && getProjectCode());
 }
 
 // 是否为空

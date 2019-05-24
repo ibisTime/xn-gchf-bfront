@@ -47,13 +47,13 @@
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
             <div class="item-label">进场时间</div>
-            <div class="item-input">{{detail ? detail.entryTime : ''}}</div>
+            <div class="item-input">{{(detail ? detail.entryTime : '') | formatDate}}</div>
           </div>
         </div>
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
             <div class="item-label">退场时间</div>
-            <div class="item-input">{{detail ? detail.exitTime : ''}}</div>
+            <div class="item-input">{{(detail ? detail.exitTime : '') | formatDate}}</div>
           </div>
         </div>
         <div class="form-item border-bottom-1px">
@@ -95,9 +95,11 @@
   import Scroll from 'base/scroll/scroll';
   import NoResult from 'base/no-result/no-result';
   import FullLoading from 'base/full-loading/full-loading';
+  import { commonMixin } from 'common/js/mixin';
   import { getClassDetail } from 'api/biz';
 
   export default {
+    mixins: [commonMixin],
     data() {
       return {
         detail: null,

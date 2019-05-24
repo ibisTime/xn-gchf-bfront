@@ -5,9 +5,9 @@
         <div @click="goDetail(item.code)" v-for="item in classList" :key="item.code" class="item border-bottom-1px">
           <div class="item-info">
             <div class="title">{{item.teamName}}</div>
-            <div class="tip">进场时间：2019-01-22</div>
+            <div class="tip">进场时间：{{item.entryTime | formatDate}}</div>
           </div>
-          <div class="status">已上传</div>
+          <div class="status">{{formatUploadStatus(item.uploadStatus)}}</div>
           <i></i>
         </div>
         <no-result v-show="!classList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
@@ -20,32 +20,65 @@
   </div>
 </template>
 <script>
+  import { mapGetters, mapMutations } from 'vuex';
+  import { SET_CLASS_LIST } from 'store/mutation-types';
+  import { commonMixin } from 'common/js/mixin';
   import Scroll from 'base/scroll/scroll';
   import NoResult from 'base/no-result/no-result';
   import { getPageClass } from 'api/biz';
+  import { getDictList } from 'api/general';
 
   export default {
+    mixins: [commonMixin],
     data() {
       return {
         start: 1,
         limit: 20,
         hasMore: true,
-        classList: []
+        uploadStatusList: []
       };
     },
+    computed: {
+      ...mapGetters([
+        'classList'
+      ])
+    },
     created() {
+      getDictList('upload_status').then(data => {
+        this.uploadStatusList = data;
+      });
       this.getPageClass();
     },
     methods: {
       getPageClass() {
-        getPageClass(this.start, this.limit).then((data) => {
-          this.classList = this.classList.concat(data.list);
+        return getPageClass(this.start, this.limit).then((data) => {
+          let list = this.classList.slice();
+          list = list.concat(data.list);
+          this.setClassList(list);
           this.hasMore = data.pageNO > data.totalPage;
           this.start++;
         });
       },
       goDetail(code) {
         this.$router.push(`/class/${code}`);
+      },
+      formatUploadStatus(status) {
+        for (let i = 0; i < this.uploadStatusList.length; i++) {
+          if (this.uploadStatusList[i].dkey === status) {
+            return this.uploadStatusList[i].dvalue;
+          }
+        }
+        return '';
+      },
+      ...mapMutations({
+        'setClassList': SET_CLASS_LIST
+      })
+    },
+    watch: {
+      classList() {
+        setTimeout(() => {
+          this.$refs.scroll.refresh();
+        }, 20);
       }
     },
     components: {
