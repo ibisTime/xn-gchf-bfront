@@ -51,6 +51,17 @@ export function editClassInfo(params) {
 }
 
 /**
+ * 删除班组
+ * @param {string} code
+ */
+export function deleteClass(code) {
+  return fetch(631651, {
+    codeList: [code],
+    userId: getUserId()
+  });
+}
+
+/**
  * 列表查询某个项目下的参建单位列表
  */
 export function getCropList() {

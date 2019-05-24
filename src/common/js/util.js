@@ -1,7 +1,7 @@
 import {setCookie, getCookie, delCookie} from './cookie';
 
 // 日期格式化
-export function formatDate(date, fmt) {
+export function formatDate(date, fmt = 'yyyy-MM-dd') {
   date = new Date(date);
   if (/(y+)/.test(fmt)) {
     fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length));
