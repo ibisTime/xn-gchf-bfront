@@ -9,25 +9,25 @@
         </div>
         <div class="baseTop">
             <div class="tel">
-              手机号码<input type="telphone" placeholder="请输入手机号码"/>
+              手机号码<input type="telphone" v-model="config.phone" placeholder="请输入手机号码"/>
             </div>
           <div class="outlook">
             <label>政治面貌</label>
-            <select style="width: 80%;">
+            <select style="width: 80%;" v-model="config.politicsType">
               <option value="">请选择</option>
               <option :value="item.dkey" v-for="(item, index) in politicsTypeData" v-bind:key="index">{{item.dvalue}}</option>
             </select>
           </div>
           <div class="outlook">
             <label>文化程度</label>
-            <select style="width: 80%;">
+            <select style="width: 80%;" v-model="config.cultureLevelType">
               <option value="">请选择</option>
               <option :value="item.dkey" v-for="(item, index) in cultureLevelTypeData" v-bind:key="index">{{item.dvalue}}</option>
             </select>
           </div>
           <div class="outlook">
             <label>是否加入公会</label>
-            <select style="width: 60%;">
+            <select style="width: 60%;" v-model="config.isJoined">
               <option value="">请选择</option>
               <option key='1' value='1'>是</option>
               <option key='0' value='0'>否</option>
@@ -46,11 +46,11 @@
           <!--/>-->
           <!--</div>-->
           <div class="habits">
-            特长<input type="text"/>
+            特长<input type="text" v-model="config.specialty"/>
           </div>
             <div class="medical">
               <label>是否重大病史</label>
-              <select style="width: 60%;">
+              <select style="width: 60%;" v-model="config.hasBadMedicalHistory">
                 <option value="">请选择</option>
                 <option key='1' value='1'>是</option>
                 <option key='0' value='0'>否</option>
@@ -58,16 +58,16 @@
             </div>
             <div class="isMarry">
               <label>婚姻状况</label>
-              <select style="width: 60%;">
+              <select style="width: 60%;" v-model="config.maritalStatus">
                 <option value="">请选择</option>
                 <option :value="item.dkey" v-for="(item, index) in maritalStatusData" v-bind:key="index">{{item.dvalue }}</option>
               </select>
             </div>
             <div class="familyM">
-                紧急联系人<input type="text" placeholder="请输入联系人姓名"/>
+                紧急联系人<input type="text" placeholder="请输入紧急联系人" v-model="config.urgentLinkMan"/>
             </div>
             <div class="familyTel">
-                紧急联系人号码<input type="telphone" placeholder="请输入联系人号码"/>
+                紧急联系人号码<input type="telphone" placeholder="请输入联系人号码" v-model="config.urgentLinkManPhone"/>
             </div>
         </div>
         <router-link to="/handleEntry">
@@ -84,26 +84,28 @@ import Scroll from 'base/scroll/scroll';
 import Toast from 'base/toast/toast';
 import DatePicker from 'base/date-picker/date-picker';
 import{getDictList} from 'api/general';
+import {getUserId} from "common/js/util";
+
 export default {
     data(){
         return{
-          toastText: '照片请上传完整',
-          entryYear: '',
-          entryMonth: '',
-          entryDay: '',
-          entryStartYear: '',
-          entryStartMonth: '',
-          entryStartDay: '',
-          entryEndYear: '',
-          entryEndMonth: '',
-          entryEndDay: '',
-          addYear: '',
-          addMonth: '',
-          addDay: '',
+          toastText: '请填写完整',
           politicsTypeData: [],
           cultureLevelTypeData: [],
           maritalStatusData: [],
-
+          config: {
+            phone: '',
+            politicsType: '',
+            cultureLevelType: '',
+            isJoined: '',
+            specialty: '',
+            hasBadMedicalHistory: '',
+            maritalStatus: '',
+            urgentLinkMan: '',
+            urgentLinkManPhone: '',
+            code: '',
+            userId: getUserId()
+          }
         }
     },
     created() {
