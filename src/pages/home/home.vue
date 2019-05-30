@@ -58,7 +58,7 @@
         items2: [{
           text: '进出记录',
           src: require('./进出记录@2x.png'),
-          to: ''
+          to: '/isEntryRecord'
         }, {
           text: '考勤记录',
           src: require('./考勤记录@2x.png'),
