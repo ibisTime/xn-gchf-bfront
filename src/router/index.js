@@ -50,6 +50,12 @@ const Information = () => import('pages/information/information');
 const Filed = () => import('pages/filed/filed');
 // 进出详情
 const IntoDetails = () => import('pages/into-details/into-details');
+//新增修改进退场
+const AddProject = () => import('pages/addProject/addProject');
+//进出记录
+const IsEntryRecord = () =>import('pages/isEntryRecord/isEntryRecord');
+//进出详情 详情
+const DetailsText = () =>import('pages/detailsText/detailsText');
 const router = new Router({
   mode: 'history',
   routes: [
@@ -160,6 +166,18 @@ const router = new Router({
       path: '/into-details',
       meta: { title: '进出详情', auto: true },
       component: IntoDetails
+    }, {
+      path: '/addProject',
+      meta: { title: '新增修改进退场', auto: true },
+      component: AddProject
+    }, {
+      path: '/isEntryRecord',
+      meta: { title: '进出记录', auto: true },
+      component: IsEntryRecord
+    }, {
+      path: '/detailsText',
+      meta: { title: '进出记录', auto: true },
+      component: DetailsText
     }
   ]
 });

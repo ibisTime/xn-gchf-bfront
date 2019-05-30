@@ -4,7 +4,7 @@
             <div>
                 <div class="proBanner">
                     <p class="proCenter">
-                        进退场记录
+                        进出记录
                     </p>
                     <div class="right">
                         <router-link to='/search'>
@@ -12,25 +12,26 @@
                         </router-link>
                     </div>
                 </div>
-                    <router-link to="/into-details">
-                        <div class="detailItems">
-                            <div class="details" v-for="(item, index) in items" :key="index">
-                                <p class="detailTop">
-                                    <span>{{item.workName}}</span>
-                                    <span>{{item.teamName}}</span>
-                                    <span>{{item.status}}</span>
-                                </p>
-                                <p class="detailUnder">
-                                    <span>{{item.isEntry}}</span>
-                                    <span>记录时间:{{filedTime}}</span>
-                                </p>
-                                
-                                    <div class="detailImg">
-                                        <img src="./to@2x.png"/>
-                                    </div>
-                            </div>
+                <router-link to="into-details">
+                    <div class="detailItems">
+                        <div class="details" v-for="(item, index) in items" :key="index">
+                            <p class="detailTop">
+                                <span>{{item.workName}}</span>
+                                <span>{{item.teamName}}</span>
+                                <span>{{item.status}}</span>
+                            </p>
+                            <p class="detailUnder">
+                                <span>{{item.isEntry}}</span>
+                                <span>记录时间:{{filedTime}}</span>
+                            </p>
+                            <router-link to="/into-details">
+                                <div class="detailImg">
+                                    <img src="./to@2x.png"/>
+                                </div>
+                            </router-link>
                         </div>
-                    </router-link>
+                    </div>
+                </router-link>
             </div>
         </scroll>
     </div>
@@ -46,8 +47,8 @@ import{getDictList} from 'api/general'
                 items:[{
                     workName:'张三',
                     teamName:'钢筋组',
-                    status:'已入场',
-                    isEntry:'进场',
+                    status:'在场内',
+                    isEntry:'出去',
                     filedTime:'2019-2-12'
                     }],
             }
