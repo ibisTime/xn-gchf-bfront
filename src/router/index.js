@@ -50,12 +50,12 @@ const Information = () => import('pages/information/information');
 const Filed = () => import('pages/filed/filed');
 // 进出详情
 const IntoDetails = () => import('pages/into-details/into-details');
-//新增修改进退场
+// 新增修改进退场
 const AddProject = () => import('pages/addProject/addProject');
-//进出记录
-const IsEntryRecord = () =>import('pages/isEntryRecord/isEntryRecord');
-//进出详情 详情
-const DetailsText = () =>import('pages/detailsText/detailsText');
+// 进出记录
+const IsEntryRecord = () => import('pages/isEntryRecord/isEntryRecord');
+// 进出详情 详情
+const DetailsText = () => import('pages/detailsText/detailsText');
 const router = new Router({
   mode: 'history',
   routes: [
@@ -129,7 +129,7 @@ const router = new Router({
     }, {
       path: '/memberDetails',
       meta: { title: '人员详情', auto: true },
-      component: MemberDetails,
+      component: MemberDetails
     }, {
       path: '/faceCollect',
       meta: { title: '人脸采集', auto: true },
