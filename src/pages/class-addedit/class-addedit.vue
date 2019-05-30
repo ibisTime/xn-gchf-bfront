@@ -129,8 +129,9 @@
   import FullLoading from 'base/full-loading/full-loading';
   import Toast from 'base/toast/toast';
   import DatePicker from 'base/date-picker/date-picker';
-  import { getCropList, addClassInfo } from 'api/biz';
+  import { getClassDetail, getCropList, addClassInfo, editClassInfo } from 'api/biz';
   import { getDictList } from 'api/general';
+  import { formatDate } from 'common/js/util';
 
   export default {
     data() {
@@ -174,10 +175,15 @@
     },
     created() {
       this.pullUpLoad = null;
-      Promise.all([
+      let fetchList = [
         this.getCropList(),
         this.getCardTypeList()
-      ]).then(() => {
+      ];
+      if (this.$route.path.indexOf('/class/edit') !== -1) {
+        this.isEdit = true;
+        fetchList.push(this.getClassDetail());
+      }
+      Promise.all(fetchList).then(() => {
         this.loadingFlag = false;
       }).catch(() => {
         this.loadingFlag = false;
@@ -189,6 +195,33 @@
       }, 40);
     },
     methods: {
+      getClassDetail() {
+        return getClassDetail(this.$route.params.code).then(data => {
+          this.corpCode = data.corpCode || '';
+          this.teamName = data.teamName || '';
+          this.responsiblePersonName = data.responsiblePersonName || '';
+          this.responsiblePersonPhone = data.responsiblePersonPhone || '';
+          this.responsiblePersonIdcardType = data.responsiblePersonIdcardType || '';
+          this.responsiblePersonIdNumber = data.responsiblePersonIdNumber || '';
+          if (data.entryTime) {
+            let dates = formatDate(data.entryTime).split('-');
+            this.entryYear = dates[0];
+            this.entryMonth = dates[1];
+            this.entryDay = dates[2];
+          }
+          if (data.exitTime) {
+            let dates = formatDate(data.exitTime).split('-');
+            this.exitYear = dates[0];
+            this.exitMonth = dates[1];
+            this.exitDay = dates[2];
+          }
+          this.teamLeaderName = data.teamLeaderName || '';
+          this.teamLeaderPhone = data.teamLeaderPhone || '';
+          this.teamLeaderIdcardType = data.teamLeaderIdcardType || '';
+          this.teamLeaderIdNumber = data.teamLeaderIdNumber || '';
+          this.remark = data.remark || '';
+        });
+      },
       getCropList() {
         return getCropList().then(data => {
           this.corpList = data;
@@ -213,15 +246,28 @@
         this.$validator.validateAll().then((result) => {
           if (result) {
             this.loadFlag = true;
-            this.addClassInfo(this.getParams());
+            if (this.isEdit) {
+              this.editClass(this.getParams());
+            } else {
+              this.addClass(this.getParams());
+            }
           }
         });
       },
-      addClassInfo(params) {
+      addClass(params) {
         addClassInfo(params).then((data) => {
           params.code = data.code;
           params.uploadStatus = '0';
-          this.addClassList({ data: params });
+          this.addClassInfo({ data: params });
+          this.doSuccess();
+        }).catch(() => {
+          this.loadFlag = false;
+        });
+      },
+      editClass(params) {
+        editClassInfo(params).then((data) => {
+          params.uploadStatus = '0';
+          this.editClassInfo({ data: params });
           this.doSuccess();
         }).catch(() => {
           this.loadFlag = false;
@@ -256,10 +302,14 @@
           delete params.teamLeaderIdcardType;
           delete params.teamLeaderIdNumber;
         }
+        if (this.isEdit) {
+          params.code = this.$route.params.code;
+        }
         return params;
       },
       ...mapActions([
-        'addClassList'
+        'addClassInfo',
+        'editClassInfo'
       ])
     },
     components: {

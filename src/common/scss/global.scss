@@ -139,6 +139,24 @@
       &[disabled] {
         background: $color-disable-background;
       }
+
+      +button {
+        margin-top: 0.3rem;
+      }
+    }
+
+    &.form-btn-clear {
+      button {
+        color: $primary-color;
+        background: #fff;
+        border: 1px solid $primary-color;
+
+        &[disabled] {
+          background: $color-disable-background;
+          color: #fff;
+          border: none;
+        }
+      }
     }
   }
 

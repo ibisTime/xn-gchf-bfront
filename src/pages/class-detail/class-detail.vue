@@ -86,24 +86,34 @@
             <div class="item-input">{{detail ? detail.remark : ''}}</div>
           </div>
         </div>
+        <div class="form-btn form-btn-clear">
+          <button @click="edit" v-if="showEidt()">修改</button>
+          <button @click="deleteConfirm">删除</button>
+        </div>
       </div>
     </scroll>
-    <full-loading v-show="loadingFlag"></full-loading>
+    <full-loading v-show="loadingFlag" :title="loadingText"></full-loading>
+    <toast ref="toast" :text="toastText"></toast>
+    <confirm ref="confirm" text="确定删除该班组吗" @confirm="deleteClass"></confirm>
   </div>
 </template>
 <script>
+  import { mapActions } from 'vuex';
   import Scroll from 'base/scroll/scroll';
-  import NoResult from 'base/no-result/no-result';
   import FullLoading from 'base/full-loading/full-loading';
+  import Toast from 'base/toast/toast';
+  import Confirm from 'base/confirm/confirm';
   import { commonMixin } from 'common/js/mixin';
-  import { getClassDetail } from 'api/biz';
+  import { getClassDetail, deleteClass } from 'api/biz';
 
   export default {
     mixins: [commonMixin],
     data() {
       return {
         detail: null,
-        loadingFlag: true
+        loadingFlag: true,
+        loadingText: '正在载入...',
+        toastText: ''
       };
     },
     created() {
@@ -111,6 +121,7 @@
       this.getClassDetail();
     },
     methods: {
+      // 班组详情
       getClassDetail() {
         getClassDetail(this.$route.params.code).then((data) => {
           this.detail = data;
@@ -118,12 +129,46 @@
         }).catch(() => {
           this.loadingFlag = false;
         });
-      }
+      },
+      // 删除确认
+      deleteConfirm() {
+        this.$refs.confirm.show();
+      },
+      // 删除
+      deleteClass() {
+        this.loadingFlag = true;
+        this.loadingText = '删除中...';
+        deleteClass(this.$route.params.code).then(() => {
+          this.loadingFlag = false;
+          this.toastText = '删除成功';
+          this.$refs.toast.show();
+          this.deleteClassInfo({
+            code: this.$route.params.code
+          });
+          setTimeout(() => {
+            this.$router.back();
+          }, 1000);
+        }).catch(() => {
+          this.loadingFlag = false;
+        });
+      },
+      // 进入修改页面
+      edit() {
+        this.$router.push(`/class/edit/${this.$route.params.code}`);
+      },
+      showEidt() {
+        let status = this.detail && this.detail.uploadStatus || '';
+        return status !== '3' && status !== '4' && status !== '5';
+      },
+      ...mapActions([
+        'deleteClassInfo'
+      ])
     },
     components: {
       Scroll,
-      NoResult,
-      FullLoading
+      FullLoading,
+      Toast,
+      Confirm
     }
   };
 </script>
