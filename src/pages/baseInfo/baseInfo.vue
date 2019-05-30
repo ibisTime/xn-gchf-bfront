@@ -1,6 +1,6 @@
 <template>
-    <div class="full-screen-wrapper baseInfo-wrapper">   
-        <scroll ref="scroll" :hasMore="false"> 
+    <div class="full-screen-wrapper baseInfo-wrapper">
+        <scroll ref="scroll" :hasMore="false">
         <div>
          <div class="baseBanner">
             <p class="baseCenter">
@@ -9,72 +9,167 @@
         </div>
         <div class="baseTop">
             <div class="tel">
-                手机号码<input type="telphone"/>
+              <div class="left">
+                手机号码 <span class="red">*</span>
+              </div>
+              <div class="right">
+                <input type="telphone" v-model="config.phone" placeholder="请输入手机号码"/>
+              </div>
             </div>
-            <div class="outlook">
-                政治面貌
-                <div class="imgWrapper">
-                    <img src="./pushdown.png"/>
-                </div>
+          <div class="tel">
+            <div class="left">
+              <label>政治面貌 <span class="red">*</span></label>
             </div>
-            <div class="education">
-                文化程度
-                <div class="imgWrapper">
-                    <img src="./pushdown.png"/>
-                </div>
+            <div class="right">
+              <select v-model="config.politicsType">
+                <option value="">请选择</option>
+                <option :value="item.dkey" v-for="(item, index) in politicsTypeData" v-bind:key="index">{{item.dvalue}}</option>
+              </select>
             </div>
-            <div class="Labour">
-                是否加入公会
-                <div class="imgWrapper">
-                    <img src="./pushdown.png"/>
-                </div>
+          </div>
+          <div class="tel">
+            <div class="left">
+              <label>文化程度 <span class="red">*</span></label>
             </div>
+            <div class="right">
+              <select v-model="config.cultureLevelType">
+                <option value="">请选择</option>
+                <option :value="item.dkey" v-for="(item, index) in cultureLevelTypeData" v-bind:key="index">{{item.dvalue}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="tel">
+            <div class="left">
+              <label>是否加入公会</label>
+            </div>
+            <div class="right">
+              <select v-model="config.isJoined">
+                <option value="">请选择</option>
+                <option key='1' value='1'>是</option>
+                <option key='0' value='0'>否</option>
+              </select>
+            </div>
+          </div>
+          </div>
         </div>
         <div class="empty"></div>
         <div class="baseFooter">
-             <div class="habits">
-                特长<input type="text"/>
+          <div class="tel">
+            特长<input type="text" v-model="config.specialty"/>
+          </div>
+            <div class="tel">
+              <div class="left">
+                <label>是否重大病史</label>
+              </div>
+              <div class="right">
+                <select v-model="config.hasBadMedicalHistory">
+                  <option value="">请选择</option>
+                  <option key='1' value='1'>是</option>
+                  <option key='0' value='0'>否</option>
+                </select>
+              </div>
             </div>
-            <div class="medical">
-                是否重大病史
-                <div class="imgWrapper">
-                    <img src="./pushdown.png"/>
+            <div class="tel">
+              <div class="left">
+                <label>婚姻状况</label>
+              </div>
+              <div class="right">
+                <select v-model="config.maritalStatus">
+                  <option value="">请选择</option>
+                  <option :value="item.dkey" v-for="(item, index) in maritalStatusData" v-bind:key="index">{{item.dvalue }}</option>
+                </select>
+              </div>
+            </div>
+            <div class="tel">
+                <div class="left">
+                  紧急联系人
+                </div>
+                <div class="right">
+                  <input type="text" placeholder="请输入紧急联系人" v-model="config.urgentLinkMan"/>
                 </div>
             </div>
-            <div class="isMarry">
-                婚姻状况
-                <div class="imgWrapper">
-                    <img src="./pushdown.png"/>
+            <div class="tel">
+                <div class="left">
+                  紧急联系人号码
+                </div>
+                <div class="right">
+                  <input type="telphone" placeholder="请输入联系人号码" v-model="config.urgentLinkManPhone"/>
                 </div>
             </div>
-            <div class="familyM">
-                紧急联系人<input type="text" placeholder="请输入联系人姓名"/>
-            </div>
-            <div class="familyTel">
-                紧急联系人号码<input type="telphone" placeholder="请输入联系人号码"/>
-            </div>
         </div>
-        <router-link to="/handleEntry">
-            <div class="next-step">
-                下一步
-            </div>
-        </router-link>
-        </div>
-         </scroll>
+          <div class="next-step" @click="nextStepFn">
+            下一步
+          </div>
+        </scroll>
+      <toast ref="toast" :text="toastText"></toast>
     </div>
 </template>
 <script>
 import Scroll from 'base/scroll/scroll';
+import Toast from 'base/toast/toast';
+import DatePicker from 'base/date-picker/date-picker';
+import{getDictList} from 'api/general';
+import{baseInfoEntry} from 'api/deal';
+import {getUserId} from "common/js/util";
+
 export default {
     data(){
         return{
+          toastText: '请填写完整',
+          politicsTypeData: [],
+          cultureLevelTypeData: [],
+          maritalStatusData: [],
+          config: {
+            phone: '',
+            politicsType: '',
+            cultureLevelType: '',
+            isJoined: '',
+            specialty: '',
+            hasBadMedicalHistory: '',
+            maritalStatus: '',
+            urgentLinkMan: '',
+            urgentLinkManPhone: '',
+            code: '',
+            userId: getUserId()
+          }
         }
     },
+    created() {
+      Promise.all([
+        getDictList('politics_type'),
+        getDictList('culture_level_type'),
+        getDictList('marital_status')
+      ]).then(([data1, data2, data3]) => {
+        this.politicsTypeData = data1;
+        this.cultureLevelTypeData = data2;
+        this.maritalStatusData = data3;
+      });
+    },
     methods:{
-
+      nextStepFn() {
+        if(!this.config.phone ||
+          !this.config.politicsType ||
+          !this.config.cultureLevelType ||
+          !this.config.cultureLevelType) {
+          this.$refs.toast.show('请填写完整');
+          return false;
+        }
+        const { code } = this.$route.query;
+        baseInfoEntry({
+          code,
+          ...this.config
+        }).then(data => {
+          this.$refs.toast.show('操作成功');
+          setTimeout(() => {
+            this.$router.push(`/handleEntry?code=${data.code}`);
+          }, 1000);
+        });
+      }
     },
     components:{
-        scroll:Scroll
+        scroll:Scroll,
+        toast: Toast,
+        datePicker: DatePicker
     }
 }
 </script>
@@ -97,199 +192,35 @@ export default {
     }
     .baseTop{
         width: 100%;
-        .tel{
-            position: relative;
-            height: .9rem;
-            width: 92%;
-            margin: 0 auto;
-            line-height: .9rem;
-            color: #999999;
-            font-size: 0.28rem;
-            box-shadow: 0 1px 0 0 #E6E6E6;
-            input{
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%,-50%);
-                margin-left: .8rem;
-                color: #333;
-                font-size: 0.28rem;
-            }
-        }
-        .outlook{
-            position: relative;
-            height: .9rem;
-            width: 92%;
-            margin: 0 auto;
-            line-height: .9rem;
-            color: #999999;
-            font-size: 0.28rem;
-            box-shadow: 0 1px 0 0 #E6E6E6;
-            .imgWrapper{
-                position: absolute;
-                right: 0;
-                top: 50%;
-                width: 0.18rem;
-                height: 0.14rem;
-                img{
-                    position: absolute;
-                    width: 100%;
-                    height: 100%;
-                }
-            }
-        }
-        .education{
-            position: relative;
-            height: .9rem;
-            width: 92%;
-            margin: 0 auto;
-            line-height: .9rem;
-            color: #999999;
-            font-size: 0.28rem;
-            box-shadow: 0 1px 0 0 #E6E6E6;
-            .imgWrapper{
-                position: absolute;
-                right: 0;
-                top: 50%;
-                width: 0.18rem;
-                height: 0.14rem;
-                img{
-                    position: absolute;
-                    width: 100%;
-                    height: 100%;
-                }
-            }
-        }
-        .Labour{
-            position: relative;
-            height: .9rem;
-            width: 92%;
-            margin: 0 auto;
-            line-height: .9rem;
-            color: #999999;
-            font-size: 0.28rem;
-            box-shadow: 0 1px 0 0 #E6E6E6;
-            .imgWrapper{
-                position: absolute;
-                right: 0;
-                top: 50%;
-                width: 0.18rem;
-                height: 0.14rem;
-                img{
-                    position: absolute;
-                    width: 100%;
-                    height: 100%;
-                }
-            }
-        }
     }
+  .tel{
+    position: relative;
+    display: flex;
+    height: .9rem;
+    width: 92%;
+    margin: 0 auto;
+    line-height: .9rem;
+    color: #999999;
+    font-size: 0.28rem;
+    box-shadow: 0 1px 0 0 #E6E6E6;
+    .left{
+      width: 35%;
+    }
+    .right{
+      width: 65%;
+      input{
+        color: #333;
+        font-size: 0.28rem;
+      }
+      select{
+        width: 100%;
+      }
+    }
+  }
     .empty{
         width: 100%;
         height: 0.2rem;
         background: #F0F0F0;
-    }
-    .baseFooter{
-         .habits{
-            position: relative;
-            height: .9rem;
-            width: 92%;
-            margin: 0 auto;
-            line-height: .9rem;
-            color: #999999;
-            font-size: 0.28rem;
-            box-shadow: 0 1px 0 0 #E6E6E6;
-            input{
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%,-50%);
-                margin-left: .8rem;
-                color: #333;
-                font-size: 0.28rem;
-            }
-        }
-        .medical{
-            position: relative;
-            height: .9rem;
-            width: 92%;
-            margin: 0 auto;
-            line-height: .9rem;
-            color: #999999;
-            font-size: 0.28rem;
-            box-shadow: 0 1px 0 0 #E6E6E6;
-            .imgWrapper{
-                position: absolute;
-                right: 0;
-                top: 50%;
-                width: 0.18rem;
-                height: 0.14rem;
-                img{
-                    position: absolute;
-                    width: 100%;
-                    height: 100%;
-                }
-            }
-        }
-        .isMarry{
-            position: relative;
-            height: .9rem;
-            width: 92%;
-            margin: 0 auto;
-            line-height: .9rem;
-            color: #999999;
-            font-size: 0.28rem;
-            box-shadow: 0 1px 0 0 #E6E6E6;
-            .imgWrapper{
-                position: absolute;
-                right: 0;
-                top: 50%;
-                width: 0.18rem;
-                height: 0.14rem;
-                img{
-                    position: absolute;
-                    width: 100%;
-                    height: 100%;
-                }
-            }
-        }
-        .familyM{
-            position: relative;
-            height: .9rem;
-            width: 92%;
-            margin: 0 auto;
-            line-height: .9rem;
-            color: #999999;
-            font-size: 0.28rem;
-            box-shadow: 0 1px 0 0 #E6E6E6;
-            input{
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%,-50%);
-                margin-left: .8rem;
-                color: #333;
-                font-size: 0.28rem;
-            }
-        }
-        .familyTel{
-            position: relative;
-            height: .9rem;
-            width: 92%;
-            margin: 0 auto;
-            line-height: .9rem;
-            color: #999999;
-            font-size: 0.28rem;
-            box-shadow: 0 1px 0 0 #E6E6E6;
-            input{
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%,-50%);
-                margin-left: .8rem;
-                color: #333;
-                font-size: 0.28rem;
-            }
-        }
     }
     .next-step{
         background: #028EFF;
@@ -303,6 +234,9 @@ export default {
         margin: 0 auto;
         margin-top: 1.6rem;
     }
+  .red{
+    color: red;
+  }
 }
 </style>
 

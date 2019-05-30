@@ -278,7 +278,7 @@
         this.toastText = '保存成功';
         this.$refs.toast.show();
         setTimeout(() => {
-          this.$router.back();
+          this.$router.push('/class');
         }, 1000);
       },
       getParams() {

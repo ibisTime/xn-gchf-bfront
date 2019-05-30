@@ -24,9 +24,9 @@ const ClassAddEdit = () => import('pages/class-addedit/class-addedit');
 const ClassDetail = () => import('pages/class-detail/class-detail');
 // 项目人员
 const ProjectMember = () => import('pages/project-member/project-member');
-//搜索
+// 搜索
 const search = () => import('pages/search/search');
-//考勤人员
+// 考勤人员
 const CheckWork = () => import('pages/check-work/check-work');
 //考勤详情
 const CheckWorkDetails = () =>import('pages/checkWorkDetails/checkWorkDetails');
@@ -34,27 +34,27 @@ const CheckWorkDetails = () =>import('pages/checkWorkDetails/checkWorkDetails');
 const Supp = () =>import('pages/supp/supp');
 //进出详情
 const InOut = () => import('pages/in-out/in-out');
-//人员详情
+// 人员详情
 const MemberDetails = () => import('pages/MemberDetails/MemberDetails');
-//人脸采集
+// 人脸采集
 const FaceCollect = () => import('pages/faceCollect/faceCollect');
-//人员建档
+// 人员建档
 const CreateRecord = () => import('pages/createRecord/createRecord');
-//人员建档 2
+// 人员建档 2
 const RecordCopy = () => import('pages/recordCopy/recordCopy');
-//手持照片
+// 手持照片
 const Photo = () => import('pages/photo/photo');
-//基本信息录入
+// 基本信息录入
 const BaseInfo = () => import('pages/baseInfo/baseInfo');
-//办理入职
+// 办理入职
 const HandleEntry = () => import('pages/handleEntry/handleEntry');
-//基本信息
+// 基本信息
 const Information = () => import('pages/information/information');
-//进退场
+// 进退场
 const Filed = () => import('pages/filed/filed');
 //进退场 进出详情
 const IntoDetails = () => import('pages/into-details/into-details');
-//新增修改进退场
+// 新增修改进退场
 const AddProject = () => import('pages/addProject/addProject');
 //进出记录
 const IsEntryRecord = () => import('pages/isEntryRecord/isEntryRecord');
@@ -141,7 +141,7 @@ const router = new Router({
     }, {
       path: '/memberDetails',
       meta: { title: '人员详情', auto: true },
-      component: MemberDetails,
+      component: MemberDetails
     }, {
       path: '/faceCollect',
       meta: { title: '人脸采集', auto: true },
@@ -161,34 +161,35 @@ const router = new Router({
     }, {
       path: '/baseInfo',
       meta: { title: '基本信息录入', auto: true },
-      component:BaseInfo
+      component: BaseInfo
     }, {
       path: '/handleEntry',
       meta: { title: '基本信息录入', auto: true },
-      component:HandleEntry
+      component: HandleEntry
     }, {
       path: '/information',
       meta: { title: '项目人员', auto: true },
-      component:Information
+      component: Information
     }, {
       path: '/filed',
       meta: { title: '进退场记录', auto: true },
-      component:Filed
+      component: Filed
     }, {
       path: '/into-details',
       meta: { title: '进出详情', auto: true },
-      component:IntoDetails
+      component: IntoDetails
     }, {
       path: '/addProject',
       meta: { title: '新增修改进退场', auto: true },
-      component:AddProject
+      component: AddProject
     }, {
       path: '/isEntryRecord',
       meta: { title: '进出记录', auto: true },
-      component:IsEntryRecord
+      component: IsEntryRecord
     }, {
       path: '/detailsText',
       meta: { title: '进出记录', auto: true },
+<<<<<<< HEAD
       component:DetailsText
     }, {
       path: '/wage',
@@ -214,6 +215,9 @@ const router = new Router({
       path: '/bind',
       meta: { title: '绑定银行卡', auto: true },
       component:Bind
+=======
+      component: DetailsText
+>>>>>>> e7dca3a5561e68315a17d7dce0868a3e798b6ed6
     }
   ]
 });

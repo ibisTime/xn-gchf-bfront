@@ -1,35 +1,36 @@
 <template>
     <div class="full-screen-wrapper project-member-wrapper">
-        <scroll ref="scroll" :hasMore="false">
+      <div class="proBanner">
+        <p class="proCenter">
+          项目人员
+        </p>
+        <div class="right">
+          <router-link to='/search'>
+            <img src="./search@3x.png" />
+          </router-link>
+        </div>
+      </div>
+        <scroll ref="scroll" :hasMore="hasMore" @pullingUp="getTeamList" :data="items">
             <div>
-                <div class="proBanner">
-                    <p class="proCenter">
-                        项目人员
-                    </p>
-                    <div class="right">
-                        <router-link to='/search'>
-                        <img src="./search@3x.png" />
-                        </router-link>
-                    </div>
-                </div>
                 <div class="detailItems">
                     <div class="details" v-for="(item, index) in items" :key="index">
+                      <div @click="toUserDetail(item.code)">
                         <p class="detailTop">
-                            <span>{{item.workerName}}</span>
-                            <span>{{item.teamName}}</span>
+                          <span>{{item.workerName}}</span>
+                          <span>{{item.teamName}}</span>
                         </p>
                         <p class="detailUnder">
-                            <span>身份证号:{{item.idcardNumber}}</span>
-                            <span>{{staticObj[item.workerPicUploadStatus]}}</span>
+                          <span>身份证号:{{item.idcardNumber}}</span>
+                          <span>{{staticObj[item.workerPicUploadStatus]}}</span>
                         </p>
-                        <router-link to="/memberDetails">
-                            <div class="detailImg">
-                                <img src="./to@2x.png"/>
-                            </div>
-                        </router-link>
+                        <div class="detailImg">
+                          <img src="./to@2x.png"/>
+                        </div>
+                      </div>
                     </div>
                 </div>
             </div>
+          <noResult title="暂无班组人员" v-if="items.length === 0 && !hasMore" style="margin-top: 0.8rem"/>
         </scroll>
         <router-link to="/createRecord">
             <div class="footer">
@@ -43,34 +44,53 @@
 
 <script>
 import Scroll from 'base/scroll/scroll';
+import NoResult from 'base/no-result/no-result';
 import {deal} from 'api/deal';
-import{getDictList} from 'api/general'
+import{getDictList} from 'api/general';
     export default{
         data(){
             return{
                 items:[],
-                staticObj: {}
+                staticObj: {},
+              hasMore: true,
+              config: {
+                  start: 1
+              }
             }
         },
         created(){
-            Promise.all([deal(1), getDictList('upload_status')]).then(([data1, data2]) => {
-                this.items = data1.list;
-                data2.forEach(item => {
-                    this.staticObj[item.dkey] = item.dvalue;
-                });
-                console.log(this.staticObj);
-            })
-            // deal(1).then(data => {
-            //     this.items = data.list;
-            // })
-            // getDictList('upload_status').then(data => {
-            //     this.staticList = data.map(item => ({
-            //         [item.dkey]: item.dvalue
-            //     }));
-            // })
-        },components:{
-            scroll:Scroll
+          this.getTeamList();
+          getDictList('upload_status').then(data => {
+            data.forEach(item => {
+              this.staticObj[item.dkey] = item.dvalue;
+            });
+          });
+        },
+      methods: {
+          getTeamList() {
+            let teamUserConfig = sessionStorage.getItem('teamUserConfig') || '';
+            if(teamUserConfig) {
+              teamUserConfig = JSON.parse(teamUserConfig);
+              this.config = {
+                ...this.config,
+                ...teamUserConfig
+              };
+              sessionStorage.removeItem('teamUserConfig');
+            }
+            return deal(this.config).then(data => {
+              this.hasMore = (data.pageNO < data.totalPage);
+              this.config.start ++;
+              this.items = [...this.items, ...data.list];
+            });
+          },
+        toUserDetail(code) {
+          this.$router.push(`/memberDetails?code=${code}`);
         }
+      },
+      components:{
+        scroll:Scroll,
+        noResult: NoResult
+      }
     }
 </script>
 <style lang="scss" scoped>
@@ -83,7 +103,7 @@ import{getDictList} from 'api/general'
     }
     .proBanner{
         position: relative;
-        height:0.8rem;
+        height:1.28rem;
         width:100%;
         background:#028EFF;
         text-align: center;

@@ -1,5 +1,5 @@
 <template>
-  <div class="loading">
+  <div class="loading" v-show="isLoading">
     <img src="./loading.gif">
     <p class="desc">{{title}}</p>
   </div>
@@ -10,6 +10,10 @@
       title: {
         type: String,
         default: '正在载入...'
+      },
+      isLoading: {
+        type: Boolean,
+        default: true
       }
     }
   };
@@ -18,6 +22,10 @@
   @import "~common/scss/variable";
 
   .loading {
+    position: fixed;
+    left: 50%;
+    top: 150px;
+    transform: translateX(-50%);
     width: 100%;
     text-align: center;
     font-size: 0;
