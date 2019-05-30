@@ -58,7 +58,6 @@ import{getDictList} from 'api/general'
                 data2.forEach(item => {
                     this.staticObj[item.dkey] = item.dvalue;
                 });
-                console.log(this.staticObj);
             })
             // deal(1).then(data => {
             //     this.items = data.list;

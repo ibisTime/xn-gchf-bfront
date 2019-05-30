@@ -1,6 +1,6 @@
 <template>
-    <div class="full-screen-wrapper baseInfo-wrapper">   
-        <scroll ref="scroll" :hasMore="false"> 
+    <div class="full-screen-wrapper baseInfo-wrapper">
+        <scroll ref="scroll" :hasMore="false">
         <div>
          <div class="baseBanner">
             <p class="baseCenter">
@@ -9,43 +9,59 @@
         </div>
         <div class="baseTop">
             <div class="tel">
-                手机号码<input type="telphone"/>
+              手机号码<input type="telphone" placeholder="请输入手机号码"/>
             </div>
-            <div class="outlook">
-                政治面貌
-                <div class="imgWrapper">
-                    <img src="./pushdown.png"/>
-                </div>
-            </div>
-            <div class="education">
-                文化程度
-                <div class="imgWrapper">
-                    <img src="./pushdown.png"/>
-                </div>
-            </div>
-            <div class="Labour">
-                是否加入公会
-                <div class="imgWrapper">
-                    <img src="./pushdown.png"/>
-                </div>
-            </div>
+          <div class="outlook">
+            <label>政治面貌</label>
+            <select style="width: 80%;">
+              <option value="">请选择</option>
+              <option :value="item.dkey" v-for="(item, index) in politicsTypeData" v-bind:key="index">{{item.dvalue}}</option>
+            </select>
+          </div>
+          <div class="outlook">
+            <label>文化程度</label>
+            <select style="width: 80%;">
+              <option value="">请选择</option>
+              <option :value="item.dkey" v-for="(item, index) in cultureLevelTypeData" v-bind:key="index">{{item.dvalue}}</option>
+            </select>
+          </div>
+          <div class="outlook">
+            <label>是否加入公会</label>
+            <select style="width: 60%;">
+              <option value="">请选择</option>
+              <option key='1' value='1'>是</option>
+              <option key='0' value='0'>否</option>
+            </select>
+          </div>
+          </div>
         </div>
         <div class="empty"></div>
         <div class="baseFooter">
-             <div class="habits">
-                特长<input type="text"/>
-            </div>
+          <!--<div class="medical">-->
+            <!--加入公会时间 <datePicker-->
+            <!--:year="addYear"-->
+            <!--:month="addMonth"-->
+            <!--:day="addDay"-->
+            <!--@change="updateAddDate"-->
+          <!--/>-->
+          <!--</div>-->
+          <div class="habits">
+            特长<input type="text"/>
+          </div>
             <div class="medical">
-                是否重大病史
-                <div class="imgWrapper">
-                    <img src="./pushdown.png"/>
-                </div>
+              <label>是否重大病史</label>
+              <select style="width: 60%;">
+                <option value="">请选择</option>
+                <option key='1' value='1'>是</option>
+                <option key='0' value='0'>否</option>
+              </select>
             </div>
             <div class="isMarry">
-                婚姻状况
-                <div class="imgWrapper">
-                    <img src="./pushdown.png"/>
-                </div>
+              <label>婚姻状况</label>
+              <select style="width: 60%;">
+                <option value="">请选择</option>
+                <option :value="item.dkey" v-for="(item, index) in maritalStatusData" v-bind:key="index">{{item.dvalue }}</option>
+              </select>
             </div>
             <div class="familyM">
                 紧急联系人<input type="text" placeholder="请输入联系人姓名"/>
@@ -59,22 +75,74 @@
                 下一步
             </div>
         </router-link>
-        </div>
-         </scroll>
+        </scroll>
+      <toast ref="toast" :text="toastText"></toast>
     </div>
 </template>
 <script>
 import Scroll from 'base/scroll/scroll';
+import Toast from 'base/toast/toast';
+import DatePicker from 'base/date-picker/date-picker';
+import{getDictList} from 'api/general';
 export default {
     data(){
         return{
+          toastText: '照片请上传完整',
+          entryYear: '',
+          entryMonth: '',
+          entryDay: '',
+          entryStartYear: '',
+          entryStartMonth: '',
+          entryStartDay: '',
+          entryEndYear: '',
+          entryEndMonth: '',
+          entryEndDay: '',
+          addYear: '',
+          addMonth: '',
+          addDay: '',
+          politicsTypeData: [],
+          cultureLevelTypeData: [],
+          maritalStatusData: [],
+
         }
     },
+    created() {
+      Promise.all([
+        getDictList('politics_type'),
+        getDictList('culture_level_type'),
+        getDictList('marital_status')
+      ]).then(([data1, data2, data3]) => {
+        this.politicsTypeData = data1;
+        this.cultureLevelTypeData = data2;
+        this.maritalStatusData = data3;
+      });
+    },
     methods:{
-
+      updateEntryDate(year, month, day) {
+        this.entryYear = year;
+        this.entryMonth = month;
+        this.entryDay = day;
+      },
+      updateStartEntryDate(year, month, day) {
+        this.entryStartYear = year;
+        this.entryStartMonth = month;
+        this.entryStartDay = day;
+      },
+      updateEndEntryDate(year, month, day) {
+        this.entryEndYear = year;
+        this.entryEndMonth = month;
+        this.entryEndDay = day;
+      },
+      updateAddDate(year, month, day) {
+        this.addYear = year;
+        this.addMonth = month;
+        this.addDay = day;
+      },
     },
     components:{
-        scroll:Scroll
+        scroll:Scroll,
+        toast: Toast,
+        datePicker: DatePicker
     }
 }
 </script>
