@@ -74,6 +74,7 @@
       },
       queryUser() {
         return getUser().then((data) => {
+          sessionStorage.setItem('organizationCode', data.organizationCode);
           this.setUser(data);
         });
       },

@@ -6,24 +6,78 @@
             </p>
         </div>
         <div class="seaSelect">
-            所在班组
-           <img src="./selectBottom.png"/>
+            <div class="left">
+              所在班组
+            </div>
+          <div class="right">
+            <select v-model="config.teamSysNo">
+              <option
+                :value="item.code"
+                v-for="(item, index) in teamData"
+                :key="index"
+              >{{item.teamName}}</option>
+            </select>
+          </div>
         </div>
+        <!--<div class="seaSelect">-->
+           <!--项目人员-->
+           <!--<img src="./selectBottom.png"/>-->
+        <!--</div>-->
         <div class="seaSelect">
-           项目人员
-           <img src="./selectBottom.png"/>
+          <div class="left">
+            上传状态
+          </div>
+          <div class="right">
+            <select v-model="config.uploadStatus">
+              <option
+                :value="item.key"
+                v-for="(item, index) in statusList"
+                :key="index"
+              >{{item.value}}</option>
+            </select>
+          </div>
         </div>
-        <div class="seaSelect">
-            状态
-           <img src="./selectBottom.png"/>
-        </div>
-        <div class="footer">
+        <div class="footer" @click="searchUser">
             搜索
         </div>
     </div>
 </template>
 <script>
-
+  import { xmbzList } from 'api/deal';
+  import{getDictList} from 'api/general';
+  export default {
+    data() {
+      return {
+        config: {
+          teamSysNo: '',
+          uploadStatus: ''
+        },
+        teamData: [],
+        statusList: []
+      }
+    },
+    created() {
+      let projectCode = sessionStorage.getItem('organizationCode');
+      Promise.all([
+        xmbzList({projectCode}),
+        getDictList('upload_status')
+      ]).then(([data1, data2]) => {
+        this.teamData = data1;
+        this.statusList = data2.map(item => ({
+          key: item.dkey,
+          value: item.dvalue
+        }));
+      });
+    },
+    methods: {
+      searchUser() {
+        if(this.config.teamSysNo || this.config.uploadStatus) {
+          sessionStorage.setItem('teamUserConfig', JSON.stringify(this.config));
+        }
+        this.$router.push('/project-member');
+      }
+    }
+  }
 </script>
 
 <style lang="scss" scoped>
@@ -49,22 +103,24 @@
     }
 }
 .seaSelect{
-        position: relative;
-        width: 100%;
-        height: 1rem;
-        font-size: 0.28rem;
-        color: #999;
-        padding:0.375rem;
-        box-shadow: 0 1px 0 0 #E6E6E6;
-        line-height: .55rem;
-        img{
-            position: absolute;
-            right: 0.2rem;
-            display: inline-block;
-            width: 0.2rem;
-            height: 0.175rem;
-            top:.55rem;
-        }
+      position: relative;
+  display: flex;
+      width: 100%;
+      height: 1rem;
+      font-size: 0.28rem;
+      color: #999;
+      padding:0.375rem;
+      box-shadow: 0 1px 0 0 #E6E6E6;
+      line-height: .55rem;
+  .left{
+    width: 30%;
+  }
+  .right{
+    width: 70%;
+    select{
+      width: 100%;
+    }
+  }
 }
 .footer{
     width:92%;

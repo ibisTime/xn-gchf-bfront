@@ -9,8 +9,8 @@
             </div>
             <div class="createTop">
                 <div class="positive">身份证正面</div>
-                <div class="p-wrapper">
-                    <div class="cross" :style="{opacity: isVideoZm ? 1 : 0}" @click="getMediaZm">
+                <div class="p-wrapper" @click="getMediaZm">
+                    <div class="cross" :style="{opacity: isVideoZm ? 1 : 0}">
                         <img src="./upload.png"/>
                     </div>
                   <div class="sfz_zm">
@@ -22,8 +22,8 @@
             </div>
             <div class="createUnder">
                 <div class="other">身份证反面</div>
-                <div class="o-wrapper">
-                    <div class="ucross" :style="{opacity: isVideoFm ? 1 : 0}" @click="getMediaFm">
+                <div class="o-wrapper" @click="getMediaFm">
+                    <div class="ucross" :style="{opacity: isVideoFm ? 1 : 0}">
                         <img src="./upload.png"/>
                     </div>
                   <div class="sfz_zm">
@@ -58,6 +58,7 @@
 <script>
 import Scroll from 'base/scroll/scroll';
 import Toast from 'base/toast/toast';
+import {orcIdNo} from 'api/deal';
 export default {
     data(){
         return{
@@ -122,6 +123,13 @@ export default {
         let fileReader = new FileReader();
         let _this = this;
         fileReader.readAsDataURL(theFile);
+        if(theFile.size > 51200) {
+          this.toastText = '上传图片不得大于500KB';
+          this.$refs.toast.show();
+          _this.isShow = true;
+          _this.isVideoSfz = true;
+          return false;
+        }
         fileReader.onload = function() {
           _this.isShow = true;
           _this.isVideoSfz = true;
@@ -139,9 +147,19 @@ export default {
           this.$refs.toast.show();
           return false;
         }else {
-          sessionStorage.setItem('sfzzm', this.sfzzm);
-          sessionStorage.setItem('sfzfm', this.sfzfm);
-          this.$router.push('/photo');
+          orcIdNo({
+            positiveImage: this.sfzzm,
+            negativeImage: this.sfzfm
+          }).then((data) => {
+            this.toastText = '操作成功';
+            this.$refs.toast.show();
+            setTimeout(() => {
+              this.$router.push(`/photo?code=${data.code}`);
+            }, 1000);
+          }, () => {
+            this.toastText = '操作失败';
+            this.$refs.toast.show();
+          });
         }
       }
     },
@@ -183,7 +201,7 @@ export default {
         .p-wrapper{
             position: relative;
             width: 92%;
-            height: 4rem;
+            height: 4.5rem;
             margin: 0 auto;
             margin-top: .3rem;
             margin-bottom: .3rem;
@@ -224,7 +242,7 @@ export default {
         .o-wrapper{
             position: relative;
             width: 92%;
-            height: 4rem;
+            height: 4.5rem;
             margin: 0 auto;
             margin-top: .3rem;
             margin-bottom: 1rem;
@@ -267,11 +285,11 @@ export default {
     top: 0;
     position: fixed;
     z-index: 9;
-    background-color: rgba(0, 0, 0, .6);
+    background-color: rgba(0, 0, 0, .8);
     padding-top: 0.5rem;
   }
   #canvasShow{
-    margin-left: 50px;
+    margin-left: 0.5rem;
   }
   .hidden{
     display: none;
@@ -283,7 +301,7 @@ export default {
     z-index: 100;
     height: 100%;
     width: 100%;
-    background: rgba(0,0,0,0.50);
+    background: rgba(0,0,0,0.8);
   }
   .footer{
     width: 100%;

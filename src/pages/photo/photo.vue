@@ -36,17 +36,20 @@
       </div>
       <div class="sfz_modal" :class="isVideoSfz ? 'hidden' : ''">
         <video id="video" width="100%" height="82.6%" muted="muted">您的浏览器不支持拍照上传功能</video>
-        <div class="nextStep" @click="videoClick">
+        <div class="nextStep" style="marginTop: 0" @click="videoClick">
           拍 照
         </div>
       </div>
       <toast ref="toast" :text="toastText"></toast>
+      <loading :isLoading="isLoading"></loading>
     </div>
 </template>
 
 <script>
 import Scroll from 'base/scroll/scroll';
 import Toast from 'base/toast/toast';
+import Loading from 'base/loading/loading';
+import {scPicEntry} from 'api/deal';
 export default{
     data(){
        return{
@@ -56,7 +59,8 @@ export default{
          isVideo: true,
          sczzp: '',
          mediaStreamTrack: null,
-          toastText: '照片请上传完整'
+          toastText: '照片请上传完整',
+         isLoading: false
        }
     },
     methods:{
@@ -65,6 +69,7 @@ export default{
         },
       getMedia() {
         this.isVideoSfz = false;
+        this.isLoading = true;
         let constraints = {
           video: {width: 500, height: 500},
           audio: true
@@ -75,6 +80,7 @@ export default{
         promise.then((MediaStream) => {
           this.mediaStreamTrack = MediaStream;
           video.srcObject = MediaStream;
+          this.isLoading = false;
           video.play();
         });
       },
@@ -107,17 +113,24 @@ export default{
       },
       nextStepFn() {
           if(!this.sczzp) {
-            sessionStorage.setItem('sczzp', this.sczzp);
             this.$refs.toast.show();
             return;
           }else {
-            this.$router.push('/baseInfo');
+            const { code } = this.$route.query;
+            console.log(code);
+            scPicEntry({code, handIdCardImageUrl: this.sczzp}).then(data => {
+              this.$refs.toast.show('操作成功');
+              setTimeout(() => {
+                this.$router.push(`/baseInfo?code=${data.code}`);
+              }, 1000);
+            });
           }
       }
     },
     components:{
         scroll:Scroll,
-        toast: Toast
+        toast: Toast,
+        loading: Loading
     }
 }
 </script>
@@ -126,7 +139,7 @@ export default{
 .faceCollect-wrapper{
     .faceCollectBanner{
         position: relative;
-        height:0.8rem;
+        height: 1.5rem;
         width:100%;
         background:#028EFF;
         text-align: center;

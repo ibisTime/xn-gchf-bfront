@@ -9,9 +9,9 @@
             <img :src="getAvatar()"/>
             </div>
             <div class="card-info">
-            <div class="card-title">姓名：{{realName}}</div>
-            <div class="card-tip">班组：xxx</div>
-            <div class="card-time">入职时间: 2019-6-28</div>
+            <div class="card-title">姓名：{{userInfo.workerName}}</div>
+            <div class="card-tip">班组：{{userInfo.teamName}}</div>
+            <div class="card-time">入职时间: {{}}</div>
             </div>
         </div>
     </router-link>
@@ -44,17 +44,29 @@
 </template>
 
 <script>
-import { formatAvatar } from 'common/js/util';
+import { formatAvatar, formatDate } from 'common/js/util';
+import { teamUserDetail } from 'api/deal';
 export default{
-methods:{
-    getAvatar() {
-        if (!this.user) {
-          return require('./avatar.png');
-        }
-        return formatAvatar(this.user.photo);
-      }
+  data(){
+    return{
+      userInfo: {}
     }
-}
+  },
+  created() {
+    const { code } = this.$route.query;
+    teamUserDetail(code).then(data => {
+      this.userInfo = data;
+    })
+  },
+  methods:{
+      getAvatar() {
+          if (!this.user) {
+            return require('./avatar.png');
+          }
+          return formatAvatar(this.user.photo);
+        }
+      }
+  }
 </script>
 
 <style lang="scss" scoped>
@@ -146,7 +158,7 @@ methods:{
         margin-top:.1rem;
         font-size:0.28rem;
         color: #333;
-        border-bottom:1px solid #f0f0f0; 
+        border-bottom:1px solid #f0f0f0;
         .facePhoto{
             position: absolute;
             right: 0.2rem;
@@ -168,7 +180,7 @@ methods:{
         margin-top:.1rem;
         font-size:0.28rem;
         color: #333;
-        border-bottom:1px solid #f0f0f0; 
+        border-bottom:1px solid #f0f0f0;
         .cardPhoto{
             position: absolute;
             right: 0.2rem;
@@ -216,7 +228,7 @@ methods:{
         margin-top:.1rem;
         font-size:0.28rem;
         color: #333;
-        border-bottom:1px solid #f0f0f0; 
+        border-bottom:1px solid #f0f0f0;
         .recordPhoto{
             position: absolute;
             right: 0.2rem;

@@ -1,39 +1,55 @@
 import fetch from 'common/js/fetch';
-import {getUserId} from 'common/js/util'
+import {getUserId} from 'common/js/util';
 
+const projectCode = sessionStorage.getItem('organizationCode');
 // 项目人员
-export function deal(start) {
+export function deal(config) {
   return fetch(631605, {
-      start,
-      limit: 10,
-      userId:getUserId()
+    limit: 10,
+    userId: getUserId(),
+    projectCode,
+    ...config
   });
 }
 
-//基本信息
-export function info(){
-    return fetch(631790,{
-        name,
-        gender,
-        nation,
-        birthday,
-        idCardType,
-        idCardNumber,
-        address,
-        grantOrg,
-        startDate,
-        expiryDate,
-        politicsType,
-        cultureLevelType,
-        headImageUrl,
-        isJoined,
-        joinedTime,
-        specialty,
-        hasBadMedicalHistory,
-        maritalStatus,
-        projectCode,
-        userId,
-        attendancePicture
-    });  
+// 列表查询项目班组
+export function xmbzList(config) {
+  return fetch(631667, {
+    ...config,
+    userId: getUserId()
+  });
 }
 
+// OCR识别身份证
+export function orcIdNo(config) {
+  return fetch(631795, {
+    ...config,
+    userId: getUserId()
+  });
+}
+
+// 手持身份证照片录入
+export function scPicEntry(config) {
+  return fetch(631796, config);
+}
+
+// 基本信息录入
+export function baseInfoEntry(config) {
+  return fetch(631797, config);
+}
+
+// 添加人员进退场
+export function userInOut(config) {
+  return fetch(631730, {
+    ...config,
+    userId: getUserId()
+  });
+}
+
+// 详细查询班组人员
+export function teamUserDetail(code) {
+  return fetch(631606, {
+    code,
+    userId: getUserId()
+  });
+}

@@ -1,5 +1,5 @@
 <template>
-    <div class="full-screen-wrapper handle-wrapper">    
+    <div class="full-screen-wrapper handle-wrapper">
          <scroll ref="scroll" :hasMore="false">
             <div>
             <div class="baseBanner">
@@ -9,58 +9,117 @@
             </div>
             <div class="baseTop">
                 <div class="group">
-                所属班组
+                  <div class="g_left">
+                    所属班组 <sapn class="red">*</sapn>
+                  </div>
+                  <div class="group-sele">
+                    <select v-model="config.teamSysNo">
+                      <option value=""></option>
+                    </select>
                     <div class="imgWrapper">
-                        <img src="./pushdown.png"/>
+                      <img src="./pushdown.png"/>
                     </div>
+                  </div>
                 </div>
-                <div class="monitor">
-                    是否班长
+                <div class="group">
+                  <div class="g_left">
+                    是否班长 <sapn class="red">*</sapn>
+                  </div>
+                  <div class="group-sele">
+                    <select v-model="config.isTeamLeader">
+                      <option value=""></option>
+                    </select>
                     <div class="imgWrapper">
-                        <img src="./pushdown.png"/>
+                      <img src="./pushdown.png"/>
                     </div>
+                  </div>
                 </div>
-                <div class="work">
-                    工种
+                <div class="group">
+                  <div class="g_left">
+                    工种 <sapn class="red">*</sapn>
+                  </div>
+                  <div class="group-sele">
+                    <select v-model="config.workType">
+                      <option value=""></option>
+                    </select>
                     <div class="imgWrapper">
-                        <img src="./pushdown.png"/>
+                      <img src="./pushdown.png"/>
                     </div>
+                  </div>
                 </div>
-                <div class="workerType">
-                    工人类型
+                <div class="group">
+                  <div class="g_left">
+                    工人类型 <sapn class="red">*</sapn>
+                  </div>
+                  <div class="group-sele">
+                    <select v-model="config.workRole">
+                      <option value=""></option>
+                    </select>
                     <div class="imgWrapper">
-                        <img src="./pushdown.png"/>
+                      <img src="./pushdown.png"/>
                     </div>
+                  </div>
                 </div>
             </div>
             <div class="empty"></div>
             <div class="baseFooter">
                 <div class="Insurance">
-                    是否购买保险
-                    <div class="imgWrapper">
-                        <img src="./pushdown.png"/>
+                    <div class="g_left">
+                      是否购买保险
                     </div>
+                  <div class="group-sele">
+                    <select v-model="config.hasBuyInsurance">
+                      <option value=""></option>
+                    </select>
+                    <div class="imgWrapper">
+                      <img src="./pushdown.png"/>
+                    </div>
+                  </div>
                 </div>
             </div>
-            <div class="ok">
+            <div class="ok" @click="inputtingOk">
                 完成建档
             </div>
             </div>
         </scroll>
+      <toast ref="toast" :text="toastText"></toast>
     </div>
 </template>
 <script>
 import Scroll from 'base/scroll/scroll';
+import Toast from 'base/toast/toast';
+import { userInOut } from 'api/deal';
 export default {
     data(){
         return{
+          config: {
+            workerCode: '',
+            teamSysNo: '',
+            workType: '',
+            workRole: '',
+            isTeamLeader: '',
+            hasBuyInsurance: ''
+          },
+          toastText: '操作完成'
         }
     },
     methods:{
-
+      inputtingOk() {
+        const { code } = this.$route.query;
+        userInOut({
+          ...this.config,
+          workerCode: code
+        }).then(() => {
+          this.$refs.toast.show();
+          setTimeout(() => {
+            this.$router.push('/home');
+          }, 1000);
+        });
+      }
     },
     components:{
-        scroll:Scroll
+        scroll:Scroll,
+      toast: Toast
     }
 }
 </script>
@@ -85,6 +144,7 @@ export default {
         width: 100%;
         .group{
             position: relative;
+          display: flex;
             height: .9rem;
             width: 92%;
             margin: 0 auto;
@@ -92,84 +152,6 @@ export default {
             color: #999999;
             font-size: 0.28rem;
             box-shadow: 0 1px 0 0 #E6E6E6;
-            .imgWrapper{
-                position: absolute;
-                right: 0;
-                top: 50%;
-                width: 0.18rem;
-                height: 0.14rem;
-                img{
-                    position: absolute;
-                    width: 100%;
-                    height: 100%;
-                }
-            }
-        }
-        .monitor{
-            position: relative;
-            height: .9rem;
-            width: 92%;
-            margin: 0 auto;
-            line-height: .9rem;
-            color: #999999;
-            font-size: 0.28rem;
-            box-shadow: 0 1px 0 0 #E6E6E6;
-            .imgWrapper{
-                position: absolute;
-                right: 0;
-                top: 50%;
-                width: 0.18rem;
-                height: 0.14rem;
-                img{
-                    position: absolute;
-                    width: 100%;
-                    height: 100%;
-                }
-            }
-        }
-        .work{
-            position: relative;
-            height: .9rem;
-            width: 92%;
-            margin: 0 auto;
-            line-height: .9rem;
-            color: #999999;
-            font-size: 0.28rem;
-            box-shadow: 0 1px 0 0 #E6E6E6;
-            .imgWrapper{
-                position: absolute;
-                right: 0;
-                top: 50%;
-                width: 0.18rem;
-                height: 0.14rem;
-                img{
-                    position: absolute;
-                    width: 100%;
-                    height: 100%;
-                }
-            }
-        }
-         .workerType{
-            position: relative;
-            height: .9rem;
-            width: 92%;
-            margin: 0 auto;
-            line-height: .9rem;
-            color: #999999;
-            font-size: 0.28rem;
-            box-shadow: 0 1px 0 0 #E6E6E6;
-            .imgWrapper{
-                position: absolute;
-                right: 0;
-                top: 50%;
-                width: 0.18rem;
-                height: 0.14rem;
-                img{
-                    position: absolute;
-                    width: 100%;
-                    height: 100%;
-                }
-            }
         }
     }
     .empty{
@@ -177,30 +159,17 @@ export default {
         height: 0.2rem;
         background: #F0F0F0;
     }
-    .baseFooter{
-        .Insurance{
-            position: relative;
-            height: .9rem;
-            width: 92%;
-            margin: 0 auto;
-            line-height: .9rem;
-            color: #999999;
-            font-size: 0.28rem;
-            box-shadow: 0 1px 0 0 #E6E6E6;
-            .imgWrapper{
-                position: absolute;
-                right: 0;
-                top: 50%;
-                width: 0.18rem;
-                height: 0.14rem;
-                img{
-                    position: absolute;
-                    width: 100%;
-                    height: 100%;
-                }
-            }
-        }
-    }
+  .Insurance{
+    position: relative;
+    display: flex;
+    height: .9rem;
+    width: 92%;
+    margin: 0 auto;
+    line-height: .9rem;
+    color: #999999;
+    font-size: 0.28rem;
+    box-shadow: 0 1px 0 0 #E6E6E6;
+  }
     .ok{
         background: #028EFF;
         border-radius: 4px;
@@ -213,6 +182,31 @@ export default {
         margin: 0 auto;
         margin-top: 3rem;
     }
+  .imgWrapper{
+    position: absolute;
+    right: 0;
+    top: 45%;
+    width: 0.18rem;
+    height: 0.14rem;
+    img{
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .g_left{
+    width: 30%;
+  }
+  .group-sele{
+    position: relative;
+    width: 70%;
+    select{
+      width: 100%;
+    }
+  }
+  .red{
+    color: red;
+  }
 }
 </style>
 
