@@ -12,7 +12,8 @@
                         </router-link>
                     </div>
                 </div>
-                <div class="detailItems">
+                <router-link to="checkWorkDetails">
+                    <div class="detailItems">
                     <div class="details" v-for="item in items1">
                         <p class="detailTop">
                             <span>{{item.name}}</span>
@@ -27,6 +28,7 @@
                         </div>
                     </div>
                 </div>
+                </router-link>
             </div>
         </scroll>
     </div>
@@ -70,11 +72,11 @@ export default{
 }
 .inOutBanner{
     position: relative;
-    height:1.6rem;
+    height:.8rem;
     width:100%;
     background:#028EFF;
     text-align: center;
-    font-size: 0.45rem;
+    font-size: 0.32rem;
     color: #fff;
     .inOutCenter{
         position: absolute;

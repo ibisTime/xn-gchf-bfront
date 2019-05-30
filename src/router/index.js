@@ -28,6 +28,10 @@ const ProjectMember = () => import('pages/project-member/project-member');
 const search = () => import('pages/search/search');
 //考勤人员
 const CheckWork = () => import('pages/check-work/check-work');
+//考勤详情
+const CheckWorkDetails = () =>import('pages/checkWorkDetails/checkWorkDetails');
+//考勤补录
+const Supp = () =>import('pages/supp/supp');
 //进出详情
 const InOut = () => import('pages/in-out/in-out');
 //人员详情
@@ -48,14 +52,22 @@ const HandleEntry = () => import('pages/handleEntry/handleEntry');
 const Information = () => import('pages/information/information');
 //进退场
 const Filed = () => import('pages/filed/filed');
-//进出详情
+//进退场 进出详情
 const IntoDetails = () => import('pages/into-details/into-details');
 //新增修改进退场
 const AddProject = () => import('pages/addProject/addProject');
 //进出记录
-const IsEntryRecord = () =>import('pages/isEntryRecord/isEntryRecord');
+const IsEntryRecord = () => import('pages/isEntryRecord/isEntryRecord');
 //进出详情 详情
-const DetailsText = () =>import('pages/detailsText/detailsText');
+const DetailsText = () => import('pages/detailsText/detailsText');
+// 进出记录 进出详情
+const OutDetails = () => import('pages/outDetails/outDetails');
+//工资单
+const Wage = () => import('pages/wage/wage');
+//绑定银行卡
+const BindCard = () => import('pages/bindCard/bindCard');
+//绑定银行卡
+const Bind =() => import('pages/bind/bind');
 const router = new Router({
   mode: 'history',
   routes: [
@@ -178,6 +190,30 @@ const router = new Router({
       path: '/detailsText',
       meta: { title: '进出记录', auto: true },
       component:DetailsText
+    }, {
+      path: '/wage',
+      meta: { title: '工资状况', auto: true },
+      component:Wage
+    }, {
+      path: '/checkWorkDetails',
+      meta: { title: '考勤详情', auto: true },
+      component:CheckWorkDetails
+    }, {
+      path: '/supp',
+      meta: { title: '考勤补录', auto: true },
+      component:Supp
+    }, {
+      path: '/outDetails',
+      meta: { title: '考勤补录', auto: true },
+      component:OutDetails
+    }, {
+      path: '/bindCard',
+      meta: { title: '绑定银行卡', auto: true },
+      component:BindCard
+    }, {
+      path: '/bind',
+      meta: { title: '绑定银行卡', auto: true },
+      component:Bind
     }
   ]
 });

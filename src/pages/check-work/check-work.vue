@@ -87,11 +87,11 @@ import Scroll from 'base/scroll/scroll';
 }
 .cheBanner{
     position: relative;
-    height:1.6rem;
+    height:.6rem;
     width:100%;
     background:#028EFF;
     text-align: center;
-    font-size: 0.45rem;
+    font-size: 0.32rem;
     color: #fff;
     .cheCenter{
         position: absolute;

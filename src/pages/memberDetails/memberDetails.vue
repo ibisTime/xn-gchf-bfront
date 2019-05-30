@@ -15,18 +15,20 @@
             </div>
         </div>
     </router-link>
-    <div class="faceCollect">人脸采集
-        <router-link to="/faceCollect">
-            <div class="facePhoto">
-                <img src="./person.png"/>
-            </div>
-        </router-link>
-    </div>
-    <div class="cashCard">绑定工资卡
-        <div class="cardPhoto">
-            <img src="./person.png"/>
+    <router-link to="/faceCollect">
+        <div class="faceCollect">人脸采集
+                <div class="facePhoto">
+                    <img src="./person.png"/>
+                </div>
         </div>
-    </div>
+    </router-link>
+    <router-link to="bindCard">
+        <div class="cashCard">绑定工资卡
+                <div class="cardPhoto">
+                    <img src="./person.png"/>
+                </div>
+        </div>
+    </router-link>
     <div class="baseInfo">基本信息
         <div class="infoPhoto">
             <img src="./person.png"/>

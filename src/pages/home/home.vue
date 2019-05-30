@@ -66,7 +66,7 @@
         }, {
           text: '工资单',
           src: require('./工资单@2x.png'),
-          to: ''
+          to: '/wage'
         }],
         loadingFlag: true
       };

@@ -1,18 +1,13 @@
 <template>
-    <div class="full-screen-wrapper project-member-wrapper">
+    <div class="full-screen-wrapper into-wrapper">
         <scroll ref="scroll" :hasMore="false">
             <div>
-                <div class="proBanner">
-                    <p class="proCenter">
-                        进出记录
+                <div class="baseBanner">
+                    <p class="baseCenter">
+                        进出详情
                     </p>
-                    <div class="right">
-                        <router-link to='/search'>
-                        <img src="./search@3x.png" />
-                        </router-link>
-                    </div>
                 </div>
-                <router-link to="outDetails">
+                <router-link to="/memberDetails">
                     <div class="detailItems">
                         <div class="details" v-for="(item, index) in items" :key="index">
                             <p class="detailTop">
@@ -21,10 +16,9 @@
                                 <span>{{item.status}}</span>
                             </p>
                             <p class="detailUnder">
-                                <span>{{item.isEntry}}</span>
-                                <span>记录时间:{{filedTime}}</span>
+                                <span>身份证号:{{item.iden}}</span>
                             </p>
-                            <router-link to="/into-details">
+                            <router-link to="/memberDetails">
                                 <div class="detailImg">
                                     <img src="./to@2x.png"/>
                                 </div>
@@ -32,68 +26,58 @@
                         </div>
                     </div>
                 </router-link>
+                <div class="empty"></div>
+                <router-link to="/detailsText">
+                    <div class="pushAdd" v-for="(item,index) in isEntry" :key="index">
+                        <div class="entry">
+                            {{item.entryTo}}<span>{{item.times}}</span>
+                        </div>
+                        <div class="entryImg">
+                            <img src="./to@2x.png"/>
+                        </div>
+                    </div>
+                </router-link>
             </div>
         </scroll>
     </div>
 </template>
-
 <script>
 import Scroll from 'base/scroll/scroll';
-import {deal} from 'api/deal';
-import{getDictList} from 'api/general'
-    export default{
-        data(){
-            return{
-                items:[{
+export default {
+    data(){
+        return{
+            items:[{
                     workName:'张三',
                     teamName:'钢筋组',
-                    status:'在场内',
-                    isEntry:'出去',
-                    filedTime:'2019-2-12'
+                    status:'已入场',
+                    iden:'324444187902202112',
                     }],
-            }
-        },
-        created(){
-        
-        },components:{
-            scroll:Scroll
+            isEntry:[{
+                    entryTo:'进入',
+                    times:'2019-2-12 20:00:00'
+            }]
         }
     }
+}
 </script>
+
 <style lang="scss" scoped>
-@import "~common/scss/mixin";
-@import "~common/scss/variable";
-.project-member-wrapper{
-    *{
-    margin: 0;
-    padding: 0;
-    }
-    .proBanner{
+.into-wrapper{
+    .baseBanner{
         position: relative;
-        height:0.8rem;
+        height:.8rem;
         width:100%;
         background:#028EFF;
         text-align: center;
         font-size: 0.32rem;
         color: #fff;
-        box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-        .proCenter{
+        .baseCenter{
             position: absolute;
             top: 50%;
             left: 50%;
             transform:translateX(-50%) translateY(-50%);
-        }
-        .right{
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            right: .3rem;
-            img{
-                width: .4rem;
-                height: .4rem;
             }
         }
-    }
     .detailItems{
         position: relative;
         width:100%;
@@ -123,15 +107,9 @@ import{getDictList} from 'api/general'
                 width: 100%;
                 font-size:0.24rem;
                 margin-top:0.4rem;
-                font-family: PingFangSC-Regular;
-                color: #999999;
+                color: #333;
                 letter-spacing: 0;
                 text-align: justify;
-                :nth-child(2){
-                    display: inline-block;
-                    position: absolute;
-                    right: 3.5rem;
-                }
             }
             .detailImg{
                 width: 0.2rem;
@@ -147,6 +125,37 @@ import{getDictList} from 'api/general'
             }
         }
     }
+    .empty{
+        height: .2rem;
+        background: #f0f0f0;
+        width: 100%;
+    }
+    .pushAdd{
+        position: relative;
+        width: 92%;
+        margin: 0 auto;
+        height: 1rem;
+        line-height: 1rem;
+        box-shadow: 0 1px 0 0 #E6E6E6;
+        font-size:.32rem;
+        span{
+            position: absolute;
+            display: inline-block;
+            margin-left: 2rem;
+        }
+        .entryImg{
+            width: 0.2rem;
+            height: 0.3rem;
+            display: inline-block;
+            position: absolute;
+            right: 0.1rem;
+            top: 0.1rem;
+            img{
+            width: 100%;
+            height: 100%;
+            }
+        }
+     }
 }
 </style>
 

@@ -4,7 +4,7 @@
             <div>
                 <div class="proBanner">
                     <p class="proCenter">
-                        进出记录
+                        工资状况
                     </p>
                     <div class="right">
                         <router-link to='/search'>
@@ -12,26 +12,26 @@
                         </router-link>
                     </div>
                 </div>
-                <router-link to="outDetails">
-                    <div class="detailItems">
-                        <div class="details" v-for="(item, index) in items" :key="index">
-                            <p class="detailTop">
-                                <span>{{item.workName}}</span>
-                                <span>{{item.teamName}}</span>
-                                <span>{{item.status}}</span>
-                            </p>
-                            <p class="detailUnder">
-                                <span>{{item.isEntry}}</span>
-                                <span>记录时间:{{filedTime}}</span>
-                            </p>
-                            <router-link to="/into-details">
-                                <div class="detailImg">
-                                    <img src="./to@2x.png"/>
-                                </div>
-                            </router-link>
+                    <router-link to="/into-details">
+                        <div class="detailItems">
+                            <div class="details" v-for="(item, index) in items" :key="index">
+                                <p class="detailTop">
+                                    <span>{{item.workName}}</span>
+                                    <span>{{item.teamName}}</span>
+                                    <span>{{item.infoNum}}</span>
+                                </p>
+                                <p class="detailUnder">
+                                    <span>{{item.months}}</span>
+                                    <span>应发:{{item.mustPay}}</span>
+                                    <span>实发:{{item.actualPay}}</span>
+                                </p>
+                                
+                                    <div class="detailImg">
+                                        <img src="./to@2x.png"/>
+                                    </div>
+                            </div>
                         </div>
-                    </div>
-                </router-link>
+                    </router-link>
             </div>
         </scroll>
     </div>
@@ -47,9 +47,10 @@ import{getDictList} from 'api/general'
                 items:[{
                     workName:'张三',
                     teamName:'钢筋组',
-                    status:'在场内',
-                    isEntry:'出去',
-                    filedTime:'2019-2-12'
+                    infoNum:'共13条',
+                    months:'1月',
+                    mustPay:'5000',
+                    actualPay:'5000'
                     }],
             }
         },
@@ -130,7 +131,12 @@ import{getDictList} from 'api/general'
                 :nth-child(2){
                     display: inline-block;
                     position: absolute;
-                    right: 3.5rem;
+                    left: 1.5rem;
+                }
+                :nth-child(3){
+                    display: inline-block;
+                    position: absolute;
+                    left: 3.5rem;
                 }
             }
             .detailImg{
