@@ -25,3 +25,12 @@ export function getDictList(parentKey) {
     return Promise.resolve(data);
   });
 }
+
+//根据type列表查数据字典
+export function getTypeDicList(type) {
+  return fetch(631006, {
+    type
+  }).then((data) => {
+    return Promise.resolve(data);
+  });
+}

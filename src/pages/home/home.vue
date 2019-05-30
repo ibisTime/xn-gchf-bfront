@@ -49,11 +49,11 @@
         }, {
           text: '项目人员',
           src: require('./项目人员@2x.png'),
-          to: ''
+          to: '/project-member'
         }, {
           text: '进退场',
           src: require('./进退场@2x.png'),
-          to: ''
+          to: '/filed'
         }],
         items2: [{
           text: '进出记录',
@@ -62,7 +62,7 @@
         }, {
           text: '考勤记录',
           src: require('./考勤记录@2x.png'),
-          to: ''
+          to: '/in-out'
         }, {
           text: '工资单',
           src: require('./工资单@2x.png'),

@@ -6,6 +6,7 @@ import store from './store';
 import fastclick from 'fastclick';
 import VueLazyLoad from 'vue-lazyload';
 import 'common/js/validate';
+import axios from 'axios';
 /* eslint-disable no-unused-vars */
 // import vConsole from 'vconsole';
 

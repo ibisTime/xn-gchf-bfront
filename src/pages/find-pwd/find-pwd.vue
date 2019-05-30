@@ -1,5 +1,10 @@
 <template>
   <div class="full-screen-wrapper change-mobile-wrapper">
+    <div class="baseBanner">
+                <p class="baseCenter">
+                    修改登陆密码
+                </p>
+      </div>
     <div class="form-wrapper login-form-wrapper">
       <div class="form-item border-bottom-1px">
         <div class="item-input-wrapper">
@@ -109,6 +114,21 @@
 <style lang="scss" scoped rel="stylesheet/scss">
   @import "~common/scss/variable";
   @import "~common/scss/mixin";
+  .baseBanner{
+    position: relative;
+    height:0.8rem;
+    width:100%;
+    background:#028EFF;
+    text-align: center;
+    font-size: 0.32rem;
+    color: #fff;
+    .baseCenter{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform:translateX(-50%) translateY(-50%);
+        }
+    }
 
   .change-mobile-wrapper {
     .form-wrapper.login-form-wrapper {

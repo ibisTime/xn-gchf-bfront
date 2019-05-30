@@ -1,6 +1,18 @@
 <template>
   <div class="full-screen-wrapper change-mobile-wrapper">
     <div class="form-wrapper">
+      <div class="baseBanner">
+                <p class="baseCenter">
+                    修改手机号
+                </p>
+      </div>
+      <div class="form-item border-bottom-1px">
+        <div class="item-label">手机号</div>
+        <div class="item-input-wrapper">
+          <input type="tel" class="item-input" name="mobile"  v-validate="'required|mobile'" placeholder="请输入手机号">
+          <span v-show="errors.has('mobile')" class="error-tip">{{errors.first('mobile')}}</span>
+        </div>
+      </div>
       <div class="form-item border-bottom-1px">
         <div class="item-label">手机号</div>
         <div class="item-input-wrapper">
@@ -113,7 +125,21 @@
 </script>
 <style lang="scss" scoped rel="stylesheet/scss">
   @import "~common/scss/variable";
-
+   .baseBanner{
+    position: relative;
+    height:0.8rem;
+    width:100%;
+    background:#028EFF;
+    text-align: center;
+    font-size: 0.32rem;
+    color: #fff;
+    .baseCenter{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform:translateX(-50%) translateY(-50%);
+        }
+    }
   .change-mobile-wrapper {
     background-color: $color-background;
   }

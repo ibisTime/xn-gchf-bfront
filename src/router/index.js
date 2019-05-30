@@ -22,7 +22,34 @@ const ClassList = () => import('pages/class/class');
 const ClassAddEdit = () => import('pages/class-addedit/class-addedit');
 // 班组详情
 const ClassDetail = () => import('pages/class-detail/class-detail');
-
+// 项目人员
+const ProjectMember = () => import('pages/project-member/project-member');
+//搜索
+const search = () => import('pages/search/search');
+//考勤人员
+const CheckWork = () => import('pages/check-work/check-work');
+//进出详情
+const InOut = () => import('pages/in-out/in-out');
+//人员详情
+const MemberDetails = () => import('pages/MemberDetails/MemberDetails');
+//人脸采集
+const FaceCollect = () => import('pages/faceCollect/faceCollect');
+//人员建档
+const CreateRecord = () => import('pages/createRecord/createRecord');
+//人员建档 2
+const RecordCopy = () => import('pages/recordCopy/recordCopy');
+//手持照片
+const Photo = () => import('pages/photo/photo');
+//基本信息录入
+const BaseInfo = () => import('pages/baseInfo/baseInfo');
+//办理入职
+const HandleEntry = () => import('pages/handleEntry/handleEntry');
+//基本信息
+const Information = () => import('pages/information/information');
+//进退场
+const Filed = () => import('pages/filed/filed');
+//进出详情
+const IntoDetails = () => import('pages/into-details/into-details');
 const router = new Router({
   mode: 'history',
   routes: [
@@ -77,6 +104,62 @@ const router = new Router({
         meta: { title: '班组详情', auto: true },
         component: ClassDetail
       }]
+    }, {
+      path: '/project-member',
+      meta: { title: '项目人员', auto: true },
+      component: ProjectMember
+    }, {
+      path: '/search',
+      meta: { title: '搜索', auto: true },
+      component: search
+    }, {
+      path: '/check-work',
+      meta: { title: '考勤人员', auto: true },
+      component: CheckWork
+    }, {
+      path: '/in-out',
+      meta: { title: '考勤人员', auto: true },
+      component: InOut
+    }, {
+      path: '/memberDetails',
+      meta: { title: '人员详情', auto: true },
+      component: MemberDetails,
+    }, {
+      path: '/faceCollect',
+      meta: { title: '人脸采集', auto: true },
+      component: FaceCollect
+    }, {
+      path: '/createRecord',
+      meta: { title: '人员建档', auto: true },
+      component: CreateRecord
+    }, {
+      path: '/recordCopy',
+      meta: { title: '人员建档2', auto: true },
+      component: RecordCopy
+    }, {
+      path: '/photo',
+      meta: { title: '手持照片', auto: true },
+      component: Photo
+    }, {
+      path: '/baseInfo',
+      meta: { title: '基本信息录入', auto: true },
+      component:BaseInfo
+    }, {
+      path: '/handleEntry',
+      meta: { title: '基本信息录入', auto: true },
+      component:HandleEntry
+    }, {
+      path: '/information',
+      meta: { title: '项目人员', auto: true },
+      component:Information
+    }, {
+      path: '/filed',
+      meta: { title: '进退场记录', auto: true },
+      component:Filed
+    }, {
+      path: '/into-details',
+      meta: { title: '进出详情', auto: true },
+      component:IntoDetails
     }
   ]
 });
