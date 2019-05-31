@@ -16,13 +16,13 @@
                     <div class="detailItems">
                         <div class="details" v-for="(item, index) in items" :key="index">
                             <p class="detailTop">
-                                <span>{{item.workName}}</span>
+                                <span>{{item.workerName}}</span>
                                 <span>{{item.teamName}}</span>
-                                <span>{{item.status}}</span>
+                                <span>{{item.direction}}</span>
                             </p>
                             <p class="detailUnder">
-                                <span>{{item.isEntry}}</span>
-                                <span>记录时间:{{filedT}}</span>
+                                <span>{{item.workerCode}}</span>
+                                <span>记录时间:{{item.date}}</span>
                             </p>
                             <router-link to="/into-details">
                                 <div class="detailImg">
@@ -44,23 +44,18 @@ import {getDictList} from 'api/general'
     export default{
         data(){
             return{
-                items:[{
-                    workName:'张三',
-                    teamName:'钢筋组',
-                    status:'在场内',
-                    isEntry:'出去',
-                    filedT:'2019-02-12'
-                    }],
+                items:[],
                     config: {
                         start: 1,
-                        limit: 10,
-                        userId:''
+                        limit: 10
                     }
             }
         },
         created(){
             projectLists(this.config).then((data) => {
-                console.log(this.config)
+                // console.log(this.config)
+                // console.log(data)
+                this.items=data.list;
             }, (err) => {})
         },components:{
             scroll:Scroll
