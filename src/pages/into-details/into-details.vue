@@ -7,39 +7,37 @@
                         进出详情
                     </p>
                 </div>
-                <router-link to="/memberDetails">
-                    <div class="detailItems">
-                        <div class="details">
-                            <p class="detailTop">
-                                <span>{{inOutData[0].workerName}}</span>
-                                <span>{{inOutData[0].teamName}}</span>
-                                <span>{{inOutData[0].uploadStatus}}</span>
-                            </p>
-                            <p class="detailUnder">
-                                <span>身份证号: {{inOutData[0].idcardNumber}}</span>
-                            </p>
-                            <router-link to="/memberDetails">
-                                <div class="detailImg">
-                                    <img src="./to@2x.png"/>
-                                </div>
-                            </router-link>
-                        </div>
+              <div class="detailItems" @click="toDetailItems">
+                <div class="details">
+                  <p class="detailTop">
+                    <span>{{inOutData[0].workerName}}</span>
+                    <span>{{inOutData[0].teamName}}</span>
+                    <span>{{inOutData[0].uploadStatus}}</span>
+                  </p>
+                  <p class="detailUnder">
+                    <span>身份证号: {{inOutData[0].idcardNumber}}</span>
+                  </p>
+                  <router-link to="/memberDetails">
+                    <div class="detailImg">
+                      <img src="./to@2x.png"/>
                     </div>
-                </router-link>
+                  </router-link>
+                </div>
+              </div>
                 <div class="empty"></div>
-                <router-link to="">
-                  <scroll ref="scroll" :hasMore="false" :data="entryOutList">
-                    <div class="pushAdd" v-for="(item, index) in entryOutList" :key="index" @click="toDetailsText(item.code)">
-                        <div class="entry">
-                            <span>{{item.type}}</span>
-                        </div>
-                        <div class="entryImg">
-                            <span>{{item.date}}</span> <img src="./to@2x.png"/>
-                        </div>
+              <scroll ref="scroll" :hasMore="false" :data="entryOutList">
+                <div class="pushAdd" v-for="(item, index) in entryOutList" :key="index">
+                  <div class="item" @click="toDetailsText(item.code)">
+                    <div class="entry">
+                      <span>{{item.type}}</span>
                     </div>
-                    <no-result title="暂无进出记录" v-if="entryOutList.length === 0" style="margin-top: 0.8rem"/>
-                  </scroll>
-                </router-link>
+                    <div class="entryImg">
+                      <span>{{item.date}}</span> <img src="./to@2x.png"/>
+                    </div>
+                  </div>
+                </div>
+                <no-result title="暂无进出记录" v-if="entryOutList.length === 0" style="margin-top: 0.8rem"/>
+              </scroll>
             </div>
         </scroll>
         <router-link to="/addProject">
@@ -109,6 +107,9 @@ export default {
     },
     toDetailsText(code) {
       this.$router.push(`/detailsText?code=${code}`)
+    },
+    toDetailItems() {
+      this.$router.push(`/memberDetails?code=${this.inOutData[0].workerCode}`);
     }
   },
   components: {
@@ -191,13 +192,15 @@ export default {
     }
     .pushAdd{
         position: relative;
-      display: flex;
         width: 92%;
         margin: 0 auto;
         height: 1rem;
         line-height: 1rem;
-        box-shadow: 0 1px 0 0 #E6E6E6;
+        border-bottom: 1px solid #E6E6E6;
         font-size:.32rem;
+      .item{
+        display: flex;
+      }
         span{
             display: inline-block;
         }

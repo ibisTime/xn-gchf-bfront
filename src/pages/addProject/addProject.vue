@@ -38,6 +38,7 @@
                            :year="exitYear"
                            :month="exitMonth"
                            :day="exitDay"
+                           :value="config.date"
                            @change="updateExitDate">
               </date-picker>
             </div>
@@ -60,8 +61,9 @@
 </div>
 </template>
 <script>
+  import { formatDate } from 'common/js/util';
   import DatePicker from 'base/date-picker/date-picker';
-  import {addEditInOut, userQueryList} from 'api/deal';
+  import {addEditInOut, userQueryList, userInOutDetail} from 'api/deal';
   import{getDictList} from 'api/general';
   import Toast from 'base/toast/toast';
 export default {
@@ -73,13 +75,15 @@ export default {
           exitDay: '',
           config: {
             type: '',
-            voucherUrl: ''
+            voucherUrl: '',
+            date: ''
           },
           workerCode: '',
           userList: [],
           dictList: [],
           toastText: '',
-          picUrl: ''
+          picUrl: '',
+          toastText: ''
         }
     },
   created() {
@@ -100,6 +104,12 @@ export default {
       });
       if(code) {
         this.title = '修改';
+        userInOutDetail({code}).then(data => {
+          this.workerCode = data.workerCode;
+          this.picUrl = data.voucherUrl;
+          this.config.type = data.type;
+          this.config.date = formatDate(data.date);
+        })
       }
   },
   methods: {
@@ -107,18 +117,28 @@ export default {
       this.exitYear = year;
       this.exitMonth = month;
       this.exitDay = day;
+      this.config.date = `${this.exitYear}-${this.exitMonth}-${this.exitDay}`;
     },
     preservation() {
       const {code} = this.$route.query;
-      let date = `${this.exitYear}-${this.exitMonth}-${this.exitDay}`;
       if(code) {
         this.config.code = code;
-        this.config.date = date;
-        addEditInOut(631732, this.config);
+        addEditInOut(631732, this.config).then(() => {
+          this.toastText = '修改成功';
+          this.$refs.toast.show();
+          setTimeout(() => {
+            this.$router.replace('/into-details');
+          }, 1000);
+        });
       }else {
-        this.config.date = date;
         this.config.workerCode = this.workerCode;
-        addEditInOut(631730, this.config)
+        addEditInOut(631730, this.config).then(() => {
+          this.toastText = '修改成功';
+          this.$refs.toast.show();
+          setTimeout(() => {
+            this.$router.replace('/into-details');
+          }, 1000);
+        });
       }
     },
     upImage() {
@@ -170,7 +190,7 @@ export default {
               height: 0.8rem;
               line-height: 0.8rem;
               font-size: 0.3rem;
-              box-shadow:0px 1px 0px 0px rgba(235,235,235,1);
+              border-bottom: 1px solid rgba(235,235,235,1);
               span{
                   display: inline-block;
                   margin-left: 1rem;

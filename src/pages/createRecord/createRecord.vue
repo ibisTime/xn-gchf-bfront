@@ -52,6 +52,7 @@
       </div>
     </div>
   <toast ref="toast" :text="toastText"></toast>
+  <loading :isLoading="isLoading"></loading>
 </div>
 </template>
 
@@ -59,7 +60,7 @@
 import Scroll from 'base/scroll/scroll';
 import Toast from 'base/toast/toast';
 import Loading from 'base/loading/loading';
-import {orcIdNo} from 'api/deal';
+import {orcIdNo, authenticationDetail} from 'api/deal';
 export default {
     data(){
         return{
@@ -71,9 +72,25 @@ export default {
           mediaStreamTrack: null,
           sfzzm: '',
           sfzfm: '',
-          toastText: '照片请上传完整'
+          toastText: '照片请上传完整',
+          isLoading: false,
+          code: ''
         }
     },
+  created() {
+    const {code} = this.$route.query;
+    if(code) {
+      this.isLoading = true;
+      this.code = code;
+      authenticationDetail(code).then(data => {
+        this.sfzzm = data.positiveIdCardImageUrl;
+        this.sfzfm = data.negativeIdCardImageUrl;
+        this.isVideoZm = false;
+        this.isVideoFm = false;
+        this.isLoading = false;
+      })
+    }
+  },
     methods:{
       getMediaZm() {
         this.pzType = '1';
@@ -149,6 +166,7 @@ export default {
           this.$refs.toast.show();
           return false;
         }else {
+          this.isLoading = true;
           orcIdNo({
             positiveImage: this.sfzzm,
             negativeImage: this.sfzfm
@@ -156,7 +174,11 @@ export default {
             this.toastText = '操作成功';
             this.$refs.toast.show();
             setTimeout(() => {
-              this.$router.push(`/photo?code=${data.code}`);
+              if(this.code) {
+                this.$router.push(`/photo?code=${this.code}`);
+              }else {
+                this.$router.push(`/photo?code=${data}`);
+              }
             }, 1000);
           }, () => {
             this.toastText = '操作失败';

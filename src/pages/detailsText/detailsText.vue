@@ -1,15 +1,14 @@
 <template>
 <div class="full-screen-wrapper details-wrapper">
+  <scroll ref="scroll" :hasMore='false'>
     <div class="wrapper">
         <div class="baseBanner">
             <p class="baseCenter">
                 进退场详情
             </p>
-            <router-link to="addProject">
-                <div class="right">
-                    修改
-                </div>
-            </router-link>
+          <div class="right" @click='exitProject'>
+            修改
+          </div>
         </div>
         <div class="banner">
           <div class="memNum">
@@ -17,7 +16,15 @@
               员工编号
             </div>
             <div class="right">
-
+              {{userDetail.workerCode}}
+            </div>
+          </div>
+          <div class="memNum">
+            <div class="left">
+              员工姓名
+            </div>
+            <div class="right">
+              {{userDetail.workerName}}
             </div>
           </div>
           <div class="memNum">
@@ -25,7 +32,7 @@
               类型
             </div>
             <div class="right">
-
+              {{userDetail.type}}
             </div>
           </div>
           <div class="memNum">
@@ -33,88 +40,89 @@
               进退场日期
             </div>
             <div class="right">
-
+              {{formatDate(userDetail.date)}}
             </div>
           </div>
           <div class="idHeader">
             <span>凭证扫描件（单）</span>
-            <div class="upPic">
-              <div class="picBox" :style="{backgroundImage: `url(${picUrl})`}"></div>
+            <div class="upPic" v-if="userDetail.voucherUrl">
+              <div class="picBox" :style="{backgroundImage: `url(${userDetail.voucherUrl})`}"></div>
             </div>
           </div>
         </div>
         <div class="empty"></div>
         <div class="footer">
             <p>操作日志</p>
-            <div class="jounal">
-                <div class="left">
-                  操作人
-                </div>
-              <div class="right">
-
+            <div class="logs">
+              <div class="jounal">
+                <div>操作人</div>
+                <div>操作类型</div>
+                <div>操作时间</div>
               </div>
-            </div>
-            <div class="mdeical">
-                <div class="left">
-                  操作类型
-                </div>
-              <div class="right">
-
-              </div>
-            </div>
-            <div class="mdeical">
-                <div class="left">
-                  操作时间
-                </div>
-              <div class="right">
-
-              </div>
+              <ul class="log-list" v-if="userDetail.operationLogs && userDetail.operationLogs.length > 0">
+                <li v-for="(item, index) in userDetail.operationLogs" :key="index">
+                  <p>{{item.operatorName}}</p>
+                  <p>{{item.operate}}</p>
+                  <p>{{formatDate(item.operateDatetime)}}</p>
+                </li>
+              </ul>
             </div>
         </div>
       <div class="preservation" @click="preservation">
         返回
       </div>
     </div>
+  </scroll>
 </div>
 </template>
 <script>
+  import { formatDate } from 'common/js/util';
   import DatePicker from 'base/date-picker/date-picker';
-  import {userQueryList} from 'api/deal';
+  import {userInOutDetail} from 'api/deal';
   import{getDictList} from 'api/general';
   import Toast from 'base/toast/toast';
+  import Scroll from 'base/scroll/scroll';
 export default {
     data(){
         return{
-          userList: [],
+          userDetail: {},
           dictList: [],
           toastText: '',
-          picUrl: ''
+          picUrl: '',
+          code: ''
         }
     },
   created() {
-    let organizationCode = sessionStorage.getItem('organizationCode');
-    Promise.all([
-      getDictList('entry_exit_type'),
-      userQueryList({projectCode: organizationCode})
-    ]).then(([data1,data2]) => {
-      this.dictList = data1.map(item => ({
-        key: item.dkey,
-        value: item.dvalue
-      }));
-      this.userList = data2.map(item => ({
-        workerName: item.workerName,
-        workerCode: item.code
-      }))
-    });
+      const {code} = this.$route.query;
+      if(code) {
+        this.code = code;
+        Promise.all([
+          getDictList('entry_exit_type'),
+          userInOutDetail({code})
+        ]).then(([data1, data2]) => {
+          this.dictList = data1.map(item => ({
+            key: item.dkey,
+            value: item.dvalue
+          }));
+          this.userDetail = data2;
+        });
+      }
   },
   methods: {
     preservation() {
-      this.$router.push({path: '/into-details', replace: true})
+      this.$router.push('/into-details');
+    },
+    formatDate(time) {
+      return formatDate(time);
+    },
+    exitProject() {
+      this.$router.replace(`/addProject?code=${this.code}`);
     }
   },
   components: {
     DatePicker,
-    Toast
+    Toast,
+    Scroll
   }
 }
 </script>
@@ -152,7 +160,7 @@ export default {
           height: 0.8rem;
           line-height: 0.8rem;
           font-size: 0.3rem;
-          box-shadow:0px 1px 0px 0px rgba(235,235,235,1);
+          border-bottom: 1px solid rgba(235,235,235,1);
           span{
             display: inline-block;
             margin-left: 1rem;
@@ -228,6 +236,35 @@ export default {
             background:rgba(240,240,240,1);
         }
         .footer{
+            .logs{
+              .jounal{
+                margin-top: 0.2rem;
+                text-align: center;
+                display: flex;
+                border-bottom: 1px solid rgba(235,235,235,1);
+                div{
+                  width: 32%;
+                  margin: 0 auto;
+                  height: .9rem;
+                  line-height: .9rem;
+                  color: rgba(153,153,153,1);
+                  font-size: 0.28rem;
+                }
+              }
+              .log-list{
+                margin-top: 0.2rem;
+                text-align: center;
+                color: #333;
+                li{
+                  display: flex;
+                  line-height: .9rem;
+                  height: .9rem;
+                  p{
+                    width: 32%;
+                  }
+                }
+              }
+            }
             p{
                 width: 92%;
                 padding:.3rem 0 0 0;
@@ -236,54 +273,17 @@ export default {
                 font-size: 0.28rem;
                 font-weight: 500;
             }
-            .jounal{
-                width: 92%;
-                margin: 0 auto;
-                height: .9rem;
-                line-height: .9rem;
-                color:rgba(153,153,153,1);
-                font-size: 0.28rem;
-                box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-                span{
-                    display: inline-block;
-                    color: #333;
-                    margin-left: 1.5rem;
-                }
-            }
-            .mdeical{
-                width: 92%;
-                margin: 0 auto;
-                height: .9rem;
-                line-height: .9rem;
-                color:rgba(153,153,153,1);
-                font-size: 0.28rem;
-                box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-                span{
-                    display: inline-block;
-                    color: #333;
-                    margin-left: 1.2rem;
-                }
-            }
-            .Remarks{
-                width: 92%;
-                margin: 0 auto;
-                padding:0.25rem 0 0.92rem 0;
-                color:rgba(153,153,153,1);
-                font-size: 0.28rem;
-                box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-            }
         }
         .preservation{
             width: 92%;
             height: 1rem;
             line-height: 1rem;
             background:rgba(255,255,255,1);
-            margin: 0 auto;
+            margin: 1rem auto 0;
             color: #028EFF;
             text-align: center;
             border:2px solid rgba(2,142,255,1);
             border-radius: 2px;
-            margin-top:.5rem;
             font-size: 0.32rem;
         }
     }

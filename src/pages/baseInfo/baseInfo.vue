@@ -93,7 +93,7 @@
                   紧急联系人号码
                 </div>
                 <div class="right">
-                  <input type="telphone" placeholder="请输入联系人号码" v-model="config.urgentLinkManPhone"/>
+                  <input type="number" placeholder="请输入联系人号码" v-model="config.urgentLinkManPhone"/>
                 </div>
             </div>
         </div>
@@ -102,14 +102,16 @@
           </div>
         </scroll>
       <toast ref="toast" :text="toastText"></toast>
+      <loading :isLoading="isLoading"></loading>
     </div>
 </template>
 <script>
 import Scroll from 'base/scroll/scroll';
 import Toast from 'base/toast/toast';
+import Loading from 'base/loading/loading';
 import DatePicker from 'base/date-picker/date-picker';
 import{getDictList} from 'api/general';
-import{baseInfoEntry} from 'api/deal';
+import{baseInfoEntry, authenticationDetail} from 'api/deal';
 import {getUserId} from "common/js/util";
 
 export default {
@@ -129,20 +131,37 @@ export default {
             maritalStatus: '',
             urgentLinkMan: '',
             urgentLinkManPhone: '',
-            code: '',
             userId: getUserId()
-          }
+          },
+          code: '',
+          isLoading: true
         }
     },
     created() {
+      const { code } = this.$route.query;
+      this.code = code;
       Promise.all([
         getDictList('politics_type'),
         getDictList('culture_level_type'),
-        getDictList('marital_status')
-      ]).then(([data1, data2, data3]) => {
+        getDictList('marital_status'),
+        authenticationDetail(code)
+      ]).then(([data1, data2, data3, data4]) => {
         this.politicsTypeData = data1;
         this.cultureLevelTypeData = data2;
         this.maritalStatusData = data3;
+        let config = {
+          phone: data4.phone || '',
+          politicsType: data4.politicsType || '',
+          cultureLevelType: data4.cultureLevelType || '',
+          isJoined: data4.isJoined || '',
+          specialty: data4.specialty || '',
+          hasBadMedicalHistory: data4.hasBadMedicalHistory || '',
+          maritalStatus: data4.maritalStatus || '',
+          urgentLinkMan: data4.urgentLinkMan || '',
+          urgentLinkManPhone: data4.urgentLinkManPhone || ''
+        };
+        this.$set(this, 'config', config);
+        this.isLoading = false;
       });
     },
     methods:{
@@ -151,17 +170,18 @@ export default {
           !this.config.politicsType ||
           !this.config.cultureLevelType ||
           !this.config.cultureLevelType) {
-          this.$refs.toast.show('请填写完整');
+          this.toastText = '请填写完整';
+          this.$refs.toast.show();
           return false;
         }
-        const { code } = this.$route.query;
         baseInfoEntry({
-          code,
+          code: this.code,
           ...this.config
         }).then(data => {
-          this.$refs.toast.show('操作成功');
+          this.toastText = '操作成功';
+          this.$refs.toast.show();
           setTimeout(() => {
-            this.$router.push(`/handleEntry?code=${data.code}`);
+            this.$router.push(`/handleEntry?code=${data.code}&from=baseInfo`);
           }, 1000);
         });
       }
@@ -169,7 +189,8 @@ export default {
     components:{
         scroll:Scroll,
         toast: Toast,
-        datePicker: DatePicker
+        datePicker: DatePicker,
+      Loading
     }
 }
 </script>

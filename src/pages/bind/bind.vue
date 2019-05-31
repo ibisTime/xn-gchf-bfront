@@ -10,23 +10,15 @@
                 <div class="left">银行</div>
                 <div class="right">
                     <select>
-                        <option value="银行名称">银行名称</option>
+                        <option value="">请选择</option>
+                        <option :value="item.key" v-for="(item, index) in backNameList" :key="index">{{item.value}}</option>
                     </select>
-                    <div class="imgPic">
-                        <img src="./down.png"/>
-                    </div>
                 </div>
             </div>
             <div class="bank">
                 <div class="left">开户支行</div>
                 <div class="right">
-                    <select>
-                        <option value="银行名称">请输入开户支行</option>
-                        <option value="中国工商银行">中国工商银行</option>
-                    </select>
-                    <div class="imgPic">
-                        <img src="./down.png"/>
-                    </div>
+                  <input type="number" placeholder="请输入开户支行"/>
                 </div>
             </div>
             <div class="bank">
@@ -48,11 +40,21 @@
     </div>
 </template>
 <script>
+  import{getDictList} from 'api/general';
 export default{
     data(){
         return{
+          backNameList: []
         }
-    }
+    },
+  created() {
+    getDictList('bank_code').then(data => {
+      this.backNameList = data.map(item => ({
+        key: item.dkay,
+        value: item.dvalue
+      }));
+    });
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -78,26 +80,24 @@ export default{
             }
     }
     .bank{
+      display: flex;
         height: 1.1rem;
         width: 92%;
         margin: 0 auto;
         line-height: 1.1rem;
-        box-shadow:0px 1px 0px 0px rgba(235,235,235,1);
+        border-bottom: 1px solid rgba(235,235,235,1);
         .left{
             width: 24%;
-            display: inline-block;
             font-size: 0.3rem;
             color: #333;
         }
         .right{
             position: relative;
             width:75%;
-            display: inline-block;  
             font-size: 0.3rem;
             color:#999;
             select{
-                z-index: 1;
-                width: 98%;
+                width: 100%;
             }
             .imgPic{
                 position: absolute;

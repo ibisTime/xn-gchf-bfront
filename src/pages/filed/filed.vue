@@ -86,6 +86,7 @@ import { formatDate } from 'common/js/util';
               let arr = data.list.map(item => ({
                 workerName: item.workerName,
                 workerCode: item.workerCode,
+                code: item.code,
                 teamName: item.teamName,
                 uploadStatus: this.workerPicUploadStatus[item.uploadStatus],
                 type: this.entryExitType[item.type],

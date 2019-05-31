@@ -1,115 +1,172 @@
 <template>
    <div class="full-screen-wrapper information-wrapper">
        <scroll ref="scroll" :hasMore="false">
-            <div class="header" v-for="(item,index) in items" :key="index">
+            <div class="header">
                 <div class="infoBanner">
                     <p class="infoCenter">
                         基本信息
                     </p>
                 </div>
-                <div class="pepName">               
-                        <span>姓名</span>
-                        <div>{{item.pepName}}</div>    
+                <div class="pepName">
+                  <div class="left">
+                    姓名
+                  </div>
+                  <div class="right">{{userDetail[0].name}}</div>
                 </div>
-                <div class="idHeader">
-                    <span>身份证头像（单）</span>
-                    <div>{{item.imgUrl}}</div>
+                <div class="pepName">
+                  <div class="left">
+                    身份证头像
+                  </div>
+                  <div class="right">
+                    <div
+                      class="pic-box"
+                      :class="userDetail[0].headImageUrl ? '' : 'hidden'"
+                      :style="{backgroundImage: `url(${userDetail[0].headImageUrl})`}"></div>
+                  </div>
                 </div>
-                <div class="sex">               
-                        <span>性别</span>
-                        <div>{{item.sex}}</div>    
+              <div class="pepName">
+                <div class="left">证件类型</div>
+                <div class="right">{{idcardTypeTypeData[userDetail[0].idCardType]}}</div>
+              </div>
+                <div class="pepName">
+                  <div class="left">性别</div>
+                  <div class="right">{{userDetail[0].gender == 0 ? '男' : '女'}}</div>
                 </div>
-                <div class="nation">               
-                        <span>民族</span>
-                        <div>{{item.nation}}</div>    
+                <div class="pepName">
+                  <div class="left">民族</div>
+                  <div class="right">{{userDetail[0].nation}}</div>
                 </div>
-                <div class="date">               
-                        <span>出生日期</span>
-                        <div>{{item.date}}</div>    
+                <div class="pepName">
+                  <div class="left">出生日期</div>
+                  <div class="right">{{formatDate(userDetail[0].birthday)}}</div>
                 </div>
-                <div class="iden">               
-                        <span>身份证号码</span>
-                        <div>{{item.id}}</div>    
+                <div class="pepName">
+                  <div class="left">身份证号码</div>
+                  <div class="right">{{userDetail[0].idCardNumber}}</div>
                 </div>
-                <div class="address">               
-                        <span>地址</span>
-                        <div>{{item.address}}</div>    
+                <div class="pepName">
+                  <div class="left">地址</div>
+                  <div class="right">{{userDetail[0].address}}</div>
                 </div>
-                <div class="startDate">               
-                        <span>有效开始日期</span>
-                        <div>{{item.startDate}}</div>    
+                <div class="pepName">
+                  <div class="left">有效开始日期</div>
+                  <div class="right">{{formatDate(userDetail[0].startDate)}}</div>
                 </div>
-                <div class="endDate">               
-                        <span>有效截止日期</span>
-                        <div>{{item.endDate}}</div>    
+                <div class="pepName">
+                  <div class="left">有效截止日期</div>
+                  <div class="right">{{formatDate(userDetail[0].expiryDate)}}</div>
                 </div>
-                <div class="office">               
-                        <span>签发机关</span>
-                        <div>{{item.office}}</div>    
+                <div class="pepName">
+                  <div class="left">签发机关</div>
+                  <div class="right">{{userDetail[0].grantOrg}}</div>
                 </div>
-                <div class="iFace">               
-                        <span>政治面貌</span>
-                        <div>{{item.iFace}}</div>    
+                <div class="pepName">
+                  <div class="left">政治面貌</div>
+                  <div class="right">{{politicsTypeData[userDetail[0].politicsType]}}</div>
                 </div>
-                <div class="culture">               
-                        <span>文化程度</span>
-                        <div>{{item.culture}}</div>    
+                <div class="pepName">
+                  <div class="left">文化程度</div>
+                  <div class="right">{{cultureLevelTypeData[userDetail[0].cultureLevelType]}}</div>
                 </div>
             </div>
             <div class="emptyOne"></div>
-            <div class="middle" v-for="(item,index) in imgItem" :key="index">
-                <div class="postive">
-                    <span>身份证正面照（单）</span>
-                    <div>{{item.posUrl}}</div>
+            <div class="middle">
+                <div class="pepName">
+                  <div class="left">
+                    身份证正面照（单）
+                  </div>
+                  <div class="right">
+                    <div
+                      class="pic-box"
+                      :class="userDetail[0].positiveIdCardImageUrl ? '' : 'hidden'"
+                      :style="{backgroundImage: `url(${userDetail[0].positiveIdCardImageUrl})`}"
+                    ></div>
+                  </div>
                 </div>
-                <div class="other">
-                    <span>身份证反面照（单）</span>
-                    <div>{{item.othUrl}}</div>
+                <div class="pepName">
+                  <div class="left">
+                    身份证反面照（单）
+                  </div>
+                  <div class="right">
+                    <div
+                      class="pic-box"
+                      :class="userDetail[0].negativeIdCardImageUrl ? '' : 'hidden'"
+                      :style="{backgroundImage: `url(${userDetail[0].negativeIdCardImageUrl})`}"></div>
+                  </div>
                 </div>
-                <div class="hand">
-                    <span>手持身份证照片（单）</span>
-                    <div>{{item.handUrl}}</div>
+                <div class="pepName">
+                  <div class="left">
+                    手持身份证照片（单）
+                  </div>
+                  <div class="right">
+                    <div
+                      class="pic-box"
+                      :class="userDetail[0].handIdCardImageUrl ? '' : 'hidden'"
+                       :style="{backgroundImage: `url(${userDetail[0].handIdCardImageUrl})`}"></div>
+                  </div>
                 </div>
-                <div class="attendance">
-                    <span>考勤人脸照（单）</span>
-                    <div>{{item.attendance}}</div>
+                <div class="pepName">
+                  <div class="left">
+                    考勤人脸照（单）
+                  </div>
+                  <div class="right">
+                    <div class="pic-box"
+                         :class="userDetail[0].attendancePicture ? '' : 'hidden'"
+                         :style="{backgroundImage: `url(${userDetail[0].attendancePicture})`}"></div>
+                  </div>
                 </div>
             </div>
             <div class="emptyTwo"></div>
-            <div class="footer" v-for="(item,index) in otherItem" :key="index">
-                <div class="tel">
-                    <span>手机号码</span>
-                    <div>{{item.tel}}</div>    
+            <div class="footer">
+                <div class="pepName">
+                  <div class="left">
+                    手机号码
+                  </div>
+                  <div class="right">{{userDetail[0].cellPhone}}</div>
                 </div>
-                <div class="sosName">
-                    <span>紧急联系人姓名</span>
-                    <div>{{item.sosName}}</div>    
+                <div class="pepName">
+                  <div class="left">
+                    紧急联系人姓名
+                  </div>
+                  <div class="right">{{userDetail[0].urgentLinkMan}}</div>
                 </div>
-                <div class="sosTel">
-                    <span>紧急联系电话</span>
-                    <div>{{item.sosTel}}</div>    
+                <div class="pepName">
+                  <div class="left">
+                    紧急联系电话
+                  </div>
+                  <div class="right">{{userDetail[0].urgentLinkManPhone}}</div>
                 </div>
-                <div class="isEntry">
-                    <span>是否加入公会</span>
-                    <div>{{item.isEntry}}</div>    
+                <div class="pepName">
+                  <div class="left">
+                    是否加入公会
+                  </div>
+                  <div class="right">{{userDetail[0].isJoined}}</div>
                 </div>
-                <div class="entryTime">
-                    <span>加入公会时间</span>
-                    <div>{{item.entryTime}}</div>    
+                <div class="pepName">
+                  <div class="left">
+                    加入公会时间
+                  </div>
+                  <div class="right">{{userDetail[0].joinedTime && formatDate(userDetail[0].joinedTime)}}</div>
                 </div>
-                <div class="habits">
-                    <span>特长</span>
-                    <div>{{item.habits}}</div>    
+                <div class="pepName">
+                  <div class="left">
+                    特长
+                  </div>
+                  <div class="right">{{userDetail[0].specialty}}</div>
                 </div>
-                <div class="flu">
-                    <span>是否有重大病史</span>
-                    <div>{{item.flu}}</div>    
+                <div class="pepName">
+                  <div class="left">
+                    是否有重大病史
+                  </div>
+                  <div class="right">{{userDetail[0].hasBadMedicalHistory}}</div>
                 </div>
-                <div class="isMarry">
-                    <span>婚姻状况</span>
-                    <div>{{item.isMarry}}</div>    
+                <div class="pepName">
+                  <div class="left">
+                    婚姻状况
+                  </div>
+                  <div class="right">{{maritalStatusData[userDetail[0].maritalStatus]}}</div>
                 </div>
-                <div class="backTo">返回</div>
+                <div class="backTo" @click="toBack">返回</div>
             </div>
        </scroll>
    </div>
@@ -117,43 +174,53 @@
 
 <script>
 import Scroll from 'base/scroll/scroll';
-import {info} from 'api/deal'
+import { teamUserDetail } from 'api/deal';
+import { getDictList } from 'api/general';
+import { formatDate } from 'common/js/util';
 export default {
     data(){
         return{
-            items:[{
-                pepName:'王大锤',
-                imgUrl:'',
-                sex:'1',
-                nation:'汉族',
-                date:'2019-5-27',
-                id:'3433331876222401',
-                address:'杭州市余杭区',
-                startDate:'2222-22-22',
-                endDate:'3333-33-33',
-                office:'杭州公安局',
-                iFace:'党员',
-                culture:'博士',
-            }],
-            imgItem:[{
-                posUrl:'',
-                othUrl:'',
-                handUrl:'',
-                attendance:'',
-            }],
-            otherItem:[{
-                tel:'18221223121',
-                sosName:'王大锤',
-                sosTel:'18999111211',
-                isEntry:'是',
-                entryTime:'2019-02-12',
-                habits:'踢球、看书',
-                flu:'否',
-                isMarry:'是'
-            }]
+          userDetail: [{}],
+          politicsTypeData: {},
+          cultureLevelTypeData: {},
+          maritalStatusData: {},
+          idcardTypeTypeData: {},
+          code: ''
         }
     },
     created(){
+      const {code} = this.$route.query;
+      this.code = code;
+      Promise.all([
+        getDictList('politics_type'),
+        getDictList('culture_level_type'),
+        getDictList('marital_status'),
+        getDictList('legal_manid_card_type'),
+        teamUserDetail(code)
+      ]).then(([data1, data2, data3, data4, data5]) => {
+         data1.forEach(item => {
+           this.politicsTypeData[`${item.dkey}`] = item.dvalue;
+        });
+        data2.map(item => {
+          this.cultureLevelTypeData[`${item.dkey}`] = item.dvalue;
+        });
+        data3.map(item => {
+          this.maritalStatusData[`${item.dkey}`] = item.dvalue;
+        });
+        data4.map(item => {
+          this.idcardTypeTypeData[`${item.dkey}`] = item.dvalue;
+        });
+        this.userDetail = [];
+        this.userDetail.push(data5.workerInfo);
+      });
+    },
+    methods: {
+      toBack() {
+        this.$router.replace(`/memberDetails?code=${this.code}`);
+      },
+      formatDate(time) {
+        return formatDate(time);
+      }
     },
     components:{
         scroll:Scroll
@@ -168,7 +235,7 @@ export default {
         background: #fff;
             .infoBanner{
             position: relative;
-            height:0.8rem;
+            height:1.28rem;
             width:100%;
             background:#028EFF;
             text-align: center;
@@ -181,422 +248,56 @@ export default {
                 transform:translateX(-50%) translateY(-50%);
             }
         }
-        .pepName{
-            padding: 0.25rem 0 0.25rem 0;
-            width: 92%;
-            margin:0 auto;
-            font-size: 0.28rem;
-            box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-             span{
-                color:rgba(153,153,153,1);
-                
-            }
-            div{
-                display: inline-block;
-                color: #333;
-                margin-left: 2rem;
-            }
-        }
-        .idHeader{
-            height: 2rem;
-            width: 92%;
-            margin: 0 auto;
-            color:rgba(153,153,153,1);
-            font-size: 0.24rem;
-            box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-            span{
-                display: inline-block;
-                margin-top: 0.2rem;
-            }
-            div{
-                width: 1rem;
-                height: 1rem;
-                margin-top: 0.2rem;
-            }
-        }
-        .sex{
-            padding: 0.25rem 0 0.25rem 0;
-            width: 92%;
-            margin:0 auto;
-            font-size: 0.28rem;
-            box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-             span{
-                color:rgba(153,153,153,1);
-                
-            }
-            div{
-                display: inline-block;
-                color: #333;
-                margin-left: 2rem;
-            }
-        }
-        .nation{
-            padding: 0.25rem 0 0.25rem 0;
-            width: 92%;
-            margin:0 auto;
-            font-size: 0.28rem;
-            box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-             span{
-                color:rgba(153,153,153,1);
-                
-            }
-            div{
-                display: inline-block;
-                color: #333;
-                margin-left: 2rem;
-            }
-        }
-        .date{
-            padding: 0.25rem 0 0.25rem 0;
-            width: 92%;
-            margin:0 auto;
-            font-size: 0.28rem;
-            box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-             span{
-                color:rgba(153,153,153,1);
-                
-            }
-            div{
-                display: inline-block;
-                color: #333;
-                margin-left: 1.4rem;
-            }
-        }
-        .iden{
-            padding: 0.25rem 0 0.25rem 0;
-            width: 92%;
-            margin:0 auto;
-            font-size: 0.28rem;
-            box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-             span{
-                color:rgba(153,153,153,1);
-                
-            }
-            div{
-                display: inline-block;
-                color: #333;
-                margin-left: 1.1rem;
-            } 
-        }
-        .address{
-            padding: 0.25rem 0 0.25rem 0;
-            width: 92%;
-            margin:0 auto;
-            font-size: 0.28rem;
-            box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-            span{
-                color:rgba(153,153,153,1);
-                display: inline-block;
-            }
-            div{
-                display: inline-block;
-                color: #333;
-                margin-left: 2rem;
-            } 
-        }
-        .startDate{
-            padding: 0.25rem 0 0.25rem 0;
-            width: 92%;
-            margin:0 auto;
-            font-size: 0.28rem;
-            box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-            span{
-                color:rgba(153,153,153,1);
-                display: inline-block;
-            }
-            div{
-                display: inline-block;
-                color: #333;
-                margin-left: .9rem;
-            } 
-        }
-        .endDate{
-            padding: 0.25rem 0 0.25rem 0;
-            width: 92%;
-            margin:0 auto;
-            font-size: 0.28rem;
-            box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-            span{
-                color:rgba(153,153,153,1);
-                display: inline-block;
-            }
-            div{
-                display: inline-block;
-                color: #333;
-                margin-left: .9rem;
-            } 
-        }
-        .office{
-            padding: 0.25rem 0 0.25rem 0;
-            width: 92%;
-            margin:0 auto;
-            font-size: 0.28rem;
-            box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-            span{
-                color:rgba(153,153,153,1);
-                display: inline-block;
-            }
-            div{
-                display: inline-block;
-                color: #333;
-                margin-left: 1.5rem;
-            } 
-        }
-        .iFace{
-            padding: 0.25rem 0 0.25rem 0;
-            width: 92%;
-            margin:0 auto;
-            font-size: 0.28rem;
-            box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-            span{
-                color:rgba(153,153,153,1);
-                display: inline-block;
-            }
-            div{
-                display: inline-block;
-                color: #333;
-                margin-left: 1.5rem;
-            } 
-        }
-        .culture{
-            padding: 0.25rem 0 0.25rem 0;
-            width: 92%;
-            margin:0 auto;
-            font-size: 0.28rem;
-            box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-            span{
-                color:rgba(153,153,153,1);
-                display: inline-block;
-            }
-            div{
-                display: inline-block;
-                color: #333;
-                margin-left: 1.5rem;
-            } 
-        }
     }
     .emptyOne{
         width: 100%;
         height: 0.2rem;
         background:rgba(240,240,240,1);
     }
-    .middle{
-        .postive{
-             height: 2rem;
-            width: 100%;
-            margin: 0 auto;
-            color:rgba(153,153,153,1);
-            font-size: 0.24rem;
-            box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-            span{
-                display: inline-block;
-                margin-top: 0.2rem;
-            }
-            div{
-                width: 1rem;
-                height: 1rem;
-                margin-top: 0.2rem;
-            }
-        }
-        .other{
-             height: 2rem;
-            width: 100%;
-            margin: 0 auto;
-            color:rgba(153,153,153,1);
-            font-size: 0.24rem;
-            box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-            span{
-                display: inline-block;
-                margin-top: 0.2rem;
-            }
-            div{
-                width: 1rem;
-                height: 1rem;
-                margin-top: 0.2rem;
-            }
-        }
-        .hand{
-            height: 2rem;
-            width: 100%;
-            margin: 0 auto;
-            color:rgba(153,153,153,1);
-            font-size: 0.24rem;
-            box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-            span{
-                display: inline-block;
-                margin-top: 0.2rem;
-            }
-            div{
-                width: 1rem;
-                height: 1rem;
-                margin-top: 0.2rem;
-            }
-        }
-        .attendance{
-            height: 2rem;
-            width: 100%;
-            margin: 0 auto;
-            color:rgba(153,153,153,1);
-            font-size: 0.24rem;
-            box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-            span{
-                display: inline-block;
-                margin-top: 0.2rem;
-            }
-            div{
-                width: 1rem;
-                height: 1rem;
-                margin-top: 0.2rem;
-            }
-        }
-    }
     .emptyTwo{
         width: 100%;
         height: 0.2rem;
         background:rgba(240,240,240,1);
     }
-    .footer{
-        width: 100%;
-        .tel{
-            padding: 0.25rem 0 0.25rem 0;
-            width: 92%;
-            margin:0 auto;
-            font-size: 0.28rem;
-            box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-             span{
-                color:rgba(153,153,153,1);
-                
-            }
-            div{
-                display: inline-block;
-                color: #333;
-                margin-left: 1.5rem;
-            }
-        }
-        .sosName{
-            padding: 0.25rem 0 0.25rem 0;
-            width: 92%;
-            margin:0 auto;
-            font-size: 0.28rem;
-            box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-             span{
-                color:rgba(153,153,153,1);
-                
-            }
-            div{
-                display: inline-block;
-                color: #333;
-                margin-left: .7rem;
-            }
-        }
-        .sosTel{
-            padding: 0.25rem 0 0.25rem 0;
-            width: 92%;
-            margin:0 auto;
-            font-size: 0.28rem;
-            box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-             span{
-                color:rgba(153,153,153,1);
-                
-            }
-            div{
-                display: inline-block;
-                color: #333;
-                margin-left: 1rem;
-            }
-        }
-        .isEntry{
-            padding: 0.25rem 0 0.25rem 0;
-            width: 92%;
-            margin:0 auto;
-            font-size: 0.28rem;
-            box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-             span{
-                color:rgba(153,153,153,1);
-                
-            }
-            div{
-                display: inline-block;
-                color: #333;
-                margin-left: 1rem;
-            }
-        }
-        .entryTime{
-            padding: 0.25rem 0 0.25rem 0;
-            width: 92%;
-            margin:0 auto;
-            font-size: 0.28rem;
-            box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-             span{
-                color:rgba(153,153,153,1);
-                
-            }
-            div{
-                display: inline-block;
-                color: #333;
-                margin-left: 1rem;
-            }
-        }
-        .habits{
-            padding: 0.25rem 0 0.25rem 0;
-            width: 92%;
-            margin:0 auto;
-            font-size: 0.28rem;
-            box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-             span{
-                color:rgba(153,153,153,1);
-                
-            }
-            div{
-                display: inline-block;
-                color: #333;
-                margin-left: 2.1rem;
-            }
-        }
-        .flu{
-           padding: 0.25rem 0 0.25rem 0;
-            width: 92%;
-            margin:0 auto;
-            font-size: 0.28rem;
-            box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-             span{
-                color:rgba(153,153,153,1);
-                
-            }
-            div{
-                display: inline-block;
-                color: #333;
-                margin-left: .7rem;
-            } 
-        }
-        .isMarry{
-            padding: 0.25rem 0 0.25rem 0;
-            width: 92%;
-            margin:0 auto;
-            font-size: 0.28rem;
-            box-shadow:0px 1px 0px 0px rgba(230,230,230,1);
-             span{
-                color:rgba(153,153,153,1);
-                
-            }
-            div{
-                display: inline-block;
-                color: #333;
-                margin-left: 1.5rem;
-            } 
-        }
-        .backTo{
-            border:2px solid rgba(2,142,255,1);
-            width: 92%;
-            height: .9rem;
-            line-height:.9rem; 
-            margin: 0 auto;
-            margin-top: .4rem;
-            color: #028EFF;
-            font-size: 0.32rem;
-            text-align: center;
-        }
+  .pepName{
+    padding: 0.25rem 0 0.25rem 0;
+    width: 92%;
+    margin:0 auto;
+    display: flex;
+    font-size: 0.28rem;
+    border-bottom: 1px solid rgba(230,230,230,1);
+    .left{
+      color:rgba(153,153,153,1);
+      width: 40%;
     }
+    .right{
+      width: 60%;
+      color: #333;
+      .pic-box{
+        width: 1.8rem;
+        height: 1.8rem;
+        border: 1px solid #ccc;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+    }
+  }
+  .backTo{
+    width: 92%;
+    height: 1rem;
+    line-height: 1rem;
+    background:rgba(255,255,255,1);
+    margin: 1rem auto 0;
+    color: #028EFF;
+    text-align: center;
+    border:2px solid rgba(2,142,255,1);
+    border-radius: 2px;
+    font-size: 0.32rem;
+  }
+  .footer{
+    padding-bottom: 1rem;
+  }
 }
 
 </style>

@@ -1,6 +1,6 @@
 <template>
 <div class="full-screen-wrapper memberDetails-wrapper">
-    <router-link to="/user" tag="div" class="card-wrapper">
+    <div class="card-wrapper">
         <p class="detailsCenter">
             人员详情
         </p>
@@ -14,36 +14,34 @@
             <div class="card-time">{{userInfo.entryTime ? '入职时间' : '离职时间'}}: {{userFormatDate(userInfo.entryTime ? userInfo.entryTime : userInfo.exitTime)}}</div>
             </div>
         </div>
-    </router-link>
-    <router-link to="/faceCollect">
-        <div class="faceCollect">人脸采集
-                <div class="facePhoto">
-                    <img src="./person.png"/>
-                </div>
-        </div>
-    </router-link>
+    </div>
+    <div class="faceCollect" @click="toFaceCollect">
+      人脸采集
+      <div class="facePhoto">
+        <img src="./person.png"/>
+      </div>
+    </div>
     <router-link to="bindCard">
-        <div class="cashCard">绑定工资卡
+        <div class="cashCard">
+          绑定工资卡
                 <div class="cardPhoto">
                     <img src="./person.png"/>
                 </div>
         </div>
     </router-link>
-    <router-link to="/information">
-        <div class="baseInfo">基本信息
-            <div class="infoPhoto">
-                <img src="./person.png"/>
-            </div>
-        </div>
-    </router-link>
+  <div class="baseInfo" @click="toInfoFn">
+    基本信息
+    <div class="infoPhoto">
+      <img src="./person.png"/>
+    </div>
+  </div>
     <div class="empty"></div>
-    <router-link to="/createRecord">
-        <div class="reRecord">重新建档
-            <div class="recordPhoto">
-                <img src="./person.png"/>
-            </div>
-        </div>
-    </router-link>
+  <div class="reRecord" @click="reRecordFn">
+    重新建档
+    <div class="recordPhoto">
+      <img src="./person.png"/>
+    </div>
+  </div>
   <toast ref="toast" :text="toastText"></toast>
   <loading :title="'正在努力加载中...'" :isLoading="isLoading"></loading>
 </div>
@@ -57,14 +55,19 @@ import Loading from 'base/loading/loading';
 export default{
   data(){
     return{
-      userInfo: {},
+      userInfo: {
+        entryTime: '',
+        exitTime: ''
+      },
       toastText: '',
-      isLoading: true
+      isLoading: true,
+      code: ''
     }
   },
   created() {
     const { code } = this.$route.query;
     if(code) {
+      this.code = code;
       teamUserDetail(code).then(data => {
         this.userInfo = data;
         this.isLoading = false;
@@ -79,8 +82,18 @@ export default{
           return formatAvatar(this.user.photo);
       },
     userFormatDate(time) {
-        console.log(time);
         return formatDate(time);
+    },
+    toFaceCollect() {
+        this.$router.push(`/photo?code=${this.userInfo.workerCode}&type=1`);
+    },
+    toInfoFn() {
+        if(this.code) {
+          this.$router.push(`/information?code=${this.code}`);
+        }
+    },
+    reRecordFn() {
+      this.$router.push(`/createRecord?code=${this.userInfo.workerCode}`);
     }
   },
   components: {

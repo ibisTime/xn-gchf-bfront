@@ -1,5 +1,6 @@
 <template>
     <div class="full-screen-wrapper faceCollect-wrapper">
+      <scroll ref="scroll" :hasMore="false">
         <div class="faceCollectBanner">
             <p class="faceCollectCenter">
                 人脸采集
@@ -8,7 +9,7 @@
         <div class="startCollect" @click="getMedia">
             <div class="opss">
                 <img src="./upload.png"/>
-            </div>   
+            </div>
         </div>
         <div class="phore">
             照片要求:{{requirement}}
@@ -16,16 +17,22 @@
         <div class="nextStep">
             下一步
         </div>
+      </scroll>
     </div>
 </template>
 
 <script>
+  import Scroll from 'base/scroll/scroll';
+  import {authenticationDetail} from 'api/deal';
 export default{
     data(){
        return{
             requirement:'xxxxxxxx'
        }
     },
+  created() {
+
+  },
     methods:{
         getMedia:function(){
             let constraints = {
@@ -47,7 +54,10 @@ export default{
             ctx.drawImage(video, 0, 0, 500, 500);
             }
         }
-    }
+    },
+  components: {
+    Scroll
+  }
 }
 </script>
 

@@ -4,7 +4,7 @@
             <div>
             <div class="faceCollectBanner">
                 <p class="faceCollectCenter">
-                    手持照片
+                    {{title}}
                 </p>
             </div>
             <div class="startCollect" @click="getMediaSczp">
@@ -20,7 +20,7 @@
                 照片要求:{{requirement}}
             </div>
               <div class="nextStep" @click="nextStepFn">
-                下一步
+                {{nextStepText}}
               </div>
             </div>
         </scroll>
@@ -49,20 +49,38 @@
 import Scroll from 'base/scroll/scroll';
 import Toast from 'base/toast/toast';
 import Loading from 'base/loading/loading';
-import {scPicEntry} from 'api/deal';
+import { scPicEntry, authenticationDetail, inKaoQingPic } from 'api/deal';
 export default{
     data(){
        return{
-          requirement:'xxxxxxxx',
+          requirement:'最大不得超过500KB',
           isShow: true,
           isVideoSfz: true,
          isVideo: true,
          sczzp: '',
          mediaStreamTrack: null,
           toastText: '照片请上传完整',
-         isLoading: false
+         isLoading: true,
+         title: '手持照片',
+         inType: false,
+        nextStepText: '下一步',
+         code: ''
        }
     },
+  created() {
+    const {code, type} = this.$route.query;
+    this.code = code;
+    if(type) {
+      this.inType = !!type;
+      this.title = '人脸采集';
+      this.nextStepText = '保 存';
+    }
+    authenticationDetail(code).then(data => {
+      this.sczzp = type ? data.attendancePicture : data.handIdCardImageUrl;
+      this.isVideo = false;
+      this.isLoading = false;
+    })
+  },
     methods:{
         getMediaSczp() {
           this.isShow = false;
@@ -103,27 +121,46 @@ export default{
         let theFile = document.getElementById('theFile').files[0];
         let fileReader = new FileReader();
         let _this = this;
-        fileReader.readAsDataURL(theFile);
-        fileReader.onload = function() {
-          _this.isShow = true;
-          _this.isVideo = false;
-          _this.isVideoSfz = true;
-          _this.sczzp = fileReader.result;
-        };
+        if(theFile.size > 512000) {
+          this.toastText = '照片最大不得超过500kb';
+          this.$refs.toast.show();
+          this.isShow = true;
+          this.isVideo = false;
+          this.isVideoSfz = true;
+          return;
+        }else {
+          fileReader.readAsDataURL(theFile);
+          fileReader.onload = function() {
+            _this.isShow = true;
+            _this.isVideo = false;
+            _this.isVideoSfz = true;
+            _this.sczzp = fileReader.result;
+          };
+        }
       },
       nextStepFn() {
           if(!this.sczzp) {
             this.$refs.toast.show();
             return;
           }else {
-            const { code } = this.$route.query;
-            console.log(code);
-            scPicEntry({code, handIdCardImageUrl: this.sczzp}).then(data => {
-              this.$refs.toast.show('操作成功');
-              setTimeout(() => {
-                this.$router.push(`/baseInfo?code=${data.code}`);
-              }, 1000);
-            });
+            this.isLoading = true;
+            if(this.inType) {
+              inKaoQingPic({code: this.code, attendancePicture: this.sczzp}).then(() => {
+                this.toastText = '操作成功';
+                this.$refs.toast.show();
+                setTimeout(() => {
+                  window.history.go(-1);
+                }, 1000);
+              });
+            }else {
+              scPicEntry({code: this.code, handIdCardImageUrl: this.sczzp}).then(() => {
+                this.toastText = '操作成功';
+                this.$refs.toast.show();
+                setTimeout(() => {
+                  this.$router.push(`/baseInfo?code=${this.code}`);
+                }, 1000);
+              });
+            }
           }
       }
     },
@@ -226,7 +263,6 @@ export default{
   }
   .footer{
     width: 100%;
-    height: 24%;
     position: absolute;
     bottom: 0;
     left: 0;

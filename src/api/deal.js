@@ -90,3 +90,43 @@ export function userQueryList(config) {
 export function projectLists(config) {
   return fetch(631845, config);
 }
+
+// 详细查人员进退场
+export function userInOutDetail(config) {
+  return fetch(631746, {
+    ...config,
+    userId: getUserId()
+  });
+}
+
+// 详细查实名认证信息
+export function authenticationDetail(code) {
+  return fetch(631806, {
+    code,
+    userId: getUserId()
+  });
+}
+
+// 录入考勤照片
+export function inKaoQingPic(config) {
+  return fetch(631794, {
+    ...config,
+    userId: getUserId()
+  });
+}
+
+// 添加班组人员
+export function addUserRz(config) {
+  return fetch(631696, {
+    ...config,
+    userId: getUserId()
+  });
+}
+
+// 添加银行卡
+export function addBackCard(config) {
+  return fetch(631750, {
+    ...config,
+    userId: getUserId()
+  });
+}
