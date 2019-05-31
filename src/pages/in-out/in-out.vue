@@ -14,14 +14,14 @@
                 </div>
                 <router-link to="checkWorkDetails">
                     <div class="detailItems">
-                    <div class="details" v-for="(item,index) in items1" :key="index">
+                    <div class="details" v-for="(item,index) in items" :key="index">
                         <p class="detailTop">
-                            <span>{{item.name}}</span>
-                            <span>{{item.group}}</span>
+                            <span>{{item.projectName}}</span>
+                            <span>{{item.teamName}}</span>
                         </p>
                         <p class="detailUnder">
-                            <span style="color:#28C71F">下班 记录时间:{{item.id}}</span>
-                            <span>{{item.state}}</span>
+                            <span>{{item.direction}} 记录时间:{{item.date}}</span>
+                            <span>{{item.uploadStatus}}</span>
                         </p>
                         <div class="detailImg">
                             <img src="./to@2x.png"/>
@@ -35,27 +35,26 @@
 </template>
 
 <script>
- import {formatDate} from 'common/js/util'
+ import {formatDate} from 'common/js/util';
+ import {getDictList} from 'api/general';
  import Scroll from 'base/scroll/scroll';
+ import {inOutLists} from 'api/deal'
 export default{
         data(){
             return{
-                towork:'上班',
-                offwork:'下班',
-                items1:[
-                    {
-                        name:'王大锤',
-                        group:'钢筋班组',
-                        id: 123,
-                        state:'已上传'
-                    }
-                ]
+                items:[],
+                config:{
+                    start:1,
+                    limit:0
+                }
             }
         },
-        methods: {
-            formatDate: function(data) {
-                return formatDate(data);
-            }
+        created(){
+            inOutLists(this.config).then((data) => {
+                console.log(this.config);
+                console.log(data);
+                this.items=data.list;
+            }, (err) => {});
         },
         components:{
             scroll:Scroll
@@ -109,7 +108,7 @@ export default{
             position: relative;
             width: 100%;
             color: #333;
-            font-size:0.4rem;
+            font-size:0.32rem;
             :nth-child(2){
                 display: inline-block;
                 position: absolute;
@@ -120,7 +119,7 @@ export default{
             position: relative;
             width: 100%;
             color: #999;
-            font-size:0.3rem;
+            font-size:0.24rem;
             margin-top:0.4rem;
             :nth-child(2){
                 display: inline-block;

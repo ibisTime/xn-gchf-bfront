@@ -88,7 +88,18 @@ export function userQueryList(config) {
 
 // 考勤人员列表
 export function projectLists(config) {
-  return fetch(631845, config);
+  return fetch(631845, {
+    ...config,
+    userId:getUserId()
+  });
+}
+
+//考勤记录
+export function inOutLists(config) {
+  return fetch(631725, {
+    ...config,
+    userId:getUserId()
+  });
 }
 
 // 详细查人员进退场
