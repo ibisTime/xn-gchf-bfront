@@ -189,7 +189,6 @@ const router = new Router({
     }, {
       path: '/detailsText',
       meta: { title: '进出记录', auto: true },
-<<<<<<< HEAD
       component:DetailsText
     }, {
       path: '/wage',
@@ -215,9 +214,6 @@ const router = new Router({
       path: '/bind',
       meta: { title: '绑定银行卡', auto: true },
       component:Bind
-=======
-      component: DetailsText
->>>>>>> e7dca3a5561e68315a17d7dce0868a3e798b6ed6
     }
   ]
 });

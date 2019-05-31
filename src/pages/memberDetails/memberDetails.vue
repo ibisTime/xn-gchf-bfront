@@ -29,11 +29,13 @@
                 </div>
         </div>
     </router-link>
-    <div class="baseInfo">基本信息
-        <div class="infoPhoto">
-            <img src="./person.png"/>
+    <router-link to="/information">
+        <div class="baseInfo">基本信息
+            <div class="infoPhoto">
+                <img src="./person.png"/>
+            </div>
         </div>
-    </div>
+    </router-link>
     <div class="empty"></div>
     <router-link to="/createRecord">
         <div class="reRecord">重新建档
