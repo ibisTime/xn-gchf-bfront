@@ -53,3 +53,35 @@ export function teamUserDetail(code) {
     userId: getUserId()
   });
 }
+
+// 分页查人员进退场
+export function userInOutSite(config) {
+  return fetch(631745, {
+    ...config,
+    userId: getUserId()
+  });
+}
+
+// 列表查人员进退场
+export function getEntryOutList(config) {
+  return fetch(631747, {
+    userId: getUserId(),
+    ...config
+  });
+}
+
+// 添加人员进退场
+export function addEditInOut(code, config) {
+  return fetch(code, {
+    ...config,
+    userId: getUserId()
+  });
+}
+
+// 列表查询班组人员
+export function userQueryList(config) {
+  return fetch(631607, {
+    ...config,
+    userId: getUserId()
+  });
+}

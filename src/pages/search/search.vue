@@ -19,10 +19,14 @@
             </select>
           </div>
         </div>
-        <!--<div class="seaSelect">-->
-           <!--项目人员-->
-           <!--<img src="./selectBottom.png"/>-->
-        <!--</div>-->
+        <div class="seaSelect">
+           <div class="left">
+             项目人员
+           </div>
+           <div class="right">
+             <input type="text" v-model="config.workerName" placeholder="请输入项目人员">
+           </div>
+        </div>
         <div class="seaSelect">
           <div class="left">
             上传状态
@@ -49,6 +53,7 @@
     data() {
       return {
         config: {
+          workerName: '',
           teamSysNo: '',
           uploadStatus: ''
         },
@@ -71,10 +76,14 @@
     },
     methods: {
       searchUser() {
-        if(this.config.teamSysNo || this.config.uploadStatus) {
+        if(this.config.teamSysNo || this.config.uploadStatus || this.config.workerName) {
           sessionStorage.setItem('teamUserConfig', JSON.stringify(this.config));
         }
-        this.$router.push('/project-member');
+        let { origin } = this.$route.query;
+        switch(origin) {
+          case 'project': this.$router.push('/project-member'); break;
+          case 'filed': this.$router.push('/filed'); break;
+        }
       }
     }
   }

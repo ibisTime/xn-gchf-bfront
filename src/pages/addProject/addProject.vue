@@ -3,46 +3,144 @@
     <div class="wrapper">
         <div class="baseBanner">
             <p class="baseCenter">
-                新增修改进退场  
+                {{title}}人员进退场
             </p>
         </div>
-        <div class="banner" v-for="(item,index) in items" :key="index">
+        <div class="banner">
             <div class="memNum">
-                员工编号<span>{{item.Num}}</span>
+                <div class="left">
+                  员工编号
+                </div>
+              <div class="right">
+                <select v-model="workerCode">
+                  <option value="">请选择</option>
+                  <option :value="item.workerCode" v-for="(item, index) in userList" :key="index">{{item.workerName}}-{{item.workerCode}}</option>
+                </select>
+              </div>
             </div>
-            <div class="date">
-                进退场日期<span>{{item.date}}</span>
+            <div class="memNum">
+                <div class="left">
+                  类型
+                </div>
+              <div class="right">
+                <select v-model="config.type">
+                  <option value="">请选择</option>
+                  <option :value="item.key" v-for="(item, index) in dictList" :key="index">{{item.value}}</option>
+                </select>
+              </div>
             </div>
-            <div class="type">
-                类型<span>{{item.type}}</span>
+          <div class="memNum">
+            <div class="left">
+              进退场日期
             </div>
+            <div class="right">
+              <date-picker class="item-input"
+                           :year="exitYear"
+                           :month="exitMonth"
+                           :day="exitDay"
+                           @change="updateExitDate">
+              </date-picker>
+            </div>
+          </div>
             <div class="idHeader">
-                    <span>身份证头像（单）</span>
-                    <div>
-                        <input type="file">
+                    <span>凭证扫描件（单）</span>
+                    <div class="upPic">
+                        <input type="file" @change="upImage" id="theFile">
                         <img src="./upload.png"/>
                         <span>上传</span>
+                      <div class="picBox" :style="{backgroundImage: `url(${picUrl})`}"></div>
                     </div>
             </div>
         </div>
-        <div class="preservation">
+        <div class="preservation" @click="preservation">
             保存
         </div>
     </div>
-</div>    
+  <toast ref="toast" :text="toastText"></toast>
+</div>
 </template>
 <script>
+  import DatePicker from 'base/date-picker/date-picker';
+  import {addEditInOut, userQueryList} from 'api/deal';
+  import{getDictList} from 'api/general';
+  import Toast from 'base/toast/toast';
 export default {
     data(){
         return{
-            items:[{
-                Num:'323868',
-                date:'2019-5-27',
-                type:'身份证',
-                imgUrl:''
-            }]
+          title: '新增',
+          exitYear: '',
+          exitMonth: '',
+          exitDay: '',
+          config: {
+            type: '',
+            voucherUrl: ''
+          },
+          workerCode: '',
+          userList: [],
+          dictList: [],
+          toastText: '',
+          picUrl: ''
         }
-    }
+    },
+  created() {
+      const {code} = this.$route.query;
+      let organizationCode = sessionStorage.getItem('organizationCode');
+      Promise.all([
+        getDictList('entry_exit_type'),
+        userQueryList({projectCode: organizationCode})
+      ]).then(([data1,data2]) => {
+        this.dictList = data1.map(item => ({
+          key: item.dkey,
+          value: item.dvalue
+        }));
+        this.userList = data2.map(item => ({
+          workerName: item.workerName,
+          workerCode: item.code
+        }))
+      });
+      if(code) {
+        this.title = '修改';
+      }
+  },
+  methods: {
+    updateExitDate(year, month, day) {
+      this.exitYear = year;
+      this.exitMonth = month;
+      this.exitDay = day;
+    },
+    preservation() {
+      const {code} = this.$route.query;
+      let date = `${this.exitYear}-${this.exitMonth}-${this.exitDay}`;
+      if(code) {
+        this.config.code = code;
+        this.config.date = date;
+        addEditInOut(631732, this.config);
+      }else {
+        this.config.date = date;
+        this.config.workerCode = this.workerCode;
+        addEditInOut(631730, this.config)
+      }
+    },
+    upImage() {
+      let theFile = document.getElementById('theFile').files[0];
+      let fileReader = new FileReader();
+      let _this = this;
+      fileReader.readAsDataURL(theFile);
+      if(theFile.size > 512000) {
+        this.toastText = '上传图片不得大于500KB';
+        this.$refs.toast.show();
+        return false;
+      }
+      fileReader.onload = function() {
+        _this.config.voucherUrl = fileReader.result;
+        _this.picUrl = fileReader.result;
+      };
+    },
+  },
+  components: {
+    DatePicker,
+    Toast
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -50,7 +148,7 @@ export default {
     .wrapper{
         .baseBanner{
         position: relative;
-        height:.8rem;
+        height: 1.28rem;
         width:100%;
         background:#028EFF;
         text-align: center;
@@ -66,43 +164,32 @@ export default {
         .banner{
             width: 100%;
             .memNum{
-            width:92%;
-            margin: 0 auto;
-            height: 0.8rem;
-            line-height: 0.8rem;
-            font-size: 0.3rem;
-            box-shadow:0px 1px 0px 0px rgba(235,235,235,1);
-            span{
-                display: inline-block;
-                margin-left: 1rem;
+              display: flex;
+              width:92%;
+              margin: 0 auto;
+              height: 0.8rem;
+              line-height: 0.8rem;
+              font-size: 0.3rem;
+              box-shadow:0px 1px 0px 0px rgba(235,235,235,1);
+              span{
+                  display: inline-block;
+                  margin-left: 1rem;
                 }
-            }
-            .date{
-            width:92%;
-            margin: 0 auto;
-            height: 0.8rem;
-            line-height: 0.8rem;
-            font-size: 0.3rem;
-            box-shadow:0px 1px 0px 0px rgba(235,235,235,1);
-            span{
-                display: inline-block;
-                margin-left: .7rem;
+              .left {
+                width: 30%;
+              }
+              .right {
+                width: 70%;
+                select{
+                  width: 100%;
                 }
-            }
-            .type{
-            width:92%;
-            margin: 0 auto;
-            height: 0.8rem;
-            line-height: 0.8rem;
-            font-size: 0.3rem;
-            box-shadow:0px 1px 0px 0px rgba(235,235,235,1);
-            span{
-                display: inline-block;
-                margin-left: 1.6rem;
+                input{
+                  width: 100%;
                 }
+              }
             }
 
-            .idHeader{
+          .idHeader{
             height: 2rem;
             width: 92%;
             margin: 0 auto;
@@ -112,30 +199,45 @@ export default {
                 display: inline-block;
                 margin-top: 0.2rem;
             }
-            div{
+            .upPic{
                 text-align: center;
                 position: relative;
-                border:1px solid #ccc;
-                width: 1.3rem;
-                height: 1.3rem;
-                margin-top: 0.2rem;
+                border: 1px solid #ccc;
+                width: 1.6rem;
+                height: 1.6rem;
+                margin-top: 0.5rem;
                 input{
                     opacity: 0;
-
+                  width: 100%;
+                  height: 100%;
+                  position: absolute;
+                  z-index: 9;
+                  left: 0;
                 }
                 img{
                     width: .5rem;
-                    height:.5rem;
+                    height: .5rem;
                     position: absolute;
-                    top: 50%;
+                    top: 40%;
                     left: 50%;
                     transform: translate(-50%,-50%);
                 }
                 span{
                     display: inline-block;
-                    margin-top:.6rem; 
-                    font-size: .2rem;   
+                    margin-top: 1rem;
+                    font-size: .2rem;
                 }
+              .picBox{
+                position: absolute;
+                left: 0;
+                top: 0;
+                z-index: 1;
+                width: 100%;
+                height: 100%;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: cover;
+              }
             }
             }
         }
@@ -148,7 +250,7 @@ export default {
             color: #fff;
             text-align: center;
             border-radius: 2px;
-            margin-top:2rem;
+            margin-top: 1.5rem;
         }
     }
 }

@@ -7,7 +7,7 @@
     <div class="form-wrapper login-form-wrapper">
       <div class="form-item border-bottom-2px">
         <div class="item-input-wrapper">
-          <input v-focus type="tel" class="item-input" name="loginName" v-model="loginName" v-validate="'required'" placeholder="请输入账号">
+          <input v-focus type="text" class="item-input" name="loginName" v-model="loginName" v-validate="'required'" placeholder="请输入账号">
           <span v-show="errors.has('loginName')" class="error-tip">{{errors.first('loginName')}}</span>
         </div>
       </div>

@@ -11,7 +11,7 @@
             <div class="card-info">
             <div class="card-title">姓名：{{userInfo.workerName}}</div>
             <div class="card-tip">班组：{{userInfo.teamName}}</div>
-            <div class="card-time">入职时间: {{}}</div>
+            <div class="card-time">{{userInfo.entryTime ? '入职时间' : '离职时间'}}: {{userFormatDate(userInfo.entryTime ? userInfo.entryTime : userInfo.exitTime)}}</div>
             </div>
         </div>
     </router-link>
@@ -44,23 +44,32 @@
             </div>
         </div>
     </router-link>
+  <toast ref="toast" :text="toastText"></toast>
+  <loading :title="'正在努力加载中...'" :isLoading="isLoading"></loading>
 </div>
 </template>
 
 <script>
 import { formatAvatar, formatDate } from 'common/js/util';
 import { teamUserDetail } from 'api/deal';
+import Toast from 'base/toast/toast';
+import Loading from 'base/loading/loading';
 export default{
   data(){
     return{
-      userInfo: {}
+      userInfo: {},
+      toastText: '',
+      isLoading: true
     }
   },
   created() {
     const { code } = this.$route.query;
-    teamUserDetail(code).then(data => {
-      this.userInfo = data;
-    })
+    if(code) {
+      teamUserDetail(code).then(data => {
+        this.userInfo = data;
+        this.isLoading = false;
+      })
+    }
   },
   methods:{
       getAvatar() {
@@ -68,9 +77,17 @@ export default{
             return require('./avatar.png');
           }
           return formatAvatar(this.user.photo);
-        }
-      }
+      },
+    userFormatDate(time) {
+        console.log(time);
+        return formatDate(time);
+    }
+  },
+  components: {
+    toast: Toast,
+    loading: Loading
   }
+}
 </script>
 
 <style lang="scss" scoped>

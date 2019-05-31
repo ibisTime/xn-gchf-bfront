@@ -5,7 +5,7 @@
           项目人员
         </p>
         <div class="right">
-          <router-link to='/search'>
+          <router-link to='/search?origin=project'>
             <img src="./search@3x.png" />
           </router-link>
         </div>

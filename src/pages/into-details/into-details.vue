@@ -9,14 +9,14 @@
                 </div>
                 <router-link to="/memberDetails">
                     <div class="detailItems">
-                        <div class="details" v-for="(item, index) in items" :key="index">
+                        <div class="details">
                             <p class="detailTop">
-                                <span>{{item.workName}}</span>
-                                <span>{{item.teamName}}</span>
-                                <span>{{item.status}}</span>
+                                <span>{{inOutData[0].workerName}}</span>
+                                <span>{{inOutData[0].teamName}}</span>
+                                <span>{{inOutData[0].uploadStatus}}</span>
                             </p>
                             <p class="detailUnder">
-                                <span>身份证号:{{item.iden}}</span>
+                                <span>身份证号: {{inOutData[0].idcardNumber}}</span>
                             </p>
                             <router-link to="/memberDetails">
                                 <div class="detailImg">
@@ -27,15 +27,18 @@
                     </div>
                 </router-link>
                 <div class="empty"></div>
-                <router-link to="/detailsText">
-                    <div class="pushAdd" v-for="(item,index) in isEntry" :key="index">
+                <router-link to="">
+                  <scroll ref="scroll" :hasMore="false" :data="entryOutList">
+                    <div class="pushAdd" v-for="(item, index) in entryOutList" :key="index" @click="toDetailsText(item.code)">
                         <div class="entry">
-                            {{item.entryTo}}<span>{{item.times}}</span>
+                            <span>{{item.type}}</span>
                         </div>
                         <div class="entryImg">
-                            <img src="./to@2x.png"/>
+                            <span>{{item.date}}</span> <img src="./to@2x.png"/>
                         </div>
                     </div>
+                    <no-result title="暂无进出记录" v-if="entryOutList.length === 0" style="margin-top: 0.8rem"/>
+                  </scroll>
                 </router-link>
             </div>
         </scroll>
@@ -46,25 +49,74 @@
                         </div>
             </div>
         </router-link>
+      <loading :title="'正在努力加载中...'" :isLoading="isLoading"></loading>
+      <toast ref="toast" :text="toastText"></toast>
     </div>
 </template>
 <script>
 import Scroll from 'base/scroll/scroll';
+import NoResult from 'base/no-result/no-result';
+import Loading from 'base/loading/loading';
+import Toast from 'base/toast/toast';
+import {getEntryOutList} from 'api/deal';
+import{getDictList} from 'api/general';
+import { formatDate } from 'common/js/util';
+
 export default {
     data(){
         return{
-            items:[{
-                    workName:'张三',
-                    teamName:'钢筋组',
-                    status:'已入场',
-                    iden:'324444187902202112',
-                    }],
-            isEntry:[{
-                    entryTo:'进场',
-                    times:'2019-2-12'
-            }]
+          entryOutList:[],
+          inOutData: [],
+          isLoading: true,
+          toastText: '',
+          config: {
+            workerCode: ''
+          },
+          entryExitType: {}
         }
+    },
+  created() {
+      let inOutData = sessionStorage.getItem('inOutData') || '';
+      if(inOutData) {
+        this.inOutData.push(JSON.parse(inOutData));
+        this.config.workerCode = this.inOutData[0].workerCode;
+        Promise.all([
+          getDictList('entry_exit_type'),
+        ]).then(([data1]) => {
+          data1.forEach(item => {
+            this.entryExitType[item.dkey] = item.dvalue;
+          });
+          this.entryOutFn()
+        });
+      }else {
+        this.toastText = '访问异常';
+        this.$refs.toast.show();
+        setTimeout(() => {
+          this.$router.push('/filed');
+        }, 1000);
+      }
+  },
+  methods: {
+    entryOutFn() {
+      return getEntryOutList(this.config).then(data => {
+        this.entryOutList = data.map(item => {
+          item.type = this.entryExitType[item.type];
+          item.date = formatDate(item.date, 'yyyy-MM-dd hh-mm-ss');
+          return item;
+        });
+        this.isLoading = false;
+      });
+    },
+    toDetailsText(code) {
+      this.$router.push(`/detailsText?code=${code}`)
     }
+  },
+  components: {
+    scroll: Scroll,
+    noResult: NoResult,
+    loading: Loading,
+    toast: Toast
+  }
 }
 </script>
 
@@ -72,7 +124,7 @@ export default {
 .into-wrapper{
     .baseBanner{
         position: relative;
-        height:.8rem;
+        height: 1.28rem;
         width:100%;
         background:#028EFF;
         text-align: center;
@@ -139,6 +191,7 @@ export default {
     }
     .pushAdd{
         position: relative;
+      display: flex;
         width: 92%;
         margin: 0 auto;
         height: 1rem;
@@ -146,20 +199,15 @@ export default {
         box-shadow: 0 1px 0 0 #E6E6E6;
         font-size:.32rem;
         span{
-            position: absolute;
             display: inline-block;
-            margin-left: 2rem;
         }
         .entryImg{
-            width: 0.2rem;
-            height: 0.3rem;
             display: inline-block;
             position: absolute;
             right: 0.1rem;
-            top: 0.1rem;
             img{
-            width: 100%;
-            height: 100%;
+              width: 0.2rem;
+              height: 0.2rem;
             }
         }
     }

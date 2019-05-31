@@ -1,61 +1,115 @@
 <template>
     <div class="full-screen-wrapper project-member-wrapper">
-        <scroll ref="scroll" :hasMore="false">
+        <scroll ref="scroll" :hasMore="hasMore" :data="items" @pullingUp="userInOutSite">
             <div>
                 <div class="proBanner">
                     <p class="proCenter">
                         进退场记录
                     </p>
                     <div class="right">
-                        <router-link to='/search'>
+                        <router-link to='/search?origin=filed'>
                         <img src="./search@3x.png" />
                         </router-link>
                     </div>
                 </div>
-                    <router-link to="/into-details">
-                        <div class="detailItems">
-                            <div class="details" v-for="(item, index) in items" :key="index">
-                                <p class="detailTop">
-                                    <span>{{item.workName}}</span>
-                                    <span>{{item.teamName}}</span>
-                                    <span>{{item.status}}</span>
-                                </p>
-                                <p class="detailUnder">
-                                    <span>{{item.isEntry}}</span>
-                                    <span>记录时间:{{filedTime}}</span>
-                                </p>
-                                
-                                    <div class="detailImg">
-                                        <img src="./to@2x.png"/>
-                                    </div>
-                            </div>
-                        </div>
-                    </router-link>
+              <div class="detailItems">
+                <div class="details" v-for="(item, index) in items" :key="index" @click="toFiledFn(item)">
+                  <p class="detailTop">
+                    <span>{{item.workerName}}</span>
+                    <span>{{item.teamName}}</span>
+                    <span>{{item.uploadStatus}}</span>
+                  </p>
+                  <p class="detailUnder">
+                    <span>{{item.type}}</span>
+                    <span>记录时间: {{item.date}}</span>
+                  </p>
+                  <div class="detailImg">
+                    <img src="./to@2x.png"/>
+                  </div>
+                </div>
+              </div>
             </div>
+          <no-result title="暂无进出记录" v-if="items.length === 0 && !hasMore" style="margin-top: 0.8rem"/>
         </scroll>
+      <loading :title="'正在努力加载中...'" :isLoading="isLoading"></loading>
     </div>
 </template>
 
 <script>
 import Scroll from 'base/scroll/scroll';
+import NoResult from 'base/no-result/no-result';
+import Loading from 'base/loading/loading';
 import {deal} from 'api/deal';
-import{getDictList} from 'api/general'
+import{getDictList} from 'api/general';
+import {userInOutSite} from 'api/deal';
+import { formatDate } from 'common/js/util';
     export default{
         data(){
             return{
-                items:[{
-                    workName:'张三',
-                    teamName:'钢筋组',
-                    status:'已入场',
-                    isEntry:'进场',
-                    filedTime:'2019-2-12'
-                    }],
+              items:[],
+              isLoading: true,
+              hasMore: true,
+              config: {
+                start: 1,
+                limit: 10
+              },
+              entryExitType: {},
+              workerPicUploadStatus: {}
             }
         },
         created(){
-        
-        },components:{
-            scroll:Scroll
+          Promise.all([
+            getDictList('entry_exit_type'),
+            getDictList('workerPicUploadStatus'),
+          ]).then(([data1, data2]) => {
+            data1.forEach(item => {
+              this.entryExitType[item.dkey] = item.dvalue;
+            });
+            data2.forEach(item => {
+              this.workerPicUploadStatus[item.dkey] = item.dvalue;
+            });
+            this.userInOutSite();
+          });
+        },
+        methods: {
+          userInOutSite() {
+            let teamUserConfig = sessionStorage.getItem('teamUserConfig') || '';
+            if(teamUserConfig) {
+              teamUserConfig = JSON.parse(teamUserConfig);
+              this.config = {
+                ...this.config,
+                ...teamUserConfig
+              };
+              sessionStorage.removeItem('teamUserConfig');
+            }
+            return userInOutSite(this.config).then(data => {
+              let arr = data.list.map(item => ({
+                workerName: item.workerName,
+                workerCode: item.workerCode,
+                teamName: item.teamName,
+                uploadStatus: this.workerPicUploadStatus[item.uploadStatus],
+                type: this.entryExitType[item.type],
+                date: this.userFormatDate(item.date),
+                idcardNumber: item.idcardNumber
+              }));
+              this.hasMore = (data.pageNO < data.totalPage);
+              this.config.start ++;
+              this.items = [...this.items, ...arr];
+              this.isLoading = false;
+            });
+          },
+          userFormatDate(time) {
+            return formatDate(time);
+          },
+          toFiledFn(item) {
+            sessionStorage.setItem('inOutData', JSON.stringify(item));
+            this.$router.push(`/into-details`);
+          }
+        },
+        components:{
+          scroll:Scroll,
+          loading: Loading,
+          noResult: NoResult
         }
     }
 </script>
@@ -69,7 +123,7 @@ import{getDictList} from 'api/general'
     }
     .proBanner{
         position: relative;
-        height:0.8rem;
+        height: 1.28rem;
         width:100%;
         background:#028EFF;
         text-align: center;
@@ -98,7 +152,7 @@ import{getDictList} from 'api/general'
         width:100%;
         .details{
             position: relative;
-            height:1.5rem;
+            height: 1.5rem;
             width: 92%;
             border-bottom: 1px solid #E6E6E6;
             margin: 0 auto;
@@ -128,8 +182,7 @@ import{getDictList} from 'api/general'
                 text-align: justify;
                 :nth-child(2){
                     display: inline-block;
-                    position: absolute;
-                    right: 3.5rem;
+                    margin-left: 0.5rem;
                 }
             }
             .detailImg{

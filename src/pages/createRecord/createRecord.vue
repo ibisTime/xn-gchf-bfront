@@ -58,6 +58,7 @@
 <script>
 import Scroll from 'base/scroll/scroll';
 import Toast from 'base/toast/toast';
+import Loading from 'base/loading/loading';
 import {orcIdNo} from 'api/deal';
 export default {
     data(){
@@ -123,7 +124,8 @@ export default {
         let fileReader = new FileReader();
         let _this = this;
         fileReader.readAsDataURL(theFile);
-        if(theFile.size > 51200) {
+        console.log(theFile.size);
+        if(theFile.size > 512000) {
           this.toastText = '上传图片不得大于500KB';
           this.$refs.toast.show();
           _this.isShow = true;
@@ -165,7 +167,8 @@ export default {
     },
     components: {
       scroll: Scroll,
-      toast: Toast
+      toast: Toast,
+      loading: Loading
     }
 }
 </script>
@@ -201,7 +204,7 @@ export default {
         .p-wrapper{
             position: relative;
             width: 92%;
-            height: 4.5rem;
+            height: 4rem;
             margin: 0 auto;
             margin-top: .3rem;
             margin-bottom: .3rem;
@@ -242,7 +245,7 @@ export default {
         .o-wrapper{
             position: relative;
             width: 92%;
-            height: 4.5rem;
+            height: 4rem;
             margin: 0 auto;
             margin-top: .3rem;
             margin-bottom: 1rem;
@@ -305,7 +308,6 @@ export default {
   }
   .footer{
     width: 100%;
-    height: 24%;
     position: absolute;
     bottom: 0;
     left: 0;
@@ -365,7 +367,9 @@ export default {
     z-index: 2;
     left: 0;
     top: 0;
-    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
   }
 }
 </style>
