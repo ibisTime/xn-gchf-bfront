@@ -53,7 +53,8 @@ import {getDictList} from 'api/general'
                     }],
                     config: {
                         start: 1,
-                        limit: 10
+                        limit: 10,
+                        userId:''
                     }
             }
         },

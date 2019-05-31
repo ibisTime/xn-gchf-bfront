@@ -33,7 +33,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use('/api', function (req, res) {
-  var url = 'http://47.98.248.153:2601/forward-service/api';
+  var url = 'http://192.168.1.178:8080/xn-gchf/api';
   // var url = 'http://121.43.101.148:4101/forward-service/api'
   var _body = req.body;
   var param = 'code=' + _body.code + '&json=' + encodeURIComponent(_body.json);
