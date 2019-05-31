@@ -14,7 +14,7 @@
                 </div>
                 <router-link to="checkWorkDetails">
                     <div class="detailItems">
-                    <div class="details" v-for="item in items1">
+                    <div class="details" v-for="(item,index) in items1" :key="index">
                         <p class="detailTop">
                             <span>{{item.name}}</span>
                             <span>{{item.group}}</span>
@@ -100,7 +100,7 @@ export default{
     width:100%;
     .details{
         position: relative;
-        height:1.6rem;
+        height:1.5rem;
         width: 92%;
         border-bottom: 1px solid #999;
         margin: 0 auto;

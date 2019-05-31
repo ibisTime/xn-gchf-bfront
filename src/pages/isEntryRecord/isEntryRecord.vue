@@ -22,7 +22,7 @@
                             </p>
                             <p class="detailUnder">
                                 <span>{{item.isEntry}}</span>
-                                <span>记录时间:{{filedTime}}</span>
+                                <span>记录时间:{{filedT}}</span>
                             </p>
                             <router-link to="/into-details">
                                 <div class="detailImg">
@@ -39,8 +39,8 @@
 
 <script>
 import Scroll from 'base/scroll/scroll';
-import {deal} from 'api/deal';
-import{getDictList} from 'api/general'
+import {projectLists} from 'api/deal';
+import {getDictList} from 'api/general'
     export default{
         data(){
             return{
@@ -49,12 +49,18 @@ import{getDictList} from 'api/general'
                     teamName:'钢筋组',
                     status:'在场内',
                     isEntry:'出去',
-                    filedTime:'2019-2-12'
+                    filedT:'2019-02-12'
                     }],
+                    config: {
+                        start: 1,
+                        limit: 10
+                    }
             }
         },
         created(){
-        
+            projectLists(this.config).then((data) => {
+                console.log(this.config)
+            }, (err) => {})
         },components:{
             scroll:Scroll
         }

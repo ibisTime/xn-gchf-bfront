@@ -85,3 +85,8 @@ export function userQueryList(config) {
     userId: getUserId()
   });
 }
+
+// 考勤人员列表
+export function projectLists(config) {
+  return fetch(631845, config);
+}
