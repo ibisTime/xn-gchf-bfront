@@ -11,7 +11,7 @@
             <div class="card-info">
             <div class="card-title">姓名：{{userInfo.workerName}}</div>
             <div class="card-tip">班组：{{userInfo.teamName}}</div>
-            <div class="card-time">{{userInfo.entryTime ? '入职时间' : '离职时间'}}: {{userFormatDate(userInfo.entryTime ? userInfo.entryTime : userInfo.exitTime)}}</div>
+            <div class="card-time">{{userInfo.entryTime ? '入职时间' : '离职时间'}}: {{userInfo.entryTime && userFormatDate(userInfo.entryTime ? userInfo.entryTime : userInfo.exitTime)}}</div>
             </div>
         </div>
     </div>
@@ -21,14 +21,12 @@
         <img src="./person.png"/>
       </div>
     </div>
-    <router-link to="bindCard">
-        <div class="cashCard">
-          绑定工资卡
-                <div class="cardPhoto">
-                    <img src="./person.png"/>
-                </div>
-        </div>
-    </router-link>
+  <div class="cashCard" @click="toCard">
+    绑定工资卡
+    <div class="cardPhoto">
+      <img src="./person.png"/>
+    </div>
+  </div>
   <div class="baseInfo" @click="toInfoFn">
     基本信息
     <div class="infoPhoto">
@@ -94,6 +92,9 @@ export default{
     },
     reRecordFn() {
       this.$router.push(`/createRecord?code=${this.userInfo.workerCode}`);
+    },
+    toCard() {
+      this.$router.push(`/bindCard?code=${this.code}`);
     }
   },
   components: {

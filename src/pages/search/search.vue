@@ -27,7 +27,7 @@
              <input type="text" v-model="config.workerName" placeholder="请输入项目人员">
            </div>
         </div>
-        <div class="seaSelect">
+        <div class="seaSelect" :class="isHide ? 'hidden': ''">
           <div class="left">
             上传状态
           </div>
@@ -58,10 +58,17 @@
           uploadStatus: ''
         },
         teamData: [],
-        statusList: []
+        statusList: [],
+        origin: '',
+        isHide: false
       }
     },
     created() {
+      let { origin } = this.$route.query;
+      this.origin = origin;
+      if(origin === 'entryRecord') {
+        this.isHide = true;
+      }
       let projectCode = sessionStorage.getItem('organizationCode');
       Promise.all([
         xmbzList({projectCode}),
@@ -79,10 +86,11 @@
         if(this.config.teamSysNo || this.config.uploadStatus || this.config.workerName) {
           sessionStorage.setItem('teamUserConfig', JSON.stringify(this.config));
         }
-        let { origin } = this.$route.query;
-        switch(origin) {
+        switch(this.origin) {
           case 'project': this.$router.push('/project-member'); break;
           case 'filed': this.$router.push('/filed'); break;
+          case 'entryRecord': this.$router.push('/isEntryRecord'); break;
+          case 'inOut': this.$router.push('/in-out'); break;
         }
       }
     }
@@ -142,19 +150,8 @@
     color: #fff;
     font-size: 0.32rem;
 }
-// .selectDis{
-//     width: 100%;
-//     color: #999;
-//     font-size:0.3rem;
-//     ul{
-//         width:90%;
-//         margin:0 auto;
-//             li{
-//                 width: 100%;
-//                 list-style: none;
-//                 border-bottom: 1px solid #999;
-//         }
-//     }
-// }
+.hidden{
+  display: none;
+}
 
 </style>

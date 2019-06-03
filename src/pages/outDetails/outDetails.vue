@@ -7,65 +7,99 @@
                         进出详情
                     </p>
                 </div>
-                <router-link to="/memberDetails">
-                    <div class="detailItems">
-                        <div class="details" v-for="(item, index) in items" :key="index">
-                            <p class="detailTop">
-                                <span>{{item.workName}}</span>
-                                <span>{{item.teamName}}</span>
-                                <span>{{item.status}}</span>
-                            </p>
-                            <p class="detailUnder">
-                                <span>身份证号:{{item.iden}}</span>
-                            </p>
-                            <router-link to="/memberDetails">
-                                <div class="detailImg">
-                                    <img src="./to@2x.png"/>
-                                </div>
-                            </router-link>
-                        </div>
-                    </div>
-                </router-link>
+              <div class="detailItems" @click="toDetailItems">
+                <div class="details">
+                  <p class="detailTop">
+                    <span>{{outInDetails[0].workerName}}</span>
+                    <span>{{outInDetails[0].teamName}}</span>
+                    <span :class="outInDetails[0].direction === '01' ? 'in' : 'out'">{{outInDetails[0].direction === '01' ? '在场内' : '已出场'}}</span>
+                  </p>
+                  <p class="detailUnder">
+                    <span>身份证号: {{outInDetails[0].idcardNumber}}</span>
+                  </p>
+                  <div class="detailImg">
+                    <img src="./to@2x.png"/>
+                  </div>
+                </div>
+              </div>
                 <div class="empty"></div>
-                <router-link to="/detailsText">
-                    <div class="pushAdd" v-for="(item,index) in isEntry" :key="index">
-                        <div class="entry">
-                            {{item.entryTo}}<span>{{item.times}}</span>
-                        </div>
-                        <div class="entryImg">
-                            <img src="./to@2x.png"/>
-                        </div>
-                    </div>
-                </router-link>
+              <div class="pushAdd" v-for="(item, index) in entryOutList" :key="index" @click="toOutInDetails(item.code)">
+                <div class="entry" :class="item.direction === '01' ? 'in' : 'out'">
+                  {{item.direction}} <span>&nbsp; {{formatDate(item.date)}}</span>
+                </div>
+                <div class="entryImg">
+                  <img src="./to@2x.png"/>
+                </div>
+              </div>
             </div>
+          <no-result title="暂无进出记录" v-if="entryOutList.length === 0" style="margin-top: 0.8rem"/>
         </scroll>
+      <loading :title="'正在努力加载中...'" :isLoading="isLoading"></loading>
+      <toast ref="toast" :text="toastText"></toast>
     </div>
 </template>
 <script>
-import Scroll from 'base/scroll/scroll';
-export default {
+  import Scroll from 'base/scroll/scroll';
+  import NoResult from 'base/no-result/no-result';
+  import Loading from 'base/loading/loading';
+  import Toast from 'base/toast/toast';
+  import {queryOutInList} from 'api/deal';
+  import {getDictList} from 'api/general';
+  import {formatDate} from 'common/js/util';
+  export default {
     data(){
         return{
-            items:[{
-                    workName:'张三',
-                    teamName:'钢筋组',
-                    status:'已入场',
-                    iden:'324444187902202112',
-                    }],
-            isEntry:[{
-                    entryTo:'进入',
-                    times:'2019-2-12 20:00:00'
-            }]
+          outInDetails: [{}],
+          entryOutList: [],
+          isLoading: true,
+          toastText: ''
         }
+    },
+    created() {
+      let outInDetails = sessionStorage.getItem('outInDetails') || '';
+      if(outInDetails) {
+        this.outInDetails = [JSON.parse(outInDetails)];
+        Promise.all([
+          getDictList('direction'),
+          queryOutInList(this.outInDetails[0].workerName)
+        ]).then(([data1, data2]) => {
+          let entryExitType = {};
+          data1.forEach(item => {
+            entryExitType[`${item.dkey}`] = item.dvalue;
+          });
+          this.entryOutList = data2.map(item => {
+            item.direction = entryExitType[item.direction];
+            return item;
+          });
+          this.isLoading = false;
+        });
+      }
+    },
+    methods: {
+      toOutInDetails(code) {
+        this.$router.push(`/outInDetails?code=${code}`);
+      },
+      formatDate(time) {
+        return formatDate(time);
+      },
+      toDetailItems() {
+        this.$router.push(`/memberDetails?code=${this.outInDetails[0].workerCode}`);
+      }
+    },
+    components: {
+      Scroll,
+      NoResult,
+      Loading,
+      Toast
     }
-}
+  }
 </script>
 
 <style lang="scss" scoped>
 .into-wrapper{
     .baseBanner{
         position: relative;
-        height:.8rem;
+        height: 1.28rem;
         width:100%;
         background:#028EFF;
         text-align: center;
@@ -141,7 +175,6 @@ export default {
         span{
             position: absolute;
             display: inline-block;
-            margin-left: 2rem;
         }
         .entryImg{
             width: 0.2rem;
@@ -156,6 +189,12 @@ export default {
             }
         }
      }
+  .in{
+    color: #28C71F !important;
+  }
+  .out{
+    color: #E93535 !important;
+  }
 }
 </style>
 

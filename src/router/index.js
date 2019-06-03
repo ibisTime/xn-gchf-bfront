@@ -52,22 +52,27 @@ const HandleEntry = () => import('pages/handleEntry/handleEntry');
 const Information = () => import('pages/information/information');
 // 进退场
 const Filed = () => import('pages/filed/filed');
-//进退场 进出详情
+// 进退场 进出详情
 const IntoDetails = () => import('pages/into-details/into-details');
 // 新增修改进退场
 const AddProject = () => import('pages/addProject/addProject');
-//进出记录
+// 进出记录
 const IsEntryRecord = () => import('pages/isEntryRecord/isEntryRecord');
-//进出详情 详情
+// 进出详情 详情
 const DetailsText = () => import('pages/detailsText/detailsText');
 // 进出记录 进出详情
 const OutDetails = () => import('pages/outDetails/outDetails');
-//工资单
+// 工资单
 const Wage = () => import('pages/wage/wage');
-//绑定银行卡
+// 绑定银行卡
 const BindCard = () => import('pages/bindCard/bindCard');
-//绑定银行卡
-const Bind =() => import('pages/bind/bind');
+// 绑定银行卡
+const Bind = () => import('pages/bind/bind');
+// 进出记录详情
+const OutInDetails = () => import('pages/outInDetails/outInDetails');
+// 考勤详情
+const Attence = () => import('pages/attence/attence');
+const AddAttence = () => import('pages/attence/addAttence');
 const router = new Router({
   mode: 'history',
   routes: [
@@ -189,31 +194,43 @@ const router = new Router({
     }, {
       path: '/detailsText',
       meta: { title: '进出记录', auto: true },
-      component:DetailsText
+      component: DetailsText
     }, {
       path: '/wage',
       meta: { title: '工资状况', auto: true },
-      component:Wage
+      component: Wage
     }, {
       path: '/checkWorkDetails',
       meta: { title: '考勤详情', auto: true },
-      component:CheckWorkDetails
+      component: CheckWorkDetails
     }, {
       path: '/supp',
       meta: { title: '考勤补录', auto: true },
-      component:Supp
+      component: Supp
     }, {
       path: '/outDetails',
-      meta: { title: '考勤补录', auto: true },
-      component:OutDetails
+      meta: { title: '进出详情', auto: true },
+      component: OutDetails
     }, {
       path: '/bindCard',
-      meta: { title: '绑定银行卡', auto: true },
-      component:BindCard
+      meta: { title: '银行卡列表', auto: true },
+      component: BindCard
     }, {
       path: '/bind',
       meta: { title: '绑定银行卡', auto: true },
-      component:Bind
+      component: Bind
+    }, {
+      path: '/outInDetails',
+      meta: { title: '进出记录详情', auto: true },
+      component: OutInDetails
+    }, {
+      path: '/attence',
+      meta: { title: '考勤记录详情', auto: true },
+      component: Attence
+    }, {
+      path: '/attence-add',
+      meta: { title: '考勤记录详情', auto: true },
+      component: AddAttence
     }
   ]
 });

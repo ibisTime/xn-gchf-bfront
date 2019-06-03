@@ -86,19 +86,19 @@ export function userQueryList(config) {
   });
 }
 
-// 考勤人员列表
+// 分页查进出记录
 export function projectLists(config) {
   return fetch(631845, {
     ...config,
-    userId:getUserId()
+    userId: getUserId()
   });
 }
 
-//考勤记录
+// 考勤记录
 export function inOutLists(config) {
   return fetch(631725, {
     ...config,
-    userId:getUserId()
+    userId: getUserId()
   });
 }
 
@@ -137,6 +137,70 @@ export function addUserRz(config) {
 // 添加银行卡
 export function addBackCard(config) {
   return fetch(631750, {
+    ...config,
+    userId: getUserId()
+  });
+}
+
+// 分页查询银行卡
+export function queryPageBack(config) {
+  return fetch(631765, {
+    userId: getUserId(),
+    ...config
+  });
+}
+
+// 查询操作日志
+export function queryOperationLog(refCode) {
+  return fetch(631137, {
+    userId: getUserId(),
+    refCode
+  });
+}
+
+// 详细查进出记录
+export function queryOutInDetail(code) {
+  return fetch(631846, {
+    userId: getUserId(),
+    code
+  });
+}
+
+// 列表查进出记录
+export function queryOutInList(workerName) {
+  return fetch(631847, {
+    userId: getUserId(),
+    workerName
+  });
+}
+
+// 列表查人员考勤
+export function queryAttendanceList(workerCode) {
+  return fetch(631727, {
+    userId: getUserId(),
+    workerCode
+  });
+}
+
+// 详情查人员考勤
+export function userAttenceDetail(code) {
+  return fetch(631726, {
+    userId: getUserId(),
+    code
+  });
+}
+
+// 添加人员考勤
+export function addAttence(config) {
+  return fetch(631710, {
+    ...config,
+    userId: getUserId()
+  });
+}
+
+// 修改人员考勤
+export function editAttence(config) {
+  return fetch(631712, {
     ...config,
     userId: getUserId()
   });

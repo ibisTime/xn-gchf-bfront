@@ -1,10 +1,10 @@
 <template>
   <div class="full-screen-wrapper">
-    <!--<div class="faceCollectBanner">-->
-      <!--<p class="faceCollectCenter">-->
-        <!--班组列表-->
-      <!--</p>-->
-    <!--</div>-->
+    <div class="faceCollectBanner">
+      <p class="faceCollectCenter">
+        班组列表
+      </p>
+    </div>
     <div class="class-wrapper">
       <div class="item-wrapper">
         <scroll ref="scroll" :hasMore="hasMore" @pullingUp="getPageClass" :data="classList">
@@ -99,7 +99,7 @@
   @import "~common/scss/variable";
   .faceCollectBanner{
     position: relative;
-    height: 1.5rem;
+    height: 1.28rem;
     width:100%;
     background:#028EFF;
     text-align: center;
@@ -116,7 +116,7 @@
     padding: 0.1rem 0.3rem 0;
     .item-wrapper {
       position: absolute;
-      top: 0.1rem;
+      top: 1.3rem;
       left: 0.3rem;
       right: 0.3rem;
       bottom: 1.9rem;

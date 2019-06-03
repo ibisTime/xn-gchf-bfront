@@ -129,6 +129,7 @@ import{getDictList} from 'api/general';
     }
     .detailItems{
         position: relative;
+      padding-top: .1rem;
         width:100%;
         .details{
             position: relative;

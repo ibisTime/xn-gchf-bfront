@@ -7,7 +7,7 @@
     <div class="form-wrapper login-form-wrapper">
       <div class="form-item border-bottom-2px">
         <div class="item-input-wrapper">
-          <input v-focus type="text" class="item-input" name="loginName" v-model="loginName" v-validate="'required'" placeholder="请输入账号">
+          <input type="text" class="item-input" name="loginName" v-model="loginName" v-validate="'required'" placeholder="请输入账号">
           <span v-show="errors.has('loginName')" class="error-tip">{{errors.first('loginName')}}</span>
         </div>
       </div>
@@ -18,7 +18,7 @@
         </div>
       </div>
       <div class="form-btn">
-        <button @click="login">登录</button>
+        <button @click.stop="login">登录</button>
       </div>
       <div class="other-info">
         <router-link to="/find-pwd">找回密码</router-link>

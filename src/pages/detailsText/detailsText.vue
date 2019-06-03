@@ -32,7 +32,7 @@
               类型
             </div>
             <div class="right">
-              {{userDetail.type}}
+              {{dictObj[userDetail.type]}}
             </div>
           </div>
           <div class="memNum">
@@ -59,8 +59,8 @@
                 <div>操作类型</div>
                 <div>操作时间</div>
               </div>
-              <ul class="log-list" v-if="userDetail.operationLogs && userDetail.operationLogs.length > 0">
-                <li v-for="(item, index) in userDetail.operationLogs" :key="index">
+              <ul class="log-list" v-if="operationLog.length > 0">
+                <li v-for="(item, index) in operationLog" :key="index">
                   <p>{{item.operatorName}}</p>
                   <p>{{item.operate}}</p>
                   <p>{{formatDate(item.operateDatetime)}}</p>
@@ -78,7 +78,7 @@
 <script>
   import { formatDate } from 'common/js/util';
   import DatePicker from 'base/date-picker/date-picker';
-  import {userInOutDetail} from 'api/deal';
+  import {userInOutDetail, queryOperationLog} from 'api/deal';
   import{getDictList} from 'api/general';
   import Toast from 'base/toast/toast';
   import Scroll from 'base/scroll/scroll';
@@ -86,7 +86,8 @@ export default {
     data(){
         return{
           userDetail: {},
-          dictList: [],
+          dictObj: {},
+          operationLog: [],
           toastText: '',
           picUrl: '',
           code: ''
@@ -98,12 +99,13 @@ export default {
         this.code = code;
         Promise.all([
           getDictList('entry_exit_type'),
-          userInOutDetail({code})
-        ]).then(([data1, data2]) => {
-          this.dictList = data1.map(item => ({
-            key: item.dkey,
-            value: item.dvalue
-          }));
+          userInOutDetail({code}),
+          queryOperationLog(code)
+        ]).then(([data1, data2, data3]) => {
+          this.operationLog = data3;
+          data1.forEach(item => {
+            this.dictObj[item.dkey] = item.dvalue;
+          });
           this.userDetail = data2;
         });
       }

@@ -344,3 +344,14 @@ export function formatChatDate(timeStamp, param) {
 export function getReportCode() {
   return sessionStorage['reportCode'] || '';
 }
+
+// 格式化银行卡号
+export function formattingBankCode(str) {
+  let text = str;
+  let rtn = '';
+  let len = Math.floor(str.length / 4);
+  for (let i = 0; i < len; i++) {
+    rtn += text.substring(i * 4, i * 4 + 4) + ' ';
+  }
+  return rtn;
+}

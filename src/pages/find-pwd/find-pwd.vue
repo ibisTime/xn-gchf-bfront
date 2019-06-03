@@ -2,7 +2,7 @@
   <div class="full-screen-wrapper change-mobile-wrapper">
     <div class="baseBanner">
                 <p class="baseCenter">
-                    修改登陆密码
+                    修改登录密码
                 </p>
       </div>
     <div class="form-wrapper login-form-wrapper">

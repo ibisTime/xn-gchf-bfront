@@ -33,6 +33,10 @@ Validator.extend('captcha', {
   getMessage: field => '格式错误',
   validate: value => /^\d{4}$/.test(value)
 });
+Validator.extend('bankCard', {
+  getMessage: field => '格式错误',
+  validate: value => /^([1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3})|([1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X|x))$/.test(value)
+});
 
 const config = {
   errorBagName: 'errors', // change if property conflicts

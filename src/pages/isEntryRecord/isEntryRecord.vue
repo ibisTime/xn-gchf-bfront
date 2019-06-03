@@ -1,65 +1,109 @@
 <template>
     <div class="full-screen-wrapper project-member-wrapper">
-        <scroll ref="scroll" :hasMore="false">
-            <div>
-                <div class="proBanner">
-                    <p class="proCenter">
-                        进出记录
-                    </p>
-                    <div class="right">
-                        <router-link to='/search'>
-                        <img src="./search@3x.png" />
-                        </router-link>
+      <div class="proBanner">
+        <p class="proCenter">
+          进出记录
+        </p>
+        <div class="right" @click="toSearchFn">
+          <img src="./search@3x.png" />
+        </div>
+      </div>
+        <scroll ref="scroll" :hasMore="hasMore" @pullingUp="getQueryList" :data="items">
+            <div style="padding-top: 0.1rem;">
+              <div class="detailItems">
+                <div class="details" v-for="(item, index) in items" :key="index" @click="toOutDetails(item)">
+                  <p class="detailTop">
+                    <span>{{item.workerName}}</span>
+                    <span>{{item.teamName}}</span>
+                    <span :class="item.direction === '01' ? 'in' : 'out'">{{item.direction === '01' ? '在场内' : '已出场'}}</span>
+                  </p>
+                  <p class="detailUnder" :class="item.direction === '01' ? 'in' : 'out'">
+                    <span>{{item.direction && entryExitType[item.direction]}}</span>
+                    <span>记录时间: {{item.date}}</span>
+                  </p>
+                  <router-link to="/into-details">
+                    <div class="detailImg">
+                      <img src="./to@2x.png"/>
                     </div>
+                  </router-link>
                 </div>
-                <router-link to="outDetails">
-                    <div class="detailItems">
-                        <div class="details" v-for="(item, index) in items" :key="index">
-                            <p class="detailTop">
-                                <span>{{item.workerName}}</span>
-                                <span>{{item.teamName}}</span>
-                                <span>{{item.direction}}</span>
-                            </p>
-                            <p class="detailUnder">
-                                <span>{{item.workerCode}}</span>
-                                <span>记录时间:{{item.date}}</span>
-                            </p>
-                            <router-link to="/into-details">
-                                <div class="detailImg">
-                                    <img src="./to@2x.png"/>
-                                </div>
-                            </router-link>
-                        </div>
-                    </div>
-                </router-link>
+              </div>
             </div>
+          <noResult title="暂无进出记录" v-if="items.length === 0 && !hasMore" style="margin-top: 0.8rem"/>
         </scroll>
+      <toast ref="toast" :text="toastText"></toast>
+      <loading :isLoading="isLoading" title="'正在努力加载中....'"></loading>
     </div>
 </template>
 
 <script>
 import Scroll from 'base/scroll/scroll';
+import Toast from 'base/toast/toast';
+import Loading from 'base/loading/loading';
+import NoResult from 'base/no-result/no-result';
 import {projectLists} from 'api/deal';
-import {getDictList} from 'api/general'
+import {getDictList} from 'api/general';
+import {formatDate} from 'common/js/util';
     export default{
-        data(){
-            return{
-                items:[],
-                    config: {
-                        start: 1,
-                        limit: 10
-                    }
-            }
+      data(){
+          return{
+            items:[],
+            entryExitType: {},
+            config: {
+              start: 1,
+              limit: 10
+            },
+            toastText: '',
+            isLoading: true,
+            hasMore: true
+          }
+      },
+      created(){
+        Promise.all([
+          getDictList('direction'),
+        ]).then(([data1]) => {
+          data1.forEach(item => {
+            this.entryExitType[item.dkey] = item.dvalue;
+          });
+          this.getQueryList();
+        });
+      },
+      methods: {
+        getQueryList() {
+          let teamUserConfig = sessionStorage.getItem('teamUserConfig') || '';
+          if(teamUserConfig) {
+            teamUserConfig = JSON.parse(teamUserConfig);
+            this.config = {
+              ...this.config,
+              ...teamUserConfig
+            };
+            sessionStorage.removeItem('teamUserConfig');
+          }
+          return projectLists(this.config).then((data) => {
+            this.isLoading = false;
+            let arr = data.list.map(item => {
+              item.date = formatDate(item.date);
+              return item;
+            });
+            this.hasMore = (data.pageNO < data.totalPage);
+            this.config.start ++;
+            this.items = [...this.items, ...arr];
+          });
         },
-        created(){
-            projectLists(this.config).then((data) => {
-                // console.log(this.config)
-                // console.log(data)
-                this.items=data.list;
-            }, (err) => {})
-        },components:{
-            scroll:Scroll
+        toSearchFn() {
+          this.$router.push(`/search?origin=entryRecord`);
+        },
+        toOutDetails(item) {
+          sessionStorage.setItem('outInDetails', JSON.stringify(item));
+          this.$router.push(`/outDetails`);
         }
+      },
+      components:{
+        Scroll,
+        Toast,
+        Loading,
+        NoResult
+      }
     }
 </script>
 <style lang="scss" scoped>
@@ -72,7 +116,7 @@ import {getDictList} from 'api/general'
     }
     .proBanner{
         position: relative;
-        height:0.8rem;
+        height:1.28rem;
         width:100%;
         background:#028EFF;
         text-align: center;
@@ -131,7 +175,6 @@ import {getDictList} from 'api/general'
                 text-align: justify;
                 :nth-child(2){
                     display: inline-block;
-                    position: absolute;
                     right: 3.5rem;
                 }
             }
@@ -148,6 +191,12 @@ import {getDictList} from 'api/general'
                 }
             }
         }
+      .in{
+        color: #28C71F !important;
+      }
+      .out{
+        color: #E93535 !important;
+      }
     }
 }
 </style>

@@ -30,7 +30,7 @@
               </div>
                 <div class="pepName">
                   <div class="left">性别</div>
-                  <div class="right">{{userDetail[0].gender == 0 ? '男' : '女'}}</div>
+                  <div class="right">{{userDetail[0].idCardType ? userDetail[0].gender === 0 ? '男' : '女' : ''}}</div>
                 </div>
                 <div class="pepName">
                   <div class="left">民族</div>
@@ -38,7 +38,7 @@
                 </div>
                 <div class="pepName">
                   <div class="left">出生日期</div>
-                  <div class="right">{{formatDate(userDetail[0].birthday)}}</div>
+                  <div class="right">{{userDetail[0].birthday && formatDate(userDetail[0].birthday)}}</div>
                 </div>
                 <div class="pepName">
                   <div class="left">身份证号码</div>
@@ -50,11 +50,11 @@
                 </div>
                 <div class="pepName">
                   <div class="left">有效开始日期</div>
-                  <div class="right">{{formatDate(userDetail[0].startDate)}}</div>
+                  <div class="right">{{userDetail[0].startDate && formatDate(userDetail[0].startDate)}}</div>
                 </div>
                 <div class="pepName">
                   <div class="left">有效截止日期</div>
-                  <div class="right">{{formatDate(userDetail[0].expiryDate)}}</div>
+                  <div class="right">{{userDetail[0].expiryDate && formatDate(userDetail[0].expiryDate)}}</div>
                 </div>
                 <div class="pepName">
                   <div class="left">签发机关</div>
@@ -169,11 +169,13 @@
                 <div class="backTo" @click="toBack">返回</div>
             </div>
        </scroll>
+     <loading :isLoading="isLoading" title="'正在努力加载中....'"></loading>
    </div>
 </template>
 
 <script>
 import Scroll from 'base/scroll/scroll';
+import Loading from 'base/loading/loading';
 import { teamUserDetail } from 'api/deal';
 import { getDictList } from 'api/general';
 import { formatDate } from 'common/js/util';
@@ -185,7 +187,8 @@ export default {
           cultureLevelTypeData: {},
           maritalStatusData: {},
           idcardTypeTypeData: {},
-          code: ''
+          code: '',
+          isLoading: true
         }
     },
     created(){
@@ -212,6 +215,7 @@ export default {
         });
         this.userDetail = [];
         this.userDetail.push(data5.workerInfo);
+        this.isLoading = false;
       });
     },
     methods: {
@@ -223,7 +227,8 @@ export default {
       }
     },
     components:{
-        scroll:Scroll
+      Scroll,
+      Loading
     }
 }
 </script>

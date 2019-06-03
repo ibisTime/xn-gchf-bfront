@@ -1,0 +1,18 @@
+<!DOCTYPE html><html style=font-size:50px;><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"><title>业务员端</title><link rel="shortcut icon" type=image/ico href=/static/zxzx.png><script>(function(doc, win) {
+        var docEl = doc.documentElement,
+          resizeEvt = 'orientationchange' in win ? 'orientationchange' : 'resize',
+          recalc = function() {
+            var clientWidth = docEl.clientWidth;
+            if (!clientWidth) return;
+            if(clientWidth < 750)
+              docEl.style.fontSize = clientWidth / 7.5 + 'px';
+            else
+              docEl.style.fontSize = '100px';
+          };
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+      })(document, window);</script><script type=text/javascript src=/static/config.js></script><link href=/static/css/app.3a06adcc62e3663da825e8a5fdaf8e42.css rel=stylesheet></head><body><div id=app></div><script>window.onload = function() {
+        var a = document.getElementById('tlbstoolbar');
+        a && a.parentNode.removeChild(a);
+      };</script><script type=text/javascript src=/static/js/manifest.052934c6552745f73025.js></script><script type=text/javascript src=/static/js/vendor.be40f86f76b08f6b701d.js></script><script type=text/javascript src=/static/js/app.7deeae89768dd8eec4db.js></script></body></html>
