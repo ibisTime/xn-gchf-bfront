@@ -4,7 +4,7 @@
       <div class="form-wrapper form-gray-wrapper">
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
-            <div class="item-label">所在企业</div>
+            <div class="item-title">所在企业</div>
             <select type="text" name="corpCode" v-model="corpCode" v-validate="'required'" class="item-input">
               <option v-for="item in corpList" :key="item.corpCode" :value="item.corpCode">{{item.corpName}}</option>
             </select>
@@ -14,7 +14,7 @@
         </div>
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
-            <div class="item-label">班组名称</div>
+            <div class="item-title">班组名称</div>
             <input type="text" name="teamName" v-model="teamName" v-validate="'required'" class="item-input" />
             <span v-show="errors.has('teamName')" class="error-tip">{{errors.first('teamName')}}</span>
           </div>
@@ -27,7 +27,7 @@
         </div>
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
-            <div class="item-label">责任人姓名</div>
+            <div class="item-title">责任人姓名</div>
             <input type="text" name="responsiblePersonName" v-model="responsiblePersonName" class="item-input" />
             <span v-show="errors.has('responsiblePersonName')" class="error-tip">{{errors.first('responsiblePersonName')}}</span>
           </div>
@@ -58,7 +58,7 @@
         </div>
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
-            <div class="item-label">进场时间</div>
+            <div class="item-title">进场时间</div>
             <date-picker class="item-input"
                          :year="entryYear"
                          :month="entryMonth"
@@ -68,7 +68,7 @@
         </div>
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
-            <div class="item-label">退场时间</div>
+            <div class="item-title">退场时间</div>
             <date-picker class="item-input"
                          :year="exitYear"
                          :month="exitMonth"
@@ -78,7 +78,7 @@
         </div>
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
-            <div class="item-label">班组长姓名</div>
+            <div class="item-title">班组长姓名</div>
             <input type="text" name="teamLeaderName" v-model="teamLeaderName" class="item-input" />
             <span v-show="errors.has('teamLeaderName')" class="error-tip">{{errors.first('teamLeaderName')}}</span>
           </div>
@@ -109,7 +109,7 @@
         </div>
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
-            <div class="item-label">备注</div>
+            <div class="item-title">备注</div>
             <input type="text" name="remark" v-model="remark" class="item-input" />
             <span v-show="errors.has('remark')" class="error-tip">{{errors.first('remark')}}</span>
           </div>
@@ -321,4 +321,13 @@
   };
 </script>
 <style lang="scss" scoped>
+  .item1{
+    width: 80%;
+  }
+  .item-title {
+    padding-left: 0;
+    color: #999;
+  }
+  input::-ms-input-placeholder{text-align: center;}
+  input::-webkit-input-placeholder{text-align: center;}
 </style>

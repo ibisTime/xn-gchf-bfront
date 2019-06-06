@@ -36,7 +36,7 @@
                     </div>
                   </div>
                 </div>
-                <no-result title="暂无进出记录" v-if="entryOutList.length === 0" style="margin-top: 0.8rem"/>
+                <no-result title="暂无进退场记录" v-if="entryOutList.length === 0" style="margin-top: 0.8rem"/>
               </scroll>
             </div>
         </scroll>

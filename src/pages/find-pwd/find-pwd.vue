@@ -1,7 +1,7 @@
 <template>
   <div class="full-screen-wrapper change-mobile-wrapper">
     <div class="baseBanner">
-                <p class="baseCenter">
+                <p class="baseCenter" id="titleCg">
                     修改登陆密码
                 </p>
       </div>
@@ -55,6 +55,9 @@
         repwd: ''
       };
     },
+    mounted: function() {
+      this.titleChange();
+    },
     methods: {
       sendCaptcha() {
         this.$validator.validate('mobile').then((result) => {
@@ -100,11 +103,19 @@
           this.sending = false;
           this.captBtnText = '获取验证码';
         }
+      },
+      titleChange() {
+        if(location.pathname == '/find-pwd'){
+          document.getElementById('titleCg').innerHTML = "找回密码";
+        }else if(location.pathname == 'change-pwd'){
+          document.getElementById('titleCg').innerHTML = "修改登陆密码";
+        }
       }
     },
     beforeDestroy() {
       this.timer && clearInterval(this.timer);
     },
+
     components: {
       Toast,
       FullLoading

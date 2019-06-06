@@ -8,7 +8,8 @@
     <div class="class-wrapper">
       <div class="item-wrapper">
         <scroll ref="scroll" :hasMore="hasMore" @pullingUp="getPageClass" :data="classList">
-          <div @click="goDetail(item.code)" v-for="item in classList" :key="item.code" class="item border-bottom-1px">
+          <div @click="goDetail(item.code)" v-for="(item, i) in classList" :key="item.code + i" class="item border-bottom-1px">
+            <!--<div @click="goDetail(item.code)" v-for="item in classList" :key="item.code" class="item border-bottom-1px">-->
             <div class="item-info">
               <div class="title">{{item.teamName}}</div>
               <div class="tip">进场时间：{{item.entryTime | formatDate}}</div>
@@ -85,7 +86,7 @@
       classList() {
         setTimeout(() => {
           this.$refs.scroll.refresh();
-        }, 20);
+        }, 10);
       }
     },
     components: {

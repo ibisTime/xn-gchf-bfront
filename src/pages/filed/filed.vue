@@ -29,7 +29,7 @@
                 </div>
               </div>
             </div>
-          <no-result title="暂无进出记录" v-if="items.length === 0 && !hasMore" style="margin-top: 0.8rem"/>
+          <no-result title="暂无进退场记录" v-if="items.length === 0 && !hasMore" style="margin-top: 0.8rem"/>
         </scroll>
       <loading :title="'正在努力加载中...'" :isLoading="isLoading"></loading>
     </div>
