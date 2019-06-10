@@ -33,7 +33,7 @@
                         <!--</div>-->
                     </div>
                 </div>
-          <noResult title="暂无银行卡" v-if="bankCardList.length === 0 && !hasMore" style="margin-top: 0.8rem"/>
+          <noResult title="抱歉，暂无银行卡" v-if="bankCardList.length === 0 && !hasMore" style="margin-top: 0.8rem"/>
         </scroll>
       <toast ref="toast" :text="toastText"></toast>
       <loading :isLoading="isLoading" title="'正在努力加载中....'"></loading>
@@ -84,7 +84,7 @@ export default {
       this.$router.push(`/bind?code=${this.code}`);
     },
     formattingBankCode(card) {
-      return formattingBankCode(card)
+      return formattingBankCode(card.replace(/^(\w{4})\w{8}(.*)$/, '$1********$2'));
     }
   },
   components: {

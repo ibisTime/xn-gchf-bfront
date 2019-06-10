@@ -121,13 +121,15 @@ export default{
         let theFile = document.getElementById('theFile').files[0];
         let fileReader = new FileReader();
         let _this = this;
+        // 因为拍照的大小一般都会超过500kb，所以最好的方法就是讲照片压缩为500kb以下
         if(theFile.size > 512000) {
-          this.toastText = '照片最大不得超过500kb';
-          this.$refs.toast.show();
-          this.isShow = true;
-          this.isVideo = false;
-          this.isVideoSfz = true;
-          return;
+          _this.imgCompress(theFile, {quality: 0.2});
+          // this.toastText = '照片最大不得超过500kb';
+          // this.$refs.toast.show();
+          // this.isShow = true;
+          // this.isVideo = false;
+          // this.isVideoSfz = true;
+          // return;
         }else {
           fileReader.readAsDataURL(theFile);
           fileReader.onload = function() {
@@ -138,6 +140,61 @@ export default{
           };
         }
       },
+      //图片压缩
+      imgCompress(path,obj){   //path是指上传的图片，obj是压缩的品质，越低越模糊
+        let _this = this  //这里的this 是把vue的实例对象指向改变为_this
+        var img = new Image();
+        img.src = path.src;
+        img.onload = function(){
+          var that = this;  //这里的this 是把img的对象指向改变为that
+          // 默认按比例压缩
+          var w = that.width,
+            h = that.height,
+            scale = w / h;
+          w = obj.width || w;
+          h = obj.height || (w / scale);
+          var quality = 0.7;  // 默认图片质量为0.7
+          //生成canvas
+          var canvas = document.createElement('canvas');
+          var ctx = canvas.getContext('2d');
+          // 创建属性节点
+          var anw = document.createAttribute("width");
+          anw.nodeValue = w;
+          var anh = document.createAttribute("height");
+          anh.nodeValue = h;
+          canvas.setAttributeNode(anw);
+          canvas.setAttributeNode(anh);
+          ctx.drawImage(that, 0, 0, w, h);
+          // 图像质量
+          if(obj.quality && obj.quality <= 1 && obj.quality > 0){
+            quality = obj.quality;
+          }
+          // quality值越小，所绘制出的图像越模糊
+          var base64 = canvas.toDataURL('image/jpeg', quality);
+          alert(base64);
+          // 回调函数返回base64的值
+          //这个地方的处理是为了把压缩的base64转化为对象，获得压缩后图片的大小size，方便对压缩后的图片再次进行判断；
+          var urlFile = _this.convertBase64UrlToBlob(base64)
+          console.log(urlFile)
+          if(urlFile.size/1024 > 1025){
+            _this.$msgbox("图片过大，请重新上传图片")
+          }else{
+            _this.partitionBase = base64.split(",")[1]
+            _this.imgType ="."+urlFile.type.split("/")[1]
+          }
+        }
+      },
+      // 将base64码转化为file（Blob）
+      // 此处函数对压缩后的base64经过处理返回{size: "", type: ""}
+      convertBase64UrlToBlob(urlData){
+        var arr = urlData.split(','), mime = arr[0].match(/:(.*?);/)[1],
+          bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        while(n--){
+          u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new Blob([u8arr], {type:mime});
+      },
+
       nextStepFn() {
           if(!this.sczzp) {
             this.$refs.toast.show();

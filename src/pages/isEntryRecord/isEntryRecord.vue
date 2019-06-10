@@ -29,7 +29,7 @@
                 </div>
               </div>
             </div>
-          <noResult title="暂无进出记录" v-if="items.length === 0 && !hasMore" style="margin-top: 0.8rem"/>
+          <noResult title="抱歉，暂无进出记录" v-if="items.length === 0 && !hasMore" style="margin-top: 0.8rem"/>
         </scroll>
       <toast ref="toast" :text="toastText"></toast>
       <loading :isLoading="isLoading" title="'正在努力加载中....'"></loading>
@@ -41,7 +41,7 @@ import Scroll from 'base/scroll/scroll';
 import Toast from 'base/toast/toast';
 import Loading from 'base/loading/loading';
 import NoResult from 'base/no-result/no-result';
-import {projectLists} from 'api/deal';
+import {projectLists, deal} from 'api/deal';
 import {getDictList} from 'api/general';
 import {formatDate} from 'common/js/util';
     export default{
@@ -79,10 +79,10 @@ import {formatDate} from 'common/js/util';
             };
             sessionStorage.removeItem('teamUserConfig');
           }
-          return projectLists(this.config).then((data) => {
+          return deal(this.config).then((data) => {
             this.isLoading = false;
             let arr = data.list.map(item => {
-              item.date = formatDate(item.date);
+              item.date = formatDate(item.lastAttendanceDatetime);
               return item;
             });
             this.hasMore = (data.pageNO < data.totalPage);

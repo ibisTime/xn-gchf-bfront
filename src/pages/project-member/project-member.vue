@@ -30,7 +30,7 @@
                     </div>
                 </div>
             </div>
-          <noResult title="暂无班组人员" v-if="items.length === 0 && !hasMore" style="margin-top: 0.8rem"/>
+          <noResult title="抱歉，暂无班组人员" v-if="items.length === 0 && !hasMore" style="margin-top: 0.8rem"/>
         </scroll>
         <router-link to="/createRecord">
             <div class="footer">

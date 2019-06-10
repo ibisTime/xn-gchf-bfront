@@ -176,6 +176,7 @@ export default {
             setTimeout(() => {
               if(this.code) {
                 this.$router.push(`/photo?code=${this.code}`);
+                console.log(this.code);
               }else {
                 this.$router.push(`/photo?code=${data}`);
               }

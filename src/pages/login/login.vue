@@ -1,7 +1,7 @@
 <template>
   <div class="full-screen-wrapper change-mobile-wrapper">
     <div class="top-logo-wrap">
-      <img src="./app.png" />
+      <img src="./logo@3x.png" />
       <div class="top-app-name">工程核发</div>
     </div>
     <div class="form-wrapper login-form-wrapper">

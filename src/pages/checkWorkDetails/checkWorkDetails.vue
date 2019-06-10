@@ -39,7 +39,7 @@
           </div>
         </div>
       </router-link>
-      <no-result title="暂无考勤记录" v-if="entryOutList.length === 0" style="margin-top: 0.8rem"/>
+      <no-result title="抱歉，暂无考勤记录" v-if="entryOutList.length === 0" style="margin-top: 0.8rem"/>
     </scroll>
     <loading :title="'正在努力加载中...'" :isLoading="isLoading"></loading>
     <toast ref="toast" :text="toastText"></toast>

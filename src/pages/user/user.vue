@@ -7,7 +7,7 @@
           </div>
           <div class="card-info">
             <div class="card-title">真实姓名：{{realName}}</div>
-            <div class="card-tip">角色名称：xxx</div>
+            <div class="card-tip">角色名称：{{roleName}}</div>
           </div>
           <i></i>
         </div>
@@ -55,6 +55,9 @@
       },
       mobile() {
         return this.user ? this.user.mobile : '';
+      },
+      roleName() {
+        return this.user ? this.user.RoleName : '';
       },
       ...mapGetters([
         'user'

@@ -7,16 +7,18 @@
     </div>
     <div class="class-wrapper">
       <div class="item-wrapper">
-        <scroll ref="scroll" :hasMore="hasMore" @pullingUp="getPageClass" :data="classList">
-          <div @click="goDetail(item.code)" v-for="item in classList" :key="item.code" class="item border-bottom-1px">
-            <div class="item-info">
-              <div class="title">{{item.teamName}}</div>
-              <div class="tip">进场时间：{{item.entryTime | formatDate}}</div>
+        <scroll ref="scroll" :hasMore="hasMore" @pullingUp="getPageClass" :data="items">
+          <div v-for="(item, index) in items" :key="index" class="item border-bottom-1px">
+            <div @click="goDetail(item.code)">
+              <div class="item-info">
+                <div class="title">{{item.teamName}}</div>
+                <div class="tip">进场时间：{{item.entryTime | formatDate}}</div>
+              </div>
+              <div class="status">{{formatUploadStatus(item.uploadStatus)}}</div>
+              <i></i>
             </div>
-            <div class="status">{{formatUploadStatus(item.uploadStatus)}}</div>
-            <i></i>
           </div>
-          <no-result v-show="!classList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
+          <no-result v-show="!items.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无班组信息"></no-result>
         </scroll>
       </div>
       <div class="add-wrapper">
@@ -34,13 +36,15 @@
   import NoResult from 'base/no-result/no-result';
   import { getPageClass } from 'api/biz';
   import { getDictList } from 'api/general';
+  import {formatDate} from 'common/js/util';
 
   export default {
     mixins: [commonMixin],
     data() {
       return {
+        items:[],
         start: 1,
-        limit: 20,
+        limit: 10,
         hasMore: true,
         uploadStatusList: []
       };
@@ -58,12 +62,23 @@
     },
     methods: {
       getPageClass() {
+        // 重复显示的问题出在这里
         return getPageClass(this.start, this.limit).then((data) => {
-          let list = this.classList.slice();
-          list = list.concat(data.list);
-          this.setClassList(list);
-          this.hasMore = data.pageNO > data.totalPage;
-          this.start++;
+          // this.loadFlag = false;
+          // let list = this.classList.slice();
+          // list = list.concat(data.list);
+          // this.setClassList(list);
+          // this.hasMore = data.pageNO > data.totalPage;
+          // this.start++;
+          this.isLoading = false;
+          let arr = data.list.map(item => {
+            item.date = formatDate(item.date);
+            return item;
+          });
+          this.hasMore = (data.pageNO < data.totalPage);
+          this.start ++;
+          this.items = [...this.items, ...arr];
+          console.log(this.items);
         });
       },
       goDetail(code) {

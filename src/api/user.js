@@ -59,9 +59,10 @@ export function changeMobCaptValid (mobile, captcha, bizType) {
  * @param {string} smsCaptcha
  */
 export function changeMobile(newMobile, smsCaptcha) {
-  return fetch(805061, {
+  return fetch(631072, {
     newMobile,
     smsCaptcha,
+    updater: getUserId(),
     userId: getUserId()
   });
 }
@@ -102,7 +103,8 @@ export function resetPwd(mobile, smsCaptcha, newLoginPwd) {
   return fetch(631080, {
     mobile,
     smsCaptcha,
-    newLoginPwd
+    newLoginPwd,
+    userId: getUserId()
   });
 }
 

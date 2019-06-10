@@ -26,7 +26,7 @@
                 </div>
               </div>
             </div>
-          <noResult title="暂无进出记录" v-if="items.length === 0 && !hasMore" style="margin-top: 0.8rem"/>
+          <noResult title="抱歉，暂无考勤人员记录" v-if="items.length === 0 && !hasMore" style="margin-top: 0.8rem"/>
         </scroll>
       <toast ref="toast" :text="toastText"></toast>
       <loading :isLoading="isLoading" title="'正在努力加载中....'"></loading>
@@ -40,7 +40,7 @@
   import NoResult from 'base/no-result/no-result';
  import {formatDate} from 'common/js/util';
  import {getDictList} from 'api/general';
- import {inOutLists} from 'api/deal'
+ import {deal} from 'api/deal'
 export default{
   data(){
       return{
@@ -81,9 +81,9 @@ export default{
         };
         sessionStorage.removeItem('teamUserConfig');
       }
-      return inOutLists(this.config).then((data) => {
+      return deal(this.config).then((data) => {
         let arr = data.list.map(item => {
-          item.date = formatDate(item.date);
+          item.date = this.userFormatDate(item.lastAttendanceDatetime);
           item.static = item.uploadStatus;
           item.uploadStatus = this.staticObj[item.uploadStatus];
           item.direction = this.attendanceStatusObj[item.direction];
@@ -94,6 +94,9 @@ export default{
         this.items = [...this.items, ...arr];
         this.isLoading = false;
       });
+    },
+    userFormatDate(time) {
+      return formatDate(time, "yyyy-MM-dd hh-mm-ss");
     },
     toSearch() {
       this.$router.push(`/search?origin=inOut`);

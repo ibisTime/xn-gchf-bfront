@@ -49,6 +49,7 @@
 <script>
   import { xmbzList } from 'api/deal';
   import{getDictList} from 'api/general';
+  import {getUserId} from "common/js/util";
   export default {
     data() {
       return {
@@ -60,7 +61,7 @@
         teamData: [],
         statusList: [],
         origin: '',
-        isHide: false
+        isHide: false,
       }
     },
     created() {
@@ -70,11 +71,13 @@
         this.isHide = true;
       }
       let projectCode = sessionStorage.getItem('organizationCode');
+      console.log(projectCode)
       Promise.all([
-        xmbzList({projectCode}),
+        xmbzList(),
         getDictList('upload_status')
       ]).then(([data1, data2]) => {
         this.teamData = data1;
+        console.log(this.teamData);
         this.statusList = data2.map(item => ({
           key: item.dkey,
           value: item.dvalue

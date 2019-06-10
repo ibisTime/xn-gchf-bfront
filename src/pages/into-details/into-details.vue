@@ -36,7 +36,7 @@
                     </div>
                   </div>
                 </div>
-                <no-result title="暂无进出记录" v-if="entryOutList.length === 0" style="margin-top: 0.8rem"/>
+                <no-result title="抱歉，暂无进出记录" v-if="entryOutList.length === 0" style="margin-top: 0.8rem"/>
               </scroll>
             </div>
         </scroll>
@@ -99,14 +99,15 @@ export default {
       return getEntryOutList(this.config).then(data => {
         this.entryOutList = data.map(item => {
           item.type = this.entryExitType[item.type];
-          item.date = formatDate(item.date, 'yyyy-MM-dd hh-mm-ss');
+          // yyyy-MM-dd  hh-mm-ss
+          item.date = formatDate(item.date, 'yyyy-MM-dd');
           return item;
         });
         this.isLoading = false;
       });
     },
     toDetailsText(code) {
-      this.$router.push(`/detailsText?code=${code}`)
+      this.$router.push(`/detailsText?code=${code}`);
     },
     toDetailItems() {
       this.$router.push(`/memberDetails?code=${this.inOutData[0].workerCode}`);

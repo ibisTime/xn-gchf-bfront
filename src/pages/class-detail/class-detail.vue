@@ -35,7 +35,7 @@
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
             <div class="item-label">责任人证件类型</div>
-            <div class="item-input">{{detail ? detail.responsiblePersonIdcardType : ''}}</div>
+            <div class="item-input" id="iiClzOne">{{detail ? getCardTypeList(detail.responsiblePersonIdcardType) : ''}}</div>
           </div>
         </div>
         <div class="form-item border-bottom-1px">
@@ -71,7 +71,7 @@
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
             <div class="item-label">班组长证件类型</div>
-            <div class="item-input">{{detail ? detail.teamLeaderIdcardType : ''}}</div>
+            <div class="item-input" id="iiClzTwo">{{detail ? getCardTypeList2(detail.teamLeaderIdcardType) : ''}}</div>
           </div>
         </div>
         <div class="form-item border-bottom-1px">
@@ -105,6 +105,7 @@
   import Confirm from 'base/confirm/confirm';
   import { commonMixin } from 'common/js/mixin';
   import { getClassDetail, deleteClass } from 'api/biz';
+  import { getDictList } from 'api/general';
 
   export default {
     mixins: [commonMixin],
@@ -113,7 +114,10 @@
         detail: null,
         loadingFlag: true,
         loadingText: '正在载入...',
-        toastText: ''
+        toastText: '',
+        cardTypeList: [],
+        cardList: [],
+        i: 1
       };
     },
     created() {
@@ -128,6 +132,27 @@
           this.loadingFlag = false;
         }).catch(() => {
           this.loadingFlag = false;
+        });
+      },
+      //
+      getCardTypeList(vcNumber) {
+        return getDictList('legal_manid_card_type').then(data => {
+          var rtf = data.find(function (obj) { if (obj.dkey == vcNumber) { return obj; } });
+            Promise.resolve(rtf).then(function (result) {
+              document.getElementById('iiClzOne').innerHTML = result.dvalue;
+            });
+        });
+      },
+      getCardTypeList2(vcNumber) {
+        return getDictList('legal_manid_card_type').then(data => {
+          var rtf = data.find(function (obj) { if (obj.dkey == vcNumber) { return obj; } });
+          Promise.resolve(rtf).then(function (result) {
+            if(result.dvalue == undefined){
+              document.getElementById('iiClzOne').innerHTML = '';
+            }else{
+              document.getElementById('iiClzTwo').innerHTML = result.dvalue;
+            }
+          });
         });
       },
       // 删除确认

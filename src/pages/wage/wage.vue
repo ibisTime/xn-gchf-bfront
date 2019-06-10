@@ -1,6 +1,6 @@
 <template>
     <div class="full-screen-wrapper project-member-wrapper">
-        <scroll ref="scroll" :hasMore="false">
+        <scroll ref="scroll" :hasMore="hasMore" :data="items" @pullingUp="PagewageInfo">
             <div>
                 <div class="proBanner">
                     <p class="proCenter">
@@ -12,52 +12,100 @@
                         </router-link>
                     </div>
                 </div>
-                    <router-link to="/into-details">
-                        <div class="detailItems">
-                            <div class="details" v-for="(item, index) in items" :key="index">
-                                <p class="detailTop">
-                                    <span>{{item.workName}}</span>
-                                    <span>{{item.teamName}}</span>
-                                    <span>{{item.infoNum}}</span>
-                                </p>
-                                <p class="detailUnder">
-                                    <span>{{item.months}}</span>
-                                    <span>应发:{{item.mustPay}}</span>
-                                    <span>实发:{{item.actualPay}}</span>
-                                </p>
-                                
-                                    <div class="detailImg">
-                                        <img src="./to@2x.png"/>
-                                    </div>
-                            </div>
-                        </div>
-                    </router-link>
+                    <!--<router-link to="/into-details">-->
+                        <!--<div class="detailItems">-->
+                            <!--<div class="details" v-for="(item, index) in items" :key="index">-->
+                                <!--<p class="detailTop">-->
+                                    <!--<span>{{item.workName}}</span>-->
+                                    <!--<span>{{item.teamName}}</span>-->
+                                    <!--<span>{{item.infoNum}}</span>-->
+                                <!--</p>-->
+                                <!--<p class="detailUnder">-->
+                                    <!--<span>{{item.months}}</span>-->
+                                    <!--<span>应发:{{item.mustPay}}</span>-->
+                                    <!--<span>实发:{{item.actualPay}}</span>-->
+                                <!--</p>-->
+                              <!--<noResult title="暂无工资信息" v-if="items.length === 0 && !hasMore" style="margin-top: 0.8rem"/>-->
+                                    <!--<div class="detailImg">-->
+                                        <!--<img src="./to@2x.png"/>-->
+                                    <!--</div>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</router-link>-->
+              <div class="detailItems">
+                <div class="details" v-for="(item, index) in items" :key="index" @click="checkWageDetails(item)">
+                  <p class="detailTop">
+                    <span>{{item.workerName}}</span>
+                    <span>{{item.teamName}}</span>
+                  </p>
+                  <p class="detailUnder">
+                  <span>日期:{{userFormatDate(item.lastPayMonth)}}</span>
+                  <span>应发:{{item.lastPayTotalAmount}}</span>
+                  <span>实发:{{item.lastPayActualAmount}}</span>
+                  </p>
+                  <div class="detailImg">
+                    <img src="./to@2x.png"/>
+                  </div>
+                </div>
+                <no-result title="抱歉，暂无工资状况记录" v-if="items.length === 0 && !hasMore" style="margin-top: 0.8rem"/>
+              </div>
             </div>
         </scroll>
+        <loading :title="'正在努力加载中...'" :isLoading="isLoading"></loading>
     </div>
 </template>
 
 <script>
-import Scroll from 'base/scroll/scroll';
-import {deal} from 'api/deal';
-import{getDictList} from 'api/general'
+  import Scroll from 'base/scroll/scroll';
+  import NoResult from 'base/no-result/no-result';
+  import Loading from 'base/loading/loading';
+import{PagewageInfo, deal} from 'api/deal';
+import { formatDate } from 'common/js/util';
     export default{
         data(){
             return{
-                items:[{
-                    workName:'张三',
-                    teamName:'钢筋组',
-                    infoNum:'共13条',
-                    months:'1月',
-                    mustPay:'5000',
-                    actualPay:'5000'
-                    }],
+                items:[],
+                isLoading: true,
+                hasMore: true,
+                config: {
+                  start: 1,
+                  limit: 10
+                }
             }
         },
         created(){
-        
-        },components:{
-            scroll:Scroll
+          this.PagewageInfo();
+        },
+        methods: {
+          PagewageInfo() {
+            let teamUserConfig = sessionStorage.getItem('teamUserConfig') || '';
+            if(teamUserConfig) {
+              teamUserConfig = JSON.parse(teamUserConfig);
+              this.config = {
+                ...this.config,
+                ...teamUserConfig
+              };
+              sessionStorage.removeItem('teamUserConfig');
+            }
+            return deal(this.config).then(data => {
+              this.hasMore = (data.pageNO < data.totalPage);
+              this.config.start ++;
+              this.items = [...this.items, ...data.list];
+              this.isLoading = false;
+            });
+          },
+          userFormatDate(time) {
+            return formatDate(time, "yyyy-MM-dd");
+          },
+          checkWageDetails(item) {
+            sessionStorage.setItem('wageDetail', JSON.stringify(item));
+            this.$router.push(`/wageDetail`);
+          }
+        },
+        components:{
+          scroll:Scroll,
+          loading: Loading,
+          noResult: NoResult
         }
     }
 </script>
@@ -128,16 +176,9 @@ import{getDictList} from 'api/general'
                 color: #999999;
                 letter-spacing: 0;
                 text-align: justify;
-                :nth-child(2){
-                    display: inline-block;
-                    position: absolute;
-                    left: 1.5rem;
-                }
-                :nth-child(3){
-                    display: inline-block;
-                    position: absolute;
-                    left: 3.5rem;
-                }
+            }
+            .detailUnder span{
+              margin-right: .5rem;
             }
             .detailImg{
                 width: 0.2rem;

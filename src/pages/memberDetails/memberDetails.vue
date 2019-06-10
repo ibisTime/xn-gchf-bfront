@@ -11,7 +11,7 @@
             <div class="card-info">
             <div class="card-title">姓名：{{userInfo.workerName}}</div>
             <div class="card-tip">班组：{{userInfo.teamName}}</div>
-            <div class="card-time">{{userInfo.entryTime ? '入职时间' : '离职时间'}}: {{userInfo.entryTime && userFormatDate(userInfo.entryTime ? userInfo.entryTime : userInfo.exitTime)}}</div>
+            <div class="card-time">{{userInfo.entryTime ? '离职时间' : '入职时间'}}: {{userInfo.entryTime && userFormatDate(userInfo.entryTime ? userInfo.entryTime : userInfo.exitTime)}}</div>
             </div>
         </div>
     </div>

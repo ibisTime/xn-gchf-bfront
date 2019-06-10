@@ -29,7 +29,7 @@
                 </div>
               </div>
             </div>
-          <no-result title="暂无进出记录" v-if="items.length === 0 && !hasMore" style="margin-top: 0.8rem"/>
+          <no-result title="抱歉，暂无进退场记录" v-if="items.length === 0 && !hasMore" style="margin-top: 0.8rem"/>
         </scroll>
       <loading :title="'正在努力加载中...'" :isLoading="isLoading"></loading>
     </div>
@@ -82,7 +82,7 @@ import { formatDate } from 'common/js/util';
               };
               sessionStorage.removeItem('teamUserConfig');
             }
-            return userInOutSite(this.config).then(data => {
+            return deal(this.config).then(data => {
               let arr = data.list.map(item => ({
                 workerName: item.workerName,
                 workerCode: item.workerCode,
@@ -90,7 +90,7 @@ import { formatDate } from 'common/js/util';
                 teamName: item.teamName,
                 uploadStatus: this.workerPicUploadStatus[item.uploadStatus],
                 type: this.entryExitType[item.type],
-                date: this.userFormatDate(item.date),
+                date: this.userFormatDate(item.lastAttendanceDatetime),
                 idcardNumber: item.idcardNumber
               }));
               this.hasMore = (data.pageNO < data.totalPage);

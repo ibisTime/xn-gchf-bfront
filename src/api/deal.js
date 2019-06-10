@@ -7,8 +7,15 @@ export function deal(config) {
   return fetch(631605, {
     limit: 10,
     userId: getUserId(),
-    projectCode,
     ...config
+  });
+}
+
+// 工资分页
+export function PagewageInfo(config) {
+  return fetch(631815, {
+    ...config,
+    userId: getUserId()
   });
 }
 
@@ -97,8 +104,10 @@ export function projectLists(config) {
 // 考勤记录
 export function inOutLists(config) {
   return fetch(631725, {
-    ...config,
-    userId: getUserId()
+    limit: 20,
+    userId: getUserId(),
+    projectCode,
+    ...config
   });
 }
 

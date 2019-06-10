@@ -146,7 +146,7 @@ export default {
       let fileReader = new FileReader();
       let _this = this;
       fileReader.readAsDataURL(theFile);
-      if(theFile.size > 512000) {
+      if(theFile.size > 5512000) {
         this.toastText = '上传图片不得大于500KB';
         this.$refs.toast.show();
         return false;

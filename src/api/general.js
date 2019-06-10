@@ -26,7 +26,7 @@ export function getDictList(parentKey) {
   });
 }
 
-//根据type列表查数据字典
+// 根据type列表查数据字典
 export function getTypeDicList(type) {
   return fetch(631006, {
     type

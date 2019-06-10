@@ -64,6 +64,10 @@ const DetailsText = () => import('pages/detailsText/detailsText');
 const OutDetails = () => import('pages/outDetails/outDetails');
 // 工资单
 const Wage = () => import('pages/wage/wage');
+// 工资详情
+const wageDetail = () => import('pages/wage/wageDetail');
+// 添加工资
+const wageAdd = () => import('pages/wage/wageAdd');
 // 绑定银行卡
 const BindCard = () => import('pages/bindCard/bindCard');
 // 绑定银行卡
@@ -199,6 +203,14 @@ const router = new Router({
       path: '/wage',
       meta: { title: '工资状况', auto: true },
       component: Wage
+    },{
+      path: '/wageDetail',
+      meta: {title: '工资详情', auto: true },
+      component: wageDetail
+    }, {
+      path: '/wageAdd',
+      meta: {title: '添加工资', auto: true },
+      component: wageAdd
     }, {
       path: '/checkWorkDetails',
       meta: { title: '考勤详情', auto: true },
