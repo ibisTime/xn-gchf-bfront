@@ -3,6 +3,7 @@
     <scroll ref="scroll" :hasMore='false'>
       <div class="wrapper">
         <div class="baseBanner">
+          <p class="toBack" @click="toBack">返回</p>
           <p class="baseCenter">
             考勤详情
           </p>
@@ -10,6 +11,7 @@
             修改
           </div>
         </div>
+        <ToHome></ToHome>
         <div class="banner">
           <div class="memNum">
             <div class="left">
@@ -32,7 +34,7 @@
               刷卡进出方向
             </div>
             <div class="right">
-              {{dictObj[userDetail.direction]}}
+              {{userDetail.direction === "01" ? "下班" : "上班"}}
             </div>
           </div>
           <div class="memNum">
@@ -40,42 +42,79 @@
               刷卡时间
             </div>
             <div class="right">
-              {{formatDate(userDetail.date)}}
+              {{formatDate(userDetail.date) == "NaN-aN-aN aN-aN-aN" ? "暂无记录" : formatDate(userDetail.date)}}
             </div>
           </div>
         </div>
         <div class="empty"></div>
         <div class="footer">
           <p>操作日志</p>
-          <div class="logs">
-            <div class="jounal">
-              <div>操作人</div>
-              <div>操作类型</div>
-              <div>操作时间</div>
+          <!--<div class="logs">-->
+            <!--<div class="jounal">-->
+              <!--<div>操作人</div>-->
+              <!--<div>操作类型</div>-->
+              <!--<div>操作时间</div>-->
+            <!--</div>-->
+            <!--<ul class="log-list" v-if="operationLog.length > 0">-->
+              <!--<li v-for="(item, index) in operationLog" :key="index">-->
+                <!--<p>{{item.operatorName}}</p>-->
+                <!--<p>{{item.operate}}</p>-->
+                <!--<p>{{formatDateT(item.operateDatetime)}}</p>-->
+              <!--</li>-->
+            <!--</ul>-->
+          <!--</div>-->
+          <p class="txtCenter">{{operationLog ? "" : "暂无数据"}}</p>
+          <div class="banner" v-for="(item, index) in operationLog" :key="index" >
+            <div class="memNum">
+              <div class="left">
+                操作人
+              </div>
+              <div class="right">
+                {{item.operatorName}}
+              </div>
             </div>
-            <ul class="log-list" v-if="operationLog.length > 0">
-              <li v-for="(item, index) in operationLog" :key="index">
-                <p>{{item.operatorName}}</p>
-                <p>{{item.operate}}</p>
-                <p>{{formatDate(item.operateDatetime)}}</p>
-              </li>
-            </ul>
+            <div class="memNum">
+              <div class="left">
+                操作类型
+              </div>
+              <div class="right">
+                {{item.operate}}
+              </div>
+            </div>
+            <div class="memNum">
+              <div class="left">
+                操作时间
+              </div>
+              <div class="right">
+                {{formatDate(item.operateDatetime)}}
+              </div>
+            </div>
+            <div class="memNumRk">
+              <div>
+                <div class="top">备注</div>
+                <div class="bottom">{{item.remark}}</div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="preservation" @click="preservation">
-          返回
+        <div class="preservationClear" @click="delAttence">
+          删除
         </div>
       </div>
+      <toast ref="toast" :text="toastText"></toast>
+      <loading :isLoading="isLoading" title="'正在努力加载中....'"></loading>
     </scroll>
   </div>
 </template>
 <script>
   import { formatDate } from 'common/js/util';
   import DatePicker from 'base/date-picker/date-picker';
-  import {userAttenceDetail, queryOperationLog} from 'api/deal';
+  import {userAttenceDetail, queryOperationLog, deleteAttence} from 'api/deal';
+  import Loading from 'base/loading/loading';
   import{getDictList} from 'api/general';
   import Toast from 'base/toast/toast';
   import Scroll from 'base/scroll/scroll';
+  import ToHome from 'base/toHome/toHome';
   export default {
     data(){
       return{
@@ -84,7 +123,8 @@
         operationLog: [],
         toastText: '',
         picUrl: '',
-        code: ''
+        code: '',
+        isLoading: true
       }
     },
     created() {
@@ -101,24 +141,43 @@
             this.dictObj[item.dkey] = item.dvalue;
           });
           this.userDetail = data2;
+          this.isLoading = false;
         });
       }
     },
     methods: {
-      preservation() {
-        this.$router.push('/into-details');
-      },
       formatDate(time) {
-        return formatDate(time);
+        return formatDate(time, "yyyy-MM-dd hh-mm-ss");
+      },
+      formatDateT(time) {
+        return formatDate(time, "yyyy-MM-dd");
       },
       exitProject() {
         this.$router.replace(`/attence-add?code=${this.code}`);
+      },
+      delAttence() {
+        this.loadingFlag = true;
+        deleteAttence(this.code).then(() => {
+          this.loadingFlag = false;
+          this.$refs.toast.show();
+          this.toastText = '删除成功';
+          setTimeout(() => {
+            this.$router.back();
+          }, 1000);
+        }).catch(() => {
+          this.loadingFlag = false;
+        });
+      },
+      toBack() {
+        window.history.go(-1);
       }
     },
     components: {
       DatePicker,
       Toast,
-      Scroll
+      Scroll,
+      Loading,
+      ToHome
     }
   }
 </script>
@@ -145,6 +204,11 @@
           top: .5rem;;
           color: #fff;
           font-size: 0.32rem;
+        }
+        .toBack{
+          float: left;
+          margin-left: 0.5rem;
+          margin-top: 0.5rem;
         }
       }
       .banner{
@@ -275,13 +339,34 @@
         height: 1rem;
         line-height: 1rem;
         background:rgba(255,255,255,1);
-        margin: 1rem auto 0;
+        margin: 0.2rem auto 0;
         color: #028EFF;
         text-align: center;
         border:2px solid rgba(2,142,255,1);
         border-radius: 2px;
         font-size: 0.32rem;
       }
+      .preservationClear{
+        width: 92%;
+        height: 1rem;
+        line-height: 1rem;
+        background:rgba(2,142,255,1);
+        margin: 1rem auto 0;
+        color: rgba(255,255,255,1);
+        text-align: center;
+        border:2px solid rgba(2,142,255,1);
+        border-radius: 2px;
+        font-size: 0.32rem;
+      }
+    }
+    .top{
+      color:#ccc;
+      margin-top: 0.3rem;
+      margin-left: 0.3rem;
+    }
+    .bottom{
+      margin-top: 0.2rem;
+      margin-left: 0.3rem;
     }
   }
 </style>

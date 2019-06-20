@@ -3,6 +3,7 @@
   <scroll ref="scroll" :hasMore='false'>
     <div class="wrapper">
         <div class="baseBanner">
+            <p class="toBack" @click="toBack">返回</p>
             <p class="baseCenter">
                 进退场详情
             </p>
@@ -10,6 +11,7 @@
             修改
           </div>
         </div>
+      <ToHome></ToHome>
         <div class="banner">
           <div class="memNum">
             <div class="left">
@@ -40,7 +42,7 @@
               进退场日期
             </div>
             <div class="right">
-              {{formatDate(userDetail.date)}}
+              {{formatDate(userDetail.date, "yyyy-MM-dd hh:mm:ss")}}
             </div>
           </div>
           <div class="idHeader">
@@ -48,67 +50,126 @@
             <div class="upPic" v-if="userDetail.voucherUrl">
               <div class="picBox" :style="{backgroundImage: `url(${userDetail.voucherUrl})`}"></div>
             </div>
+            <!--<img src="./upload.png" @click="clickImg($event)">-->
+            <big-img v-if="showImg" @clickit="viewImg" :imgSrc="imgSrc"></big-img>
+            <span style="border: 1px solid darkred;color:darkred;padding: 0.1rem;" @click="clickImg()">点击放大</span>
           </div>
+          <!--<div>-->
+            <!--<img src="./upload.png" @click="clickImg($event)">-->
+            <!--&lt;!&ndash; 放大图片 &ndash;&gt;-->
+            <!--<big-img v-if="showImg" @clickit="viewImg" :imgSrc="imgSrc"></big-img>-->
+          <!--</div>-->
         </div>
         <div class="empty"></div>
         <div class="footer">
             <p>操作日志</p>
-            <div class="logs">
-              <div class="jounal">
-                <div>操作人</div>
-                <div>操作类型</div>
-                <div>操作时间</div>
+            <!--<div class="logs">-->
+              <!--<div class="jounal">-->
+                <!--<div>操作人</div>-->
+                <!--<div>操作类型</div>-->
+                <!--<div>操作时间</div>-->
+              <!--</div>-->
+              <!--<ul class="log-list" v-if="operationLog.length > 0">-->
+                <!--<li v-for="(item, index) in operationLog" :key="index">-->
+                  <!--<p>{{item.operatorName}}</p>-->
+                  <!--<p>{{item.operate}}</p>-->
+                  <!--<p>{{formatDate(item.operateDatetime)}}</p>-->
+                <!--</li>-->
+              <!--</ul>-->
+            <!--</div>-->
+            <p class="txtCenter">{{operationLog ? "暂无数据" : ""}}</p>
+          <div class="banner" v-for="(item, index) in operationLog" :key="index" >
+            <div class="memNum">
+              <div class="left">
+                操作人
               </div>
-              <ul class="log-list" v-if="operationLog.length > 0">
-                <li v-for="(item, index) in operationLog" :key="index">
-                  <p>{{item.operatorName}}</p>
-                  <p>{{item.operate}}</p>
-                  <p>{{formatDate(item.operateDatetime)}}</p>
-                </li>
-              </ul>
+              <div class="right">
+                {{item.operatorName}}
+              </div>
             </div>
-        </div>
+            <div class="memNum">
+              <div class="left">
+                操作类型
+              </div>
+              <div class="right">
+                {{item.operate}}
+              </div>
+            </div>
+            <div class="memNum">
+              <div class="left">
+                操作时间
+              </div>
+              <div class="right">
+                {{formatDate(item.operateDatetime)}}
+              </div>
+            </div>
+            <div class="memNumRk">
+              <div>
+              <div class="top">备注</div>
+              <div class="bottom">{{item.remark}}</div>
+              </div>
+            </div>
+            </div>
+          </div>
+      <div class="preservationClear" @click="delDt">
+        删除
+      </div>
       <div class="preservation" @click="preservation">
         返回
       </div>
     </div>
+    <toast ref="toast" :text="toastText"></toast>
+    <loading :isLoading="isLoading" title="'正在努力加载中....'"></loading>
   </scroll>
 </div>
 </template>
 <script>
   import { formatDate } from 'common/js/util';
   import DatePicker from 'base/date-picker/date-picker';
-  import {userInOutDetail, queryOperationLog} from 'api/deal';
+  import {userInOutDetail, queryOperationLog, deleteDetailsText} from 'api/deal';
   import{getDictList} from 'api/general';
   import Toast from 'base/toast/toast';
   import Scroll from 'base/scroll/scroll';
+  import Loading from 'base/loading/loading';
+  import BigImg from '../imgEnlarge/BigImgTwo.vue';
+  import ToHome from 'base/toHome/toHome';
 export default {
     data(){
         return{
           userDetail: {},
-          dictObj: {},
+          dictObj: [],
           operationLog: [],
           toastText: '',
           picUrl: '',
-          code: ''
+          code: '',
+          isLoading: true,
+          showImg: false,
+          imgSrc: ''
         }
     },
   created() {
-      const {code} = this.$route.query;
-      if(code) {
-        this.code = code;
-        Promise.all([
-          getDictList('entry_exit_type'),
-          userInOutDetail({code}),
-          queryOperationLog(code)
-        ]).then(([data1, data2, data3]) => {
-          this.operationLog = data3;
-          data1.forEach(item => {
-            this.dictObj[item.dkey] = item.dvalue;
-          });
-          this.userDetail = data2;
+    const {code} = this.$route.query;
+    if(code) {
+      this.code = code;
+      Promise.all([
+        getDictList('entry_exit_type'),
+        userInOutDetail({code}),
+        queryOperationLog(code)
+      ]).then(([data1, data2, data3]) => {
+        data3.forEach(item => {
+          //item.operatorName
+          //item.operate
+          //formatDate(item.operateDatetime
         });
-      }
+        this.operationLog = data3;
+        console.log(this.operationLog);
+        data1.forEach(item => {
+          this.dictObj[item.dkey] = item.dvalue;
+        });
+        this.userDetail = data2;
+        this.isLoading = false;
+      });
+    }
   },
   methods: {
     preservation() {
@@ -117,14 +178,55 @@ export default {
     formatDate(time) {
       return formatDate(time);
     },
+    formatType(status) {
+      for (let i = 0; i < this.dictObj.length; i++) {
+        if (this.dictObj[i].dkey === status) {
+          return this.dictObj[i].dvalue;
+        }
+      }
+      return '';
+    },
     exitProject() {
       this.$router.replace(`/addProject?code=${this.code}`);
-    }
+    },
+    delDt() {
+      this.loadingFlag = true;
+      deleteDetailsText(this.code).then(() => {
+        this.loadingFlag = false;
+        this.$refs.toast.show();
+        this.toastText = '删除成功';
+        setTimeout(() => {
+          this.$router.back();
+        }, 1000);
+      }).catch(() => {
+        this.loadingFlag = false;
+      });
+    },
+    toBack() {
+      window.history.go(-1);
+    },
+    clickImg() {
+      if(this.userDetail.voucherUrl === "" || this.userDetail.voucherUrl === undefined){
+        console.log(this.userDetail.voucherUrl);
+        this.toastText = '图片为空';
+        this.$refs.toast.show();
+      }else{
+        this.showImg = true;
+        // 获取当前图片地址
+        this.imgSrc = this.userDetail.voucherUrl;
+      }
+    },
+    viewImg(){
+      this.showImg = false;
+    },
   },
   components: {
     DatePicker,
     Toast,
-    Scroll
+    Scroll,
+    Loading,
+    'big-img': BigImg,
+    ToHome
   }
 }
 </script>
@@ -169,6 +271,7 @@ export default {
           }
           .left {
             width: 30%;
+            color:#ccc;
           }
           .right {
             width: 70%;
@@ -180,7 +283,19 @@ export default {
             }
           }
         }
-
+        .memNumRk{
+          display: flex;
+          width:92%;
+          margin: 0 auto;
+          font-size: 0.2rem;
+          .top{
+            color:#ccc;
+            margin-top: 0.3rem
+          }
+          .bottom{
+            margin-top: 0.2rem
+          }
+        }
         .idHeader{
           width: 92%;
           margin: 0 auto;
@@ -238,6 +353,9 @@ export default {
             background:rgba(240,240,240,1);
         }
         .footer{
+            .txtCenter{
+              text-align: center;
+            }
             .logs{
               .jounal{
                 margin-top: 0.2rem;
@@ -281,14 +399,31 @@ export default {
             height: 1rem;
             line-height: 1rem;
             background:rgba(255,255,255,1);
-            margin: 1rem auto 0;
+            margin: 0.2rem auto 0;
             color: #028EFF;
             text-align: center;
             border:2px solid rgba(2,142,255,1);
             border-radius: 2px;
             font-size: 0.32rem;
         }
+      .preservationClear{
+        width: 92%;
+        height: 1rem;
+        line-height: 1rem;
+        background:rgba(2,142,255,1);
+        margin: 1rem auto 0;
+        color: rgba(255,255,255,1);
+        text-align: center;
+        border:2px solid rgba(2,142,255,1);
+        border-radius: 2px;
+        font-size: 0.32rem;
+      }
     }
+}
+.toBack{
+  float: left;
+  margin-left: 0.5rem;
+  margin-top: 0.5rem;
 }
 </style>
 

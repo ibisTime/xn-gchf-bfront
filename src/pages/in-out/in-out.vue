@@ -3,6 +3,7 @@
         <scroll ref="scroll" :hasMore="hasMore" @pullingUp="getQueryList" :data="items">
             <div>
                 <div class="inOutBanner">
+                    <p class="toBack" @click="toBack">返回</p>
                     <p class="inOutCenter">
                         考勤人员
                     </p>
@@ -10,15 +11,18 @@
                       <img src="./search@3x.png" />
                     </div>
                 </div>
+              <ToHome></ToHome>
               <div class="detailItems">
                 <div class="details" v-for="(item, index) in items" :key="index" @click="checkWorkDetails(item)">
                   <p class="detailTop">
                     <span>{{item.workerName}}</span>
-                    <span>{{item.teamName}}</span>
+                    <span>{{item.teamName.length > 4 ? item.teamName.substring(0,4) + "..." : item.teamName}}</span>
+                    <span>{{item.direction === "暂无记录" ? "暂无记录" : item.direction + "中"}}</span>
                   </p>
-                  <p class="detailUnder" :class="item.uploadStatus !== '1' ? 'in' : 'out'">
-                    <span>{{item.direction}} 记录时间:{{item.date}}</span>
-                    <span>{{item.uploadStatus}}</span>
+                  <p class="detailUnder" :class="item.direction === '上班' ? 'in' : 'out'">
+                    <span>{{item.direction}}</span>
+                    <span>记录时间:{{item.date === "NaN-aN-aN aN:aN:aN" ? "暂无记录" : item.date}}</span>
+                    <!--<span>{{item.uploadStatus}}</span>-->
                   </p>
                   <div class="detailImg">
                     <img src="./to@2x.png"/>
@@ -38,9 +42,10 @@
   import Toast from 'base/toast/toast';
   import Loading from 'base/loading/loading';
   import NoResult from 'base/no-result/no-result';
- import {formatDate} from 'common/js/util';
- import {getDictList} from 'api/general';
- import {deal} from 'api/deal'
+  import {formatDate} from 'common/js/util';
+  import {getDictList} from 'api/general';
+  import {deal} from 'api/deal';
+  import ToHome from 'base/toHome/toHome';
 export default{
   data(){
       return{
@@ -83,20 +88,29 @@ export default{
       }
       return deal(this.config).then((data) => {
         let arr = data.list.map(item => {
+          console.log(item.lastAttendanceDatetime);
           item.date = this.userFormatDate(item.lastAttendanceDatetime);
           item.static = item.uploadStatus;
           item.uploadStatus = this.staticObj[item.uploadStatus];
-          item.direction = this.attendanceStatusObj[item.direction];
+          //this.attendanceStatusObj[item.attendanceStatus] == "出场" ? "上班" : this.attendanceStatusObj[item.attendanceStatus] ? "暂无记录" : "下班"
+          if(this.attendanceStatusObj[item.attendanceStatus] == "出场"){
+            item.direction = "上班";
+          }else if(this.attendanceStatusObj[item.attendanceStatus] && this.attendanceStatusObj[item.attendanceStatus] == "入场"){
+            item.direction = "下班";
+          }else{
+            item.direction = "暂无记录";
+          }
           return item;
         });
         this.hasMore = (data.pageNO < data.totalPage);
         this.config.start ++;
         this.items = [...this.items, ...arr];
+        console.log(this.items);
         this.isLoading = false;
       });
     },
     userFormatDate(time) {
-      return formatDate(time, "yyyy-MM-dd hh-mm-ss");
+      return formatDate(time, "yyyy-MM-dd hh:mm:ss");
     },
     toSearch() {
       this.$router.push(`/search?origin=inOut`);
@@ -104,13 +118,17 @@ export default{
     checkWorkDetails(item) {
       sessionStorage.setItem('inOutDetail', JSON.stringify(item));
       this.$router.push(`/checkWorkDetails`);
+    },
+    toBack() {
+      window.history.go(-1);
     }
   },
   components:{
     Scroll,
     Toast,
     Loading,
-    NoResult
+    NoResult,
+    ToHome
   }
 }
 </script>
@@ -121,6 +139,11 @@ export default{
 *{
     margin: 0;
     padding: 0;
+}
+.toBack{
+  float: left;
+  margin-left: 0.5rem;
+  margin-top: 0.5rem;
 }
 .inOutBanner{
     position: relative;
@@ -163,6 +186,11 @@ export default{
             color: #333;
             font-size:0.32rem;
             :nth-child(2){
+              display: inline-block;
+              position: absolute;
+              right: 2.8rem;
+            }
+            :nth-child(3){
                 display: inline-block;
                 position: absolute;
                 right: 0.5rem;
@@ -177,7 +205,7 @@ export default{
             :nth-child(2){
                 display: inline-block;
                 position: absolute;
-                right: 0.5rem;
+                right: 2.4rem;
             }
         }
         .detailImg{

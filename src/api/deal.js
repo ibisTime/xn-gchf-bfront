@@ -1,5 +1,6 @@
 import fetch from 'common/js/fetch';
 import {getUserId} from 'common/js/util';
+import {getUser} from './user';
 
 const projectCode = sessionStorage.getItem('organizationCode');
 // 项目人员
@@ -16,6 +17,22 @@ export function PagewageInfo(config) {
   return fetch(631815, {
     ...config,
     userId: getUserId()
+  });
+}
+
+// 添加工资
+export function addWage(config) {
+  return fetch(631770, {
+    ...config,
+    userId: getUserId()
+  });
+}
+
+// 删除工资详细
+export function delWage(code) {
+  return fetch(631811, {
+    userId: getUserId(),
+    codeList: [code]
   });
 }
 
@@ -55,7 +72,7 @@ export function userInOut(config) {
 
 // 详细查询班组人员
 export function teamUserDetail(code) {
-  return fetch(631606, {
+  return fetch(631610, {
     code,
     userId: getUserId()
   });
@@ -151,6 +168,23 @@ export function addBackCard(config) {
   });
 }
 
+// 删除银行卡
+export function delBankCard(code) {
+  return fetch(631753, {
+    code,
+    userId: getUserId()
+  });
+}
+
+// 绑定银行卡
+export function bindCards(code, workerCode) {
+  return fetch(631754, {
+    code,
+    workerCode,
+    userId: getUserId()
+  });
+}
+
 // 分页查询银行卡
 export function queryPageBack(config) {
   return fetch(631765, {
@@ -199,6 +233,22 @@ export function userAttenceDetail(code) {
   });
 }
 
+// 人员考勤删除
+export function deleteAttence(code){
+  return fetch(631711, {
+    userId: getUserId(),
+    codeList: [code]
+  });
+}
+
+// 删除进退场
+export function deleteDetailsText(code) {
+  return fetch(631731, {
+    userId: getUserId(),
+    codeList: [code]
+  });
+}
+
 // 添加人员考勤
 export function addAttence(config) {
   return fetch(631710, {
@@ -210,6 +260,39 @@ export function addAttence(config) {
 // 修改人员考勤
 export function editAttence(config) {
   return fetch(631712, {
+    ...config,
+    userId: getUserId()
+  });
+}
+
+// 列表查询银行卡
+export function findBankCardByBs(config){
+  return fetch(631767, {
+    ...config,
+    projectCode,
+    userId: getUserId()
+  });
+}
+
+// 项目端查询参建单位银行卡
+export function findGinsengBk(workerCode){
+  return fetch(631769, {
+    workerCode,
+    userId: getUserId()
+  });
+}
+
+// 详情查工资单明细
+export function findWageInfo(code) {
+  return fetch(631817, {
+    code,
+    userId: getUserId()
+  });
+}
+
+// 修改工资单详情
+export function updateWageInfo(config) {
+  return fetch(631810, {
     ...config,
     userId: getUserId()
   });

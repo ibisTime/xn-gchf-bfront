@@ -1,5 +1,14 @@
 <template>
   <div class="full-screen-wrapper class-detail-wrapper">
+    <div class="faceCollectBanner">
+      <p class="toBack" @click="toBack">返回</p>
+      <p class="faceCollectCenter">
+        班组详情
+      </p>
+      <p class="headerChange" @click="edit()">
+        修改
+      </p>
+    </div>
     <scroll :pullUpLoad="pullUpLoad" ref="scroll">
       <div class="form-wrapper form-gray-wrapper">
         <div class="form-item border-bottom-1px">
@@ -35,7 +44,7 @@
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
             <div class="item-label">责任人证件类型</div>
-            <div class="item-input" id="iiClzOne">{{detail ? getCardTypeList(detail.responsiblePersonIdcardType) : ''}}</div>
+            <div class="item-input" id="iiClzOne">{{detail ? uploadStatus[detail.responsiblePersonIdcardType] : ''}}</div>
           </div>
         </div>
         <div class="form-item border-bottom-1px">
@@ -71,7 +80,7 @@
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
             <div class="item-label">班组长证件类型</div>
-            <div class="item-input" id="iiClzTwo">{{detail ? getCardTypeList2(detail.teamLeaderIdcardType) : ''}}</div>
+            <div class="item-input" id="iiClzTwo">{{detail ? uploadStatus[detail.teamLeaderIdcardType] : ''}}</div>
           </div>
         </div>
         <div class="form-item border-bottom-1px">
@@ -86,11 +95,11 @@
             <div class="item-input">{{detail ? detail.remark : ''}}</div>
           </div>
         </div>
-        <div class="form-btn form-btn-clear">
-          <button @click="edit" v-if="showEidt()">修改</button>
+        <div class="form-btn form-btn-clear" style="margin-bottom: 2rem">
           <button @click="deleteConfirm">删除</button>
         </div>
       </div>
+      <ToHome>testtasdasdasd</ToHome>
     </scroll>
     <full-loading v-show="loadingFlag" :title="loadingText"></full-loading>
     <toast ref="toast" :text="toastText"></toast>
@@ -106,6 +115,7 @@
   import { commonMixin } from 'common/js/mixin';
   import { getClassDetail, deleteClass } from 'api/biz';
   import { getDictList } from 'api/general';
+  import ToHome from 'base/toHome/toHome';
 
   export default {
     mixins: [commonMixin],
@@ -117,44 +127,25 @@
         toastText: '',
         cardTypeList: [],
         cardList: [],
-        i: 1
+        i: 1,
+        uploadStatus: {},
+        // legal_manid_card_type
       };
     },
     created() {
       this.pullUpLoad = null;
-      this.getClassDetail();
+      Promise.all([
+        getDictList('legal_manid_card_type'),
+        getClassDetail(this.$route.params.code)
+      ]).then(([data1, data2]) => {
+        data1.forEach(item => {
+          this.uploadStatus[item.dkey] = item.dvalue;
+        });
+        this.detail = data2;
+        this.loadingFlag = false;
+      });
     },
     methods: {
-      // 班组详情
-      getClassDetail() {
-        getClassDetail(this.$route.params.code).then((data) => {
-          this.detail = data;
-          this.loadingFlag = false;
-        }).catch(() => {
-          this.loadingFlag = false;
-        });
-      },
-      //
-      getCardTypeList(vcNumber) {
-        return getDictList('legal_manid_card_type').then(data => {
-          var rtf = data.find(function (obj) { if (obj.dkey == vcNumber) { return obj; } });
-            Promise.resolve(rtf).then(function (result) {
-              document.getElementById('iiClzOne').innerHTML = result.dvalue;
-            });
-        });
-      },
-      getCardTypeList2(vcNumber) {
-        return getDictList('legal_manid_card_type').then(data => {
-          var rtf = data.find(function (obj) { if (obj.dkey == vcNumber) { return obj; } });
-          Promise.resolve(rtf).then(function (result) {
-            if(result.dvalue == undefined){
-              document.getElementById('iiClzOne').innerHTML = '';
-            }else{
-              document.getElementById('iiClzTwo').innerHTML = result.dvalue;
-            }
-          });
-        });
-      },
       // 删除确认
       deleteConfirm() {
         this.$refs.confirm.show();
@@ -185,6 +176,9 @@
         let status = this.detail && this.detail.uploadStatus || '';
         return status !== '3' && status !== '4' && status !== '5';
       },
+      toBack() {
+        window.history.go(-1);
+      },
       ...mapActions([
         'deleteClassInfo'
       ])
@@ -193,14 +187,39 @@
       Scroll,
       FullLoading,
       Toast,
-      Confirm
+      Confirm,
+      ToHome
     }
   };
 </script>
 <style lang="scss" scoped>
   @import "~common/scss/mixin";
   @import "~common/scss/variable";
-
+  .faceCollectBanner{
+    position: relative;
+    height: 1.28rem;
+    width:100%;
+    background:#028EFF;
+    text-align: center;
+    font-size: 0.32rem;
+    color: #fff;
+    .faceCollectCenter{
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform:translateX(-50%) translateY(-50%);
+    }
+    .headerChange{
+      float: right;
+      margin-top: 0.5rem;
+      margin-right: .3rem;
+    }
+    .toBack{
+      float: left;
+      margin-left: 0.5rem;
+      margin-top: 0.5rem;
+    }
+  }
   .class-detail-wrapper {
     z-index: 1;
   }

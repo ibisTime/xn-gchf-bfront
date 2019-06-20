@@ -3,6 +3,7 @@
         <scroll ref="scroll" :hasMore="hasMore" :data="items" @pullingUp="userInOutSite">
             <div>
                 <div class="proBanner">
+                    <p class="toBack" @click="toBack">返回</p>
                     <p class="proCenter">
                         进退场记录
                     </p>
@@ -12,15 +13,16 @@
                         </router-link>
                     </div>
                 </div>
+              <ToHome></ToHome>
               <div class="detailItems">
                 <div class="details" v-for="(item, index) in items" :key="index" @click="toFiledFn(item)">
                   <p class="detailTop">
                     <span>{{item.workerName}}</span>
                     <span>{{item.teamName}}</span>
-                    <span>{{item.uploadStatus}}</span>
+                    <span>{{item.status2}}</span>
                   </p>
-                  <p class="detailUnder">
-                    <span>{{item.type}}</span>
+                  <p class="detailUnder" :class="item.status === '出场' ? 'out' : 'in'">
+                    <span>{{item.status}}</span>
                     <span>记录时间: {{item.date}}</span>
                   </p>
                   <div class="detailImg">
@@ -43,6 +45,7 @@ import {deal} from 'api/deal';
 import{getDictList} from 'api/general';
 import {userInOutSite} from 'api/deal';
 import { formatDate } from 'common/js/util';
+import ToHome from 'base/toHome/toHome';
     export default{
         data(){
             return{
@@ -53,20 +56,21 @@ import { formatDate } from 'common/js/util';
                 start: 1,
                 limit: 10
               },
-              entryExitType: {},
-              workerPicUploadStatus: {}
+              uploadStatusList: {},
+              directionList: {},
+              teamNameRs: ''
             }
         },
         created(){
           Promise.all([
-            getDictList('entry_exit_type'),
-            getDictList('workerPicUploadStatus'),
+            getDictList('upload_status'),
+            getDictList('direction'),
           ]).then(([data1, data2]) => {
             data1.forEach(item => {
-              this.entryExitType[item.dkey] = item.dvalue;
+              this.uploadStatusList[`${item.dkey}`] = item.dvalue;
             });
             data2.forEach(item => {
-              this.workerPicUploadStatus[item.dkey] = item.dvalue;
+              this.directionList[`${item.dkey}`] = item.dvalue;
             });
             this.userInOutSite();
           });
@@ -83,16 +87,30 @@ import { formatDate } from 'common/js/util';
               sessionStorage.removeItem('teamUserConfig');
             }
             return deal(this.config).then(data => {
-              let arr = data.list.map(item => ({
-                workerName: item.workerName,
-                workerCode: item.workerCode,
-                code: item.code,
-                teamName: item.teamName,
-                uploadStatus: this.workerPicUploadStatus[item.uploadStatus],
-                type: this.entryExitType[item.type],
-                date: this.userFormatDate(item.lastAttendanceDatetime),
-                idcardNumber: item.idcardNumber
-              }));
+              console.log(data);
+              let arr = data.list.map(item => {
+                item.workerName = item.workerName;
+                item.workerCode = item.workerCode;
+                item.code = item.code;
+                item.teamName = item.teamName.length > 4 ? item.teamName.substring(0,4) + "..." : item.teamName;
+                item.direction = this.directionList[item.status];
+                if(item.status === "0"){
+                  item.date = this.userFormatDate(item.exitTime) === "NaN-aN-aN" ? "暂无记录" : this.userFormatDate(item.exitTime);
+                  item.status = "出场";
+                  item.status2 = "已出场";
+                }else if(item.status === "1"){
+                  item.date = this.userFormatDate(item.entryTime) === "NaN-aN-aN" ? "暂无记录" : this.userFormatDate(item.entryTime);
+                  item.status = "进场";
+                  item.status2 = "已进场";
+                }else{
+                  item.date = "暂无记录";
+                  item.status = "暂无记录";
+                  item.status2 = "暂无记录";
+                }
+                item.idcardNumber = item.idcardNumber;
+                item.uploadStatus = this.uploadStatusList[item.uploadStatus];
+                return item;
+              });
               this.hasMore = (data.pageNO < data.totalPage);
               this.config.start ++;
               this.items = [...this.items, ...arr];
@@ -105,12 +123,16 @@ import { formatDate } from 'common/js/util';
           toFiledFn(item) {
             sessionStorage.setItem('inOutData', JSON.stringify(item));
             this.$router.push(`/into-details`);
+          },
+          toBack() {
+            window.history.go(-1);
           }
         },
         components:{
           scroll:Scroll,
           loading: Loading,
-          noResult: NoResult
+          noResult: NoResult,
+          ToHome
         }
     }
 </script>
@@ -147,6 +169,11 @@ import { formatDate } from 'common/js/util';
                 height: .4rem;
             }
         }
+        .toBack{
+          float: left;
+          margin-left: 0.5rem;
+          margin-top: 0.5rem;
+        }
     }
     .detailItems{
         position: relative;
@@ -165,7 +192,7 @@ import { formatDate } from 'common/js/util';
                 :nth-child(2){
                     display: inline-block;
                     position: absolute;
-                    right: 2.5rem;
+                    right: 3rem;
                 }
                 :nth-child(3){
                     display: inline-block;
@@ -183,7 +210,6 @@ import { formatDate } from 'common/js/util';
                 text-align: justify;
                 :nth-child(2){
                     display: inline-block;
-                    margin-left: 0.5rem;
                 }
             }
             .detailImg{
@@ -199,6 +225,12 @@ import { formatDate } from 'common/js/util';
                 }
             }
         }
+    }
+    .in{
+      color: #E93535 !important;
+    }
+    .out{
+      color: #28C71F !important;
     }
 }
 </style>

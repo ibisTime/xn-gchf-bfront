@@ -1,57 +1,56 @@
 <template>
   <div class="full-screen-wrapper into-wrapper">
-    <scroll ref="scroll" :hasMore="false">
+    <scroll ref="scroll" :hasMore="hasMore"  @pullingUp="entryOutFn" :data="items">
       <div>
         <div class="baseBanner">
+          <p class="toBack" @click="toBack">返回</p>
           <p class="baseCenter">
             工资详情
           </p>
         </div>
+        <ToHome></ToHome>
         <div class="detailItems" @click="toDetailItems">
           <div class="details">
             <p class="detailTop">
               <span>{{wageDetail[0].workerName}}</span>
-              <span>{{wageDetail[0].teamName}}</span>
-              <span>{{wageDetail[0].uploadStatus ? this.uploadStatus[wageDetail[0].uploadStatus] : ''}}</span>
+              <span>{{wageDetail[0].teamName.length > 4 ? wageDetail[0].teamName.substring(0,4) + "..." : wageDetail[0].teamName}}</span>
+              <span>{{wageDetail[0].uploadStatus ? formatUploadStatus(wageDetail[0].uploadStatus) : ''}}</span>
             </p>
             <p class="detailUnder">
               <span>身份证号: {{wageDetail[0].idcardNumber}}</span>
             </p>
-            <router-link to="/memberDetails">
-              <div class="detailImg">
-                <img src="./to@2x.png"/>
-              </div>
-            </router-link>
+            <div class="detailImg">
+              <img src="./to@2x.png"/>
+            </div>
           </div>
         </div>
         <div class="empty"></div>
-        <scroll ref="scroll" :hasMore="false" :data="items">
           <div class="pushAdd" v-for="(item, index) in items" :key="index">
             <div class="item" @click="toDetailsText(item.code)">
               <p>
-                <span>月份:{{balanceFormatDate(item.balanceDate, true)}}</span>
-                <span style="margin-left: 3.6rem;">状态:{{item.uploadStatus == 0 ? "待上传" : "以上传"}}</span>
+                <span>{{ item.payMonth ? balanceFormatDate(item.payMonth, true) + "月" : "暂无记录"}}</span>
+                <span class="margin-left-rem">应发:{{item.totalPayAmount ? item.totalPayAmount : "暂无记录"}}</span>
+                <span class="margin-left-rem">实发:{{item.actualAmount ? item.actualAmount : "暂无记录"}}</span>
+                <span class="margin-left-rem">状态:{{formatUploadStatus(item.uploadStatus)}}</span>
                 <br />
-                <span>日期:{{balanceFormatDate(item.balanceDate, false)}}</span>
+                <span>发放日期:{{balanceFormatDate(item.balanceDate, false) === "NaN-aN-aN" ? "暂无数据" : balanceFormatDate(item.balanceDate, false)}}</span>
               </p>
               <div class="entryImg">
                 <img src="./to@2x.png"/>
               </div>
             </div>
           </div>
-          <no-result title="抱歉，暂无工资记录" v-if="items.length === 0" style="margin-top: 0.8rem"/>
-        </scroll>
+        <div style="height:1rem;width:100%;"></div>
       </div>
+      <no-result title="抱歉，暂无工资记录" v-if="items.length === 0" style="margin-top: 0.8rem"/>
     </scroll>
     <loading :title="'正在努力加载中...'" :isLoading="isLoading"></loading>
     <toast ref="toast" :text="toastText"></toast>
-    <router-link to="/wageAdd">
-      <div class="footer">
-        <div class="footer-wrapper">
-          <img src="./addnew@2x.png"/>
-        </div>
+    <div class="footer" @click="toAddWageDetail()">
+      <div class="footer-wrapper">
+        <img src="./addnew@2x.png"/>
       </div>
-    </router-link>
+    </div>
   </div>
 </template>
 <script>
@@ -62,12 +61,13 @@
   import {PagewageInfo} from 'api/deal';
   import{getDictList} from 'api/general';
   import { formatDate } from 'common/js/util';
-
+  import ToHome from 'base/toHome/toHome';
   export default {
     data(){
       return{
         items: [],
         entryOutList:[],
+        hasMore: true,
         wageDetail: [],
         isLoading: true,
         toastText: '',
@@ -88,9 +88,9 @@
         Promise.all([
           getDictList('upload_status'),
         ]).then(([data1]) => {
+          this.uploadStatusTwo = data1;
           data1.forEach(item => {
             this.uploadStatus[item.dkey] = item.dvalue;
-            this.uploadStatusTwo[item.dkey] = item.dvalue;
           });
           this.entryOutFn();
         });
@@ -110,29 +110,43 @@
           this.items = [...this.items, ...data.list];
           console.log(this.items);
           this.isLoading = false;
-          this.isLoading = false;
         });
       },
       balanceFormatDate(time, flag) {
         if(flag) {
-          return formatDate(time, "MM") - 1;
+          return formatDate(time, "M");
         }else{
           return formatDate(time, "yyyy-MM-dd");
         }
 
       },
+      formatUploadStatus(status) {
+        for (let i = 0; i < this.uploadStatusTwo.length; i++) {
+          if (this.uploadStatusTwo[i].dkey === status) {
+            return this.uploadStatusTwo[i].dvalue;
+          }
+        }
+        return '';
+      },
       toDetailsText(code) {
-        this.$router.push(`/detailsText?code=${code}`);
+        this.$router.push(`/wageDetailInfo?code=${code}`);
       },
       toDetailItems() {
-        this.$router.push(`/memberDetails?code=${this.inOutData[0].workerCode}`);
+        this.$router.push(`/memberDetails?code=${this.wageDetail[0].code}`);
+      },
+      toAddWageDetail() {
+        this.$router.push(`/wageAdd?code=${this.wageDetail[0].code}`);
+      },
+      toBack() {
+        window.history.go(-1);
       }
     },
     components: {
       scroll: Scroll,
       noResult: NoResult,
       loading: Loading,
-      toast: Toast
+      toast: Toast,
+      ToHome
     }
   }
 </script>
@@ -152,6 +166,11 @@
         top: 50%;
         left: 50%;
         transform:translateX(-50%) translateY(-50%);
+      }
+      .toBack{
+        float: left;
+        margin-left: 0.5rem;
+        margin-top: 0.5rem;
       }
     }
     .sendStatus{
@@ -237,7 +256,6 @@
       }
     }
     .footer{
-      box-shadow: 0 -1px 0 0 #E6E6E6;
       position: fixed;
       background: #fff;
       bottom: 0;
@@ -258,6 +276,9 @@
           height: 100%;
         }
       }
+    }
+    .margin-left-rem{
+      margin-left: 0.2rem;
     }
   }
 </style>

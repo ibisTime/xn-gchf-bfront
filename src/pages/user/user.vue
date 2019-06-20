@@ -1,5 +1,6 @@
 <template>
     <div class="full-screen-wrapper user-wrapper">
+      <ToHome></ToHome>
       <div to="/user" tag="div" class="card-wrapper">
         <div class="card-container">
           <div class="card-photo">
@@ -17,15 +18,16 @@
           <div class="title">登录名</div>
           <div class="tip">{{loginName}}</div>
         </div>
-        <router-link to="/change-mobile" tag="div" class="item border-bottom-1px">
+        <div tag="div" class="item border-bottom-1px" @click="toCgTel(mobile)">
           <div class="title">手机号</div>
           <div class="tip">{{mobile}}</div>
           <i></i>
-        </router-link>
-        <router-link to="/change-pwd" tag="div" class="item border-bottom-1px">
+        </div>
+
+        <div @click="toCgPwd(mobile)" tag="div" class="item border-bottom-1px">
           <div class="title">修改登录密码</div>
           <i></i>
-        </router-link>
+        </div>
       </div>
       <div class="btn-wrapper">
         <button @click="logout">切换账号</button>
@@ -39,7 +41,7 @@
   import FullLoading from 'base/full-loading/full-loading';
   import { formatAvatar, clearUser } from 'common/js/util';
   import { getUser } from 'api/user';
-
+  import ToHome from 'base/toHome/toHome';
   export default {
     data() {
       return {
@@ -67,6 +69,12 @@
       this.getInitData();
     },
     methods: {
+      toCgPwd(mobile) {
+        this.$router.push(`/change-pwd?mobile=${mobile}`);
+      },
+      toCgTel(mobile) {
+        this.$router.push(`/change-mobile?mobile=${mobile}`);
+      },
       getInitData() {
         this.loadingFlag = true;
         this.queryUser().then(() => {
@@ -99,7 +107,8 @@
       })
     },
     components: {
-      FullLoading
+      FullLoading,
+      ToHome
     }
   };
 </script>

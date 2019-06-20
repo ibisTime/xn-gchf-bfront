@@ -1,22 +1,23 @@
 <template>
   <div class="full-screen-wrapper change-mobile-wrapper">
+    <ToHome></ToHome>
     <div class="form-wrapper">
       <div class="baseBanner">
-                <p class="baseCenter">
-                    修改手机号
-                </p>
+        <p class="toBack" @click="toBack">返回</p>
+        <p class="baseCenter">
+            修改手机号
+        </p>
       </div>
       <div class="form-item border-bottom-1px">
         <div class="item-label">手机号</div>
         <div class="item-input-wrapper">
-          <input type="tel" class="item-input" name="mobile"  v-validate="'required|mobile'" placeholder="请输入手机号">
-          <span v-show="errors.has('mobile')" class="error-tip">{{errors.first('mobile')}}</span>
+          <span class="item-input" style="color: #ccc;">{{oldMobile}}</span>
         </div>
       </div>
       <div class="form-item border-bottom-1px">
-        <div class="item-label">手机号</div>
+        <div class="item-label">新手机号</div>
         <div class="item-input-wrapper">
-          <input type="tel" class="item-input" name="mobile" v-model="mobile" v-validate="'required|mobile'" placeholder="请输入新手机号">
+          <input type="tel" class="item-input" v-model="mobile" name="mobile" v-validate="'required|mobile'" placeholder="请输入新手机号">
           <span v-show="errors.has('mobile')" class="error-tip">{{errors.first('mobile')}}</span>
         </div>
       </div>
@@ -27,7 +28,7 @@
           <span v-show="errors.has('captcha')" class="error-tip">{{errors.first('captcha')}}</span>
         </div>
         <div class="item-btn border-left-1px">
-          <button :disabled="sending" @click="sendCaptcha">{{captBtnText}}</button>
+          <button :disabled="sending" @click="sendCaptcha(true)">{{captBtnText}}</button>
         </div>
       </div>
       <div class="form-btn">
@@ -47,33 +48,53 @@
   import {directiveMixin} from 'common/js/mixin';
   import Toast from 'base/toast/toast';
   import FullLoading from 'base/full-loading/full-loading';
+  import ToHome from 'base/toHome/toHome';
 
   export default {
     mixins: [directiveMixin],
     data() {
       return {
         sending: false,
+        sending2: false,
         loadFlag: false,
         captcha: '',
         captBtnText: '获取验证码',
-        mobile: ''
+        captBtnText2: '获取验证码',
+        mobile: '',
+        newMobile: '',
+        oldMobile: ''
       };
     },
     created() {
       setTitle('修改手机号');
+      const {mobile} = this.$route.query;
+      this.oldMobile = mobile;
     },
     methods: {
-      sendCaptcha() {
-        this.$validator.validate('mobile').then((result) => {
-          if (result) {
-            this.sending = true;
-            sendCaptcha(this.mobile, 805061).then(() => {
-              this._setInterval();
-            }).catch(() => {
-              this._clearInterval();
-            });
-          }
-        });
+      sendCaptcha(flag) {
+        if(flag) {
+          this.$validator.validate('mobile').then((result) => {
+            if (result) {
+              this.sending = true;
+              sendCaptcha(this.mobile, 631072).then(() => {
+                this._setInterval(true);
+              }).catch(() => {
+                this._clearInterval(true);
+              });
+            }
+          });
+        }else{
+          this.$validator.validate('mobile').then((result) => {
+            if (result) {
+              this.sending = true;
+              sendCaptcha(this.mobile, 631072).then(() => {
+                this._setInterval(false);
+              }).catch(() => {
+                this._clearInterval(false);
+              });
+            }
+          });
+        }
       },
       _changeMobile() {
         this.$validator.validateAll().then((result) => {
@@ -93,22 +114,44 @@
           }
         });
       },
-      _setInterval() {
-        let i = 60;
-        this.timer = setInterval(() => {
-          if (i === 0) {
-            this._clearInterval();
-          } else {
-            this.captBtnText = i-- + 's';
-          }
-        }, 1000);
-      },
-      _clearInterval() {
-        if (this.timer) {
-          clearInterval(this.timer);
-          this.sending = false;
-          this.captBtnText = '获取验证码';
+      _setInterval(flag) {
+        if(flag) {
+          let i = 60;
+          this.timer = setInterval(() => {
+            if (i === 0) {
+              this._clearInterval(true);
+            } else {
+              this.captBtnText = i-- + 's';
+            }
+          }, 1000);
+        }else{
+          let i = 60;
+          this.timer2 = setInterval(() => {
+            if (i === 0) {
+              this._clearInterval(false);
+            } else {
+              this.captBtnText2 = i-- + 's';
+            }
+          }, 1000);
         }
+      },
+      _clearInterval(flag) {
+        if(flag) {
+          if (this.timer) {
+            clearInterval(this.timer);
+            this.sending = false;
+            this.captBtnText = '获取验证码';
+          }
+        }else{
+          if (this.timer2) {
+            clearInterval(this.timer2);
+            this.sending2 = false;
+            this.captBtnText2 = '获取验证码';
+          }
+        }
+      },
+      toBack() {
+        window.history.go(-1);
       },
       ...mapMutations({
         setUserMobile: SET_USER_MOBILE
@@ -116,10 +159,12 @@
     },
     beforeDestroy() {
       this.timer && clearInterval(this.timer);
+      this.timer2 && clearInterval(this.timer2);
     },
     components: {
       Toast,
-      FullLoading
+      FullLoading,
+      ToHome
     }
   };
 </script>
@@ -127,7 +172,7 @@
   @import "~common/scss/variable";
    .baseBanner{
     position: relative;
-    height:0.8rem;
+    height:1.28rem;
     width:100%;
     background:#028EFF;
     text-align: center;
@@ -139,6 +184,11 @@
         left: 50%;
         transform:translateX(-50%) translateY(-50%);
         }
+     .toBack{
+       float: left;
+       margin-left: 0.5rem;
+       margin-top: 0.5rem;
+     }
     }
   .change-mobile-wrapper {
     background-color: $color-background;

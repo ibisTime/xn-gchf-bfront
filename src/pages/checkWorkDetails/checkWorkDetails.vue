@@ -3,19 +3,21 @@
     <scroll ref="scroll" :hasMore="false">
       <div>
         <div class="baseBanner">
+          <p class="toBack" @click="toBack">返回</p>
           <p class="baseCenter">
             考勤详情
           </p>
         </div>
+        <ToHome></ToHome>
         <div class="detailItems" @click="toDetailItems">
           <div class="details">
             <p class="detailTop">
               <span>{{inOutDetail[0].workerName}}</span>
-              <span>{{inOutDetail[0].teamName}}</span>
-              <span :class="inOutDetail[0].static === '1' ? 'in' : 'out'">{{inOutDetail[0].uploadStatus}}</span>
+              <span>{{inOutDetail[0].teamName.length > 4 ? inOutDetail[0].teamName.substring(0,4) + "..." : inOutDetail[0].teamName}}</span>
+              <span>{{inOutDetail[0].uploadStatus}}</span>
             </p>
             <p class="detailUnder">
-              <span>身份证号: {{inOutDetail[0].idCardNumber}}</span>
+              <span>身份证号: {{inOutDetail[0].idcardNumber}}</span>
             </p>
             <div class="detailImg">
               <img src="./to@2x.png"/>
@@ -23,26 +25,28 @@
           </div>
         </div>
         <div class="empty"></div>
-        <div class="pushAdd" v-for="(item, index) in entryOutList" :key="index" @click="toOutInDetails(item.code)">
-          <div class="entry" :class="inOutDetail[0].static === '1' ? 'in' : 'out'">
-            {{item.direction}} <span>&nbsp; {{formatDate(item.date)}}</span>
-          </div>
-          <div class="entryImg">
-            <img src="./to@2x.png"/>
+        <div class="pushAdd" v-for="(item, index) in entryOutList" :key="index">
+          <div :class="item.direction !== '出场' ? 'out' : 'in'" class="item" @click="toOutInDetails(item.code)">
+            <div class="entry">
+              <!--:class="inOutDetail[0].uploadStatus !== '1' ? '' : ''"-->
+              <span>{{item.direction === "出场" ? "上班" : "下班"}}</span>
+            </div>
+            <div class="entryImg">
+              <span>{{formatDate(item.date) === "NaN-aN-aN aN:aN:aN" ? "暂无记录" : formatDate(item.date)}}&nbsp;</span><img src="./to@2x.png"/>
+            </div>
           </div>
         </div>
       </div>
-      <router-link to="/attence-add">
-        <div class="footer">
-          <div class="footer-wrapper">
-            <img src="./addnew@2x.png"/>
-          </div>
-        </div>
-      </router-link>
       <no-result title="抱歉，暂无考勤记录" v-if="entryOutList.length === 0" style="margin-top: 0.8rem"/>
+      <div style="height:1.4rem;width:100%;"></div>
     </scroll>
     <loading :title="'正在努力加载中...'" :isLoading="isLoading"></loading>
     <toast ref="toast" :text="toastText"></toast>
+    <div class="footer" @click="toAttenceAdd()">
+      <div class="footer-wrapper">
+        <img src="./addnew@2x.png"/>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -53,13 +57,15 @@
   import {queryAttendanceList} from 'api/deal';
   import {getDictList} from 'api/general';
   import {formatDate} from 'common/js/util';
+  import ToHome from 'base/toHome/toHome';
   export default {
     data(){
       return{
         inOutDetail: [{}],
         entryOutList: [],
         isLoading: true,
-        toastText: ''
+        toastText: '',
+        hasMore: false,
       }
     },
     created() {
@@ -68,14 +74,15 @@
         this.inOutDetail = [JSON.parse(inOutDetail)];
         Promise.all([
           getDictList('direction'),
-          queryAttendanceList(this.inOutDetail[0].workerCode)
+          queryAttendanceList(this.inOutDetail[0].code)
         ]).then(([data1, data2]) => {
           let entryExitType = {};
           data1.forEach(item => {
-            entryExitType[item.dkey] = item.dvalue;
+            entryExitType[`${item.dkey}`] = item.dvalue;
           });
           this.entryOutList = data2.map(item => {
             item.direction = entryExitType[item.direction];
+            console.log(data2);
             return item;
           });
           this.isLoading = false;
@@ -87,17 +94,24 @@
         this.$router.push(`/attence?code=${code}`);
       },
       formatDate(time) {
-        return formatDate(time);
+        return formatDate(time, "yyyy-MM-dd hh:mm:ss");
       },
       toDetailItems() {
-        this.$router.push(`/memberDetails?code=${this.inOutDetail[0].workerCode}`);
+        this.$router.push(`/memberDetails?code=${this.inOutDetail[0].code}`);
+      },
+      toAttenceAdd() {
+        this.$router.push(`/attence-add?teamSysNo=${this.inOutDetail[0].teamSysNo}&workerCode=${this.inOutDetail[0].code}`);
+      },
+      toBack() {
+        window.history.go(-1);
       }
     },
     components: {
       Scroll,
       NoResult,
       Loading,
-      Toast
+      Toast,
+      ToHome
     }
   }
 </script>
@@ -118,6 +132,11 @@
         left: 50%;
         transform:translateX(-50%) translateY(-50%);
       }
+      .toBack{
+        float: left;
+        margin-left: 0.5rem;
+        margin-top: 0.5rem;
+      }
     }
     .detailItems{
       position: relative;
@@ -136,7 +155,7 @@
           :nth-child(2){
             display: inline-block;
             position: absolute;
-            right: 2.5rem;
+            right: 2.6rem;
           }
           :nth-child(3){
             display: inline-block;
@@ -177,26 +196,25 @@
       margin: 0 auto;
       height: 1rem;
       line-height: 1rem;
-      box-shadow: 0 1px 0 0 #E6E6E6;
+      border-bottom: 1px solid #E6E6E6;
       font-size:.32rem;
+      .item{
+        display: flex;
+      }
       span{
         display: inline-block;
       }
       .entryImg{
-        width: 0.2rem;
-        height: 0.3rem;
         display: inline-block;
         position: absolute;
         right: 0.1rem;
-        top: 0.1rem;
         img{
-          width: 100%;
-          height: 100%;
+          width: 0.2rem;
+          height: 0.2rem;
         }
       }
     }
     .footer{
-      box-shadow: 0 -1px 0 0 #E6E6E6;
       position: fixed;
       background: #fff;
       bottom: 0;

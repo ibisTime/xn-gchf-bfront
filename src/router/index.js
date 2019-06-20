@@ -28,11 +28,11 @@ const ProjectMember = () => import('pages/project-member/project-member');
 const search = () => import('pages/search/search');
 // 考勤人员
 const CheckWork = () => import('pages/check-work/check-work');
-//考勤详情
+// 考勤详情
 const CheckWorkDetails = () =>import('pages/checkWorkDetails/checkWorkDetails');
-//考勤补录
+// 考勤补录
 const Supp = () =>import('pages/supp/supp');
-//进出详情
+// 进出详情
 const InOut = () => import('pages/in-out/in-out');
 // 人员详情
 const MemberDetails = () => import('pages/MemberDetails/MemberDetails');
@@ -68,6 +68,10 @@ const Wage = () => import('pages/wage/wage');
 const wageDetail = () => import('pages/wage/wageDetail');
 // 添加工资
 const wageAdd = () => import('pages/wage/wageAdd');
+// 修改工资
+const wageChange = () => import('pages/wage/wageChange');
+// 工资单明细
+const wageInfo = () => import('pages/wage/wageDetailInfo');
 // 绑定银行卡
 const BindCard = () => import('pages/bindCard/bindCard');
 // 绑定银行卡
@@ -185,7 +189,7 @@ const router = new Router({
       component: Filed
     }, {
       path: '/into-details',
-      meta: { title: '进出详情', auto: true },
+      meta: { title: '进退详情', auto: true },
       component: IntoDetails
     }, {
       path: '/addProject',
@@ -197,20 +201,28 @@ const router = new Router({
       component: IsEntryRecord
     }, {
       path: '/detailsText',
-      meta: { title: '进出记录', auto: true },
+      meta: { title: '进退记录', auto: true },
       component: DetailsText
     }, {
       path: '/wage',
       meta: { title: '工资状况', auto: true },
       component: Wage
-    },{
+    }, {
       path: '/wageDetail',
-      meta: {title: '工资详情', auto: true },
+      meta: { title: '工资详情', auto: true },
       component: wageDetail
     }, {
+      path: '/wageDetailInfo',
+      meta: { title: '工资单明细', auto: true },
+      component: wageInfo
+    }, {
       path: '/wageAdd',
-      meta: {title: '添加工资', auto: true },
+      meta: { title: '添加工资', auto: true },
       component: wageAdd
+    }, {
+      path: '/wageChange',
+      meta: { title: '修改工资', auto: true },
+      component: wageChange
     }, {
       path: '/checkWorkDetails',
       meta: { title: '考勤详情', auto: true },

@@ -32,8 +32,13 @@ export default function fetch(code, param) {
     if(res.errorCode !== ERR_OK) {
       if (res.errorInfo) {
         message.show(res.errorInfo.toString());
+        if(res.errorInfo == "用户不存在"){
+          setTimeout(() => {
+            history.go(0);
+          }, 1000);
+        }
       } else {
-        message.show('操作失败');
+        message.show(res.errorInfo.toString());
       }
       return Promise.reject(res.errorInfo);
     }

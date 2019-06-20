@@ -6,6 +6,13 @@ export function getQiniuToken() {
 }
 
 // 发送验证码
+export function sendCaptchaTwo(mobile, bizType) {
+  return fetch(631095, {
+    bizType,
+    mobile
+  });
+}
+
 export function sendCaptcha(mobile, bizType) {
   return fetch(631090, {
     bizType,

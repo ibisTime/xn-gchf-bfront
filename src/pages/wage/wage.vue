@@ -3,15 +3,17 @@
         <scroll ref="scroll" :hasMore="hasMore" :data="items" @pullingUp="PagewageInfo">
             <div>
                 <div class="proBanner">
+                    <p class="toBack" @click="toback">返回</p>
                     <p class="proCenter">
                         工资状况
                     </p>
                     <div class="right">
-                        <router-link to='/search'>
+                        <router-link to='/search?origin=wage'>
                         <img src="./search@3x.png" />
                         </router-link>
                     </div>
                 </div>
+              <ToHome></ToHome>
                     <!--<router-link to="/into-details">-->
                         <!--<div class="detailItems">-->
                             <!--<div class="details" v-for="(item, index) in items" :key="index">-->
@@ -36,12 +38,13 @@
                 <div class="details" v-for="(item, index) in items" :key="index" @click="checkWageDetails(item)">
                   <p class="detailTop">
                     <span>{{item.workerName}}</span>
-                    <span>{{item.teamName}}</span>
+                    <span>{{item.teamName.length > 4 ? item.teamName.substring(0,4) + "..." : item.teamName}}</span>
+                    <span>共{{item.payRollDetailTotal}}条</span>
                   </p>
                   <p class="detailUnder">
-                  <span>日期:{{userFormatDate(item.lastPayMonth)}}</span>
-                  <span>应发:{{item.lastPayTotalAmount}}</span>
-                  <span>实发:{{item.lastPayActualAmount}}</span>
+                  <span>{{item.lastPayMonth ? userFormatDate(item.lastPayMonth) + "月" : "暂无记录"}}</span>
+                  <span>应发:{{item.lastPayTotalAmount ? item.lastPayTotalAmount : "暂无记录"}}</span>
+                  <span>实发:{{item.lastPayActualAmount ? item.lastPayActualAmount : "暂无记录"}}</span>
                   </p>
                   <div class="detailImg">
                     <img src="./to@2x.png"/>
@@ -59,8 +62,9 @@
   import Scroll from 'base/scroll/scroll';
   import NoResult from 'base/no-result/no-result';
   import Loading from 'base/loading/loading';
-import{PagewageInfo, deal} from 'api/deal';
-import { formatDate } from 'common/js/util';
+  import{PagewageInfo, deal} from 'api/deal';
+  import { formatDate } from 'common/js/util';
+  import ToHome from 'base/toHome/toHome';
     export default{
         data(){
             return{
@@ -91,21 +95,26 @@ import { formatDate } from 'common/js/util';
               this.hasMore = (data.pageNO < data.totalPage);
               this.config.start ++;
               this.items = [...this.items, ...data.list];
+              console.log(this.items);
               this.isLoading = false;
             });
           },
           userFormatDate(time) {
-            return formatDate(time, "yyyy-MM-dd");
+            return formatDate(time, "MM");
           },
           checkWageDetails(item) {
             sessionStorage.setItem('wageDetail', JSON.stringify(item));
             this.$router.push(`/wageDetail`);
+          },
+          toback() {
+            window.history.go(-1);
           }
         },
         components:{
           scroll:Scroll,
           loading: Loading,
-          noResult: NoResult
+          noResult: NoResult,
+          ToHome
         }
     }
 </script>
@@ -119,7 +128,7 @@ import { formatDate } from 'common/js/util';
     }
     .proBanner{
         position: relative;
-        height:0.8rem;
+        height:1.28rem;
         width:100%;
         background:#028EFF;
         text-align: center;
@@ -141,6 +150,11 @@ import { formatDate } from 'common/js/util';
                 width: .4rem;
                 height: .4rem;
             }
+        }
+        .toBack{
+          float: left;
+          margin-left: 0.5rem;
+          margin-top: 0.5rem;
         }
     }
     .detailItems{

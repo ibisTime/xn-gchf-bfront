@@ -1,6 +1,8 @@
 <template>
     <div class="full-screen-wrapper project-member-wrapper">
+      <scroll ref="scroll" :hasMore="hasMore" @pullingUp="getQueryList" :data="items">
       <div class="proBanner">
+        <p class="toBack" @click="toBack">返回</p>
         <p class="proCenter">
           进出记录
         </p>
@@ -8,18 +10,18 @@
           <img src="./search@3x.png" />
         </div>
       </div>
-        <scroll ref="scroll" :hasMore="hasMore" @pullingUp="getQueryList" :data="items">
+      <ToHome></ToHome>
             <div style="padding-top: 0.1rem;">
               <div class="detailItems">
                 <div class="details" v-for="(item, index) in items" :key="index" @click="toOutDetails(item)">
                   <p class="detailTop">
                     <span>{{item.workerName}}</span>
-                    <span>{{item.teamName}}</span>
-                    <span :class="item.direction === '01' ? 'in' : 'out'">{{item.direction === '01' ? '在场内' : '已出场'}}</span>
+                    <span>{{item.teamName.length > 4 ? item.teamName.substring(0,4) + "..." : item.teamName}}</span>
+                    <span>{{item.inOutStatus}}</span>
                   </p>
-                  <p class="detailUnder" :class="item.direction === '01' ? 'in' : 'out'">
-                    <span>{{item.direction && entryExitType[item.direction]}}</span>
-                    <span>记录时间: {{item.date}}</span>
+                  <p class="detailUnder" :class="item.inOutStatus == '01' ? 'in' : 'out'">
+                    <span>{{item.inOutType}}</span>
+                    <span>记录时间: {{item.date === "NaN-aN-aN aN:aN:aN" ? '暂无记录' : item.date}}</span>
                   </p>
                   <router-link to="/into-details">
                     <div class="detailImg">
@@ -30,9 +32,9 @@
               </div>
             </div>
           <noResult title="抱歉，暂无进出记录" v-if="items.length === 0 && !hasMore" style="margin-top: 0.8rem"/>
-        </scroll>
       <toast ref="toast" :text="toastText"></toast>
       <loading :isLoading="isLoading" title="'正在努力加载中....'"></loading>
+      </scroll>
     </div>
 </template>
 
@@ -44,6 +46,7 @@ import NoResult from 'base/no-result/no-result';
 import {projectLists, deal} from 'api/deal';
 import {getDictList} from 'api/general';
 import {formatDate} from 'common/js/util';
+import ToHome from 'base/toHome/toHome';
     export default{
       data(){
           return{
@@ -81,8 +84,20 @@ import {formatDate} from 'common/js/util';
           }
           return deal(this.config).then((data) => {
             this.isLoading = false;
+            console.log(data);
             let arr = data.list.map(item => {
-              item.date = formatDate(item.lastAttendanceDatetime);
+              item.date = formatDate(item.lastInOutDatetime, "yyyy-MM-dd hh:mm:ss");
+              console.log(item.inOutStatus);
+              if(item.inOutStatus === "01"){
+                item.inOutStatus = "在场内";
+                item.inOutType = "进入";
+              }else if(item.inOutStatus === "00"){
+                item.inOutStatus = "已出场";
+                item.inOutType = "出去";
+              }else{
+                item.inOutStatus = "暂无数据";
+                item.inOutType = "暂无数据";
+              }
               return item;
             });
             this.hasMore = (data.pageNO < data.totalPage);
@@ -96,13 +111,17 @@ import {formatDate} from 'common/js/util';
         toOutDetails(item) {
           sessionStorage.setItem('outInDetails', JSON.stringify(item));
           this.$router.push(`/outDetails`);
+        },
+        toBack() {
+          this.$router.push('/home');
         }
       },
       components:{
         Scroll,
         Toast,
         Loading,
-        NoResult
+        NoResult,
+        ToHome
       }
     }
 </script>
@@ -157,7 +176,7 @@ import {formatDate} from 'common/js/util';
                 :nth-child(2){
                     display: inline-block;
                     position: absolute;
-                    right: 2.5rem;
+                    right: 2.8rem;
                 }
                 :nth-child(3){
                     display: inline-block;
@@ -198,6 +217,11 @@ import {formatDate} from 'common/js/util';
         color: #E93535 !important;
       }
     }
+  .toBack{
+    float: left;
+    margin-left: 0.5rem;
+    margin-top: 0.5rem;
+  }
 }
 </style>
 

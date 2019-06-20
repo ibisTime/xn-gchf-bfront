@@ -3,6 +3,7 @@
        <scroll ref="scroll" :hasMore="false">
             <div class="header">
                 <div class="infoBanner">
+                    <p class="toBack" @click="toBack">返回</p>
                     <p class="infoCenter">
                         基本信息
                     </p>
@@ -11,7 +12,7 @@
                   <div class="left">
                     姓名
                   </div>
-                  <div class="right">{{userDetail[0].name}}</div>
+                  <div class="right">{{userDetail.name}}</div>
                 </div>
                 <div class="pepName">
                   <div class="left">
@@ -20,53 +21,55 @@
                   <div class="right">
                     <div
                       class="pic-box"
-                      :class="userDetail[0].headImageUrl ? '' : 'hidden'"
-                      :style="{backgroundImage: `url(${userDetail[0].headImageUrl})`}"></div>
+                      :style="{backgroundImage: `url(${userDetail.headImageUrl})`}"
+                      :class="userDetail.headImageUrl ? '' : 'hidden'"
+                      @click="clickImg(userDetail.headImageUrl)"
+                    ></div>
                   </div>
                 </div>
               <div class="pepName">
                 <div class="left">证件类型</div>
-                <div class="right">{{idcardTypeTypeData[userDetail[0].idCardType]}}</div>
+                <div class="right">{{idcardTypeTypeData[userDetail.idCardType]}}</div>
               </div>
                 <div class="pepName">
                   <div class="left">性别</div>
-                  <div class="right">{{userDetail[0].idCardType ? userDetail[0].gender === 0 ? '男' : '女' : ''}}</div>
+                  <div class="right">{{userDetail.idCardType ? userDetail.gender === 0 ? '男' : '女' : ''}}</div>
                 </div>
                 <div class="pepName">
                   <div class="left">民族</div>
-                  <div class="right">{{userDetail[0].nation}}</div>
+                  <div class="right">{{userDetail.nation}}</div>
                 </div>
                 <div class="pepName">
                   <div class="left">出生日期</div>
-                  <div class="right">{{userDetail[0].birthday && formatDate(userDetail[0].birthday)}}</div>
+                  <div class="right">{{userDetail.birthday && formatDate(userDetail.birthday)}}</div>
                 </div>
                 <div class="pepName">
                   <div class="left">身份证号码</div>
-                  <div class="right">{{userDetail[0].idCardNumber}}</div>
+                  <div class="right">{{userDetail.idCardNumber}}</div>
                 </div>
                 <div class="pepName">
                   <div class="left">地址</div>
-                  <div class="right">{{userDetail[0].address}}</div>
+                  <div class="right">{{userDetail.address}}</div>
                 </div>
                 <div class="pepName">
                   <div class="left">有效开始日期</div>
-                  <div class="right">{{userDetail[0].startDate && formatDate(userDetail[0].startDate)}}</div>
+                  <div class="right">{{userDetail.startDate && formatDate(userDetail.startDate)}}</div>
                 </div>
                 <div class="pepName">
                   <div class="left">有效截止日期</div>
-                  <div class="right">{{userDetail[0].expiryDate && formatDate(userDetail[0].expiryDate)}}</div>
+                  <div class="right">{{userDetail.expiryDate && formatDate(userDetail.expiryDate)}}</div>
                 </div>
                 <div class="pepName">
                   <div class="left">签发机关</div>
-                  <div class="right">{{userDetail[0].grantOrg}}</div>
+                  <div class="right">{{userDetail.grantOrg}}</div>
                 </div>
                 <div class="pepName">
                   <div class="left">政治面貌</div>
-                  <div class="right">{{politicsTypeData[userDetail[0].politicsType]}}</div>
+                  <div class="right">{{politicsTypeData[userDetail.politicsType]}}</div>
                 </div>
                 <div class="pepName">
                   <div class="left">文化程度</div>
-                  <div class="right">{{cultureLevelTypeData[userDetail[0].cultureLevelType]}}</div>
+                  <div class="right">{{cultureLevelTypeData[userDetail.cultureLevelType]}}</div>
                 </div>
             </div>
             <div class="emptyOne"></div>
@@ -78,8 +81,9 @@
                   <div class="right">
                     <div
                       class="pic-box"
-                      :class="userDetail[0].positiveIdCardImageUrl ? '' : 'hidden'"
-                      :style="{backgroundImage: `url(${userDetail[0].positiveIdCardImageUrl})`}"
+                      :class="userDetail.positiveIdCardImageUrl ? '' : 'hidden'"
+                      :style="{backgroundImage: `url(${userDetail.positiveIdCardImageUrl})`}"
+                      @click="clickImg(userDetail.positiveIdCardImageUrl)"
                     ></div>
                   </div>
                 </div>
@@ -90,8 +94,10 @@
                   <div class="right">
                     <div
                       class="pic-box"
-                      :class="userDetail[0].negativeIdCardImageUrl ? '' : 'hidden'"
-                      :style="{backgroundImage: `url(${userDetail[0].negativeIdCardImageUrl})`}"></div>
+                      :class="userDetail.negativeIdCardImageUrl ? '' : 'hidden'"
+                      :style="{backgroundImage: `url(${userDetail.negativeIdCardImageUrl})`}"
+                      @click="clickImg(userDetail.negativeIdCardImageUrl)"
+                    ></div>
                   </div>
                 </div>
                 <div class="pepName">
@@ -101,8 +107,10 @@
                   <div class="right">
                     <div
                       class="pic-box"
-                      :class="userDetail[0].handIdCardImageUrl ? '' : 'hidden'"
-                       :style="{backgroundImage: `url(${userDetail[0].handIdCardImageUrl})`}"></div>
+                      :class="userDetail.handIdCardImageUrl ? '' : 'hidden'"
+                      :style="{backgroundImage: `url(${userDetail.handIdCardImageUrl})`}"
+                      @click="clickImg(userDetail.handIdCardImageUrl)"
+                    ></div>
                   </div>
                 </div>
                 <div class="pepName">
@@ -111,8 +119,10 @@
                   </div>
                   <div class="right">
                     <div class="pic-box"
-                         :class="userDetail[0].attendancePicture ? '' : 'hidden'"
-                         :style="{backgroundImage: `url(${userDetail[0].attendancePicture})`}"></div>
+                         :class="userDetail.attendancePicture ? '' : 'hidden'"
+                         :style="{backgroundImage: `url(${userDetail.attendancePicture})`}"
+                         @click="clickImg(userDetail.attendancePicture)"
+                    ></div>
                   </div>
                 </div>
             </div>
@@ -122,73 +132,77 @@
                   <div class="left">
                     手机号码
                   </div>
-                  <div class="right">{{userDetail[0].cellPhone}}</div>
+                  <div class="right">{{userDetail.cellPhone}}</div>
                 </div>
                 <div class="pepName">
                   <div class="left">
                     紧急联系人姓名
                   </div>
-                  <div class="right">{{userDetail[0].urgentLinkMan}}</div>
+                  <div class="right">{{userDetail.urgentLinkMan}}</div>
                 </div>
                 <div class="pepName">
                   <div class="left">
                     紧急联系电话
                   </div>
-                  <div class="right">{{userDetail[0].urgentLinkManPhone}}</div>
+                  <div class="right">{{userDetail.urgentLinkManPhone}}</div>
                 </div>
                 <div class="pepName">
                   <div class="left">
                     是否加入公会
                   </div>
-                  <div class="right">{{userDetail[0].isJoined}}</div>
+                  <div class="right">{{userDetail.isJoined == "1" ? "是" : "否"}}</div>
                 </div>
                 <div class="pepName">
                   <div class="left">
                     加入公会时间
                   </div>
-                  <div class="right">{{userDetail[0].joinedTime && formatDate(userDetail[0].joinedTime)}}</div>
+                  <div class="right">{{userDetail.joinedTime && formatDate(userDetail.joinedTime) ? formatDate(userDetail.joinedTime) : "暂无数据" }}</div>
                 </div>
                 <div class="pepName">
                   <div class="left">
                     特长
                   </div>
-                  <div class="right">{{userDetail[0].specialty}}</div>
+                  <div class="right">{{userDetail.specialty}}</div>
                 </div>
                 <div class="pepName">
                   <div class="left">
                     是否有重大病史
                   </div>
-                  <div class="right">{{userDetail[0].hasBadMedicalHistory}}</div>
+                  <div class="right">{{userDetail.hasBadMedicalHistory == "1" ? "是" : "否"}}</div>
                 </div>
                 <div class="pepName">
                   <div class="left">
                     婚姻状况
                   </div>
-                  <div class="right">{{maritalStatusData[userDetail[0].maritalStatus]}}</div>
+                  <div class="right">{{maritalStatusData[userDetail.maritalStatus]}}</div>
                 </div>
-                <div class="backTo" @click="toBack">返回</div>
+                <!--<div class="backTo" @click="toBack">返回</div>-->
             </div>
        </scroll>
      <loading :isLoading="isLoading" title="'正在努力加载中....'"></loading>
+     <big-img v-if="showImg" @clickit="viewImg" :imgSrc="imgSrc"></big-img>
    </div>
 </template>
 
 <script>
 import Scroll from 'base/scroll/scroll';
 import Loading from 'base/loading/loading';
-import { teamUserDetail } from 'api/deal';
+import { authenticationDetail, teamUserDetail } from 'api/deal';
 import { getDictList } from 'api/general';
 import { formatDate } from 'common/js/util';
+import BigImg from '../imgEnlarge/BigImgInfo.vue';
 export default {
     data(){
         return{
-          userDetail: [{}],
+          userDetail: [],
           politicsTypeData: {},
           cultureLevelTypeData: {},
           maritalStatusData: {},
           idcardTypeTypeData: {},
           code: '',
-          isLoading: true
+          isLoading: true,
+          showImg: false,
+          imgSrc: ''
         }
     },
     created(){
@@ -199,10 +213,9 @@ export default {
         getDictList('culture_level_type'),
         getDictList('marital_status'),
         getDictList('legal_manid_card_type'),
-        teamUserDetail(code)
-      ]).then(([data1, data2, data3, data4, data5]) => {
-         data1.forEach(item => {
-           this.politicsTypeData[`${item.dkey}`] = item.dvalue;
+      ]).then(([data1, data2, data3, data4]) => {
+        data1.forEach(item => {
+          this.politicsTypeData[`${item.dkey}`] = item.dvalue;
         });
         data2.map(item => {
           this.cultureLevelTypeData[`${item.dkey}`] = item.dvalue;
@@ -213,10 +226,8 @@ export default {
         data4.map(item => {
           this.idcardTypeTypeData[`${item.dkey}`] = item.dvalue;
         });
-        this.userDetail = [];
-        this.userDetail.push(data5.workerInfo);
-        this.isLoading = false;
       });
+      this.getTeamUserDetail();
     },
     methods: {
       toBack() {
@@ -224,12 +235,36 @@ export default {
       },
       formatDate(time) {
         return formatDate(time);
-      }
+      },
+      async getAuthenticationDetail(workCode) {
+        return authenticationDetail(workCode).then(data => {
+          this.userDetail = data;
+          console.log(this.userDetail);
+          this.isLoading = false;
+        });
+      },
+      async getTeamUserDetail() {
+        return teamUserDetail(this.code).then(data => {
+          this.getAuthenticationDetail(data.workerCode);
+        });
+      },
+      clickImg(imgSrc) {
+        if(imgSrc != "" && imgSrc != undefined){
+          console.log(imgSrc);
+          this.showImg = true;
+          // 获取当前图片地址
+          this.imgSrc = imgSrc;
+        }
+      },
+      viewImg(){
+        this.showImg = false;
+      },
     },
-    components:{
-      Scroll,
-      Loading
-    }
+  components: {
+    Scroll,
+    Loading,
+    'big-img': BigImg
+  }
 }
 </script>
 
@@ -251,6 +286,11 @@ export default {
                 top: 50%;
                 left: 50%;
                 transform:translateX(-50%) translateY(-50%);
+            }
+            .toBack{
+              float: left;
+              margin-left: 0.5rem;
+              margin-top: 0.5rem;
             }
         }
     }
@@ -302,6 +342,13 @@ export default {
   }
   .footer{
     padding-bottom: 1rem;
+  }
+  .clear-img{
+    border:1px solid darkred;
+    color:darkred;
+    padding:1px;
+    font-size: 0.24rem;
+    margin-left: 0.1rem;
   }
 }
 

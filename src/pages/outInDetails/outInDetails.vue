@@ -7,6 +7,7 @@
             进出记录详情
           </p>
         </div>
+        <ToHome></ToHome>
         <div class="banner">
           <div class="memNum">
             <div class="left">
@@ -95,6 +96,7 @@
   import{getDictList} from 'api/general';
   import Toast from 'base/toast/toast';
   import Scroll from 'base/scroll/scroll';
+  import ToHome from 'base/toHome/toHome';
   export default {
     data(){
       return{
@@ -136,7 +138,8 @@
     components: {
       DatePicker,
       Toast,
-      Scroll
+      Scroll,
+      ToHome
     }
   }
 </script>

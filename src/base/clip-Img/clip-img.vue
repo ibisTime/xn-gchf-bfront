@@ -161,7 +161,7 @@
           canvas.height = self.cHeight;
           let context1 = canvas.getContext('2d');
           context1.drawImage(this, self.clipX * rateW, self.clipY * rateH, width * rateW, height * rateH, 0, 0, self.cWidth, self.cHeight);
-          base64 = canvas.toDataURL(self.imgType);
+          base64 = canvas.toDataURL(self.imgType, .3);
           self.hide();
           self.$emit('choseImage', base64);
         };

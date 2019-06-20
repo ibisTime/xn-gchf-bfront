@@ -1,5 +1,6 @@
 <template>
   <div class="full-screen-wrapper change-mobile-wrapper">
+    <scroll ref="scroll" :hasMore="false">
     <div class="top-logo-wrap">
       <img src="./logo@3x.png" />
       <div class="top-app-name">工程核发</div>
@@ -24,7 +25,9 @@
         <router-link to="/find-pwd">找回密码</router-link>
       </div>
     </div>
-    <full-loading v-show="loadFlag" title="登录中..."></full-loading>
+    <loading :title="'登录中...'" :isLoading="isLoading"></loading>
+    <toast ref="toast" :text="toastText"></toast>
+    </scroll>
   </div>
 </template>
 <script>
@@ -33,33 +36,38 @@
   import { getUser, login } from 'api/user';
   import { setUser, setProjectCode } from 'common/js/util';
   import { directiveMixin } from 'common/js/mixin';
-  import FullLoading from 'base/full-loading/full-loading';
+  import Toast from 'base/toast/toast';
+  import Loading from 'base/loading/loading';
+  import Scroll from 'base/scroll/scroll';
 
   export default {
     mixins: [directiveMixin],
     data() {
       return {
-        loadFlag: false,
+        isLoading: false,
         loginName: '',
-        loginPwd: ''
+        loginPwd: '',
+        toastText: '',
       };
     },
     methods: {
       login() {
         this.$validator.validateAll().then((result) => {
           if (result) {
-            this.loadFlag = true;
+            this.isLoading = true;
             login(this.loginName, this.loginPwd).then((data) => {
               setUser(data);
               return getUser();
             }).then((data) => {
               setProjectCode(data.projectCode);
               this.setUser(data);
-              this.loadFlag = false;
+              this.isLoading = false;
+              this.toastText = "登录成功";
+              this.$refs.toast.show();
               let url = this.$route.query.redirect || '/home';
               this.$router.replace(url);
             }).catch(() => {
-              this.loadFlag = false;
+              this.isLoading = false;
             });
           }
         });
@@ -69,7 +77,9 @@
       })
     },
     components: {
-      FullLoading
+      toast: Toast,
+      loading: Loading,
+      scroll: Scroll,
     }
   };
 </script>

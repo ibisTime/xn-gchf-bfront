@@ -1,11 +1,19 @@
 <template>
   <div class="full-screen-wrapper class-detail-wrapper">
     <scroll :pullUpLoad="pullUpLoad" ref="scroll">
+    <div class="faceCollectBanner">
+      <p class="toBack" @click="toBack">返回</p>
+      <p class="faceCollectCenter">
+        {{title}}
+      </p>
+    </div>
       <div class="form-wrapper form-gray-wrapper">
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
-            <div class="item-label">所在企业</div>
-            <select type="text" name="corpCode" v-model="corpCode" v-validate="'required'" class="item-input">
+            <div class="item-must">*</div>
+            <div class="item-title">所在企业</div>
+            <select type="text" name="corpCode" v-model="corpCode" v-validate="'required'" class="item-input margin-left-ram">
+              <option selected="selected" value="">请选择所在企业</option>
               <option v-for="item in corpList" :key="item.corpCode" :value="item.corpCode">{{item.corpName}}</option>
             </select>
             <i class="select-icon"></i>
@@ -14,21 +22,22 @@
         </div>
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
-            <div class="item-label">班组名称</div>
-            <input type="text" name="teamName" v-model="teamName" v-validate="'required'" class="item-input" />
+            <div class="item-must">*</div>
+            <div class="item-title">班组名称</div>
+            <input type="text" name="teamName" v-model="teamName" v-validate="'required'" class="item-input margin-left-ram" />
             <span v-show="errors.has('teamName')" class="error-tip">{{errors.first('teamName')}}</span>
           </div>
         </div>
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
             <div class="item-label">所在企业统一社会信用代码</div>
-            <div class="item-input">{{corpCode}}</div>
+            <div class="item-input margin-left-ram">{{corpCode}}</div>
           </div>
         </div>
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
-            <div class="item-label">责任人姓名</div>
-            <input type="text" name="responsiblePersonName" v-model="responsiblePersonName" class="item-input" />
+            <div class="item-title">责任人姓名</div>
+            <input type="text" name="responsiblePersonName" v-model="responsiblePersonName" class="item-input margin-left-ram" />
             <span v-show="errors.has('responsiblePersonName')" class="error-tip">{{errors.first('responsiblePersonName')}}</span>
           </div>
         </div>
@@ -43,6 +52,7 @@
           <div class="item-input-wrapper">
             <div class="item-label">责任人证件类型</div>
             <select type="text" name="responsiblePersonIdcardType" v-model="responsiblePersonIdcardType" class="item-input">
+              <option selected="selected" value="">请选择责任人证件类型</option>
               <option v-for="item in cardTypeList" :key="item.dkey" :value="item.dkey">{{item.dvalue}}</option>
             </select>
             <i class="select-icon"></i>
@@ -52,14 +62,13 @@
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
             <div class="item-label">责任人证件号码</div>
-            <input type="text" name="responsiblePersonIdNumber" v-model="responsiblePersonIdNumber" v-validate="'idCard'" class="item-input" />
-            <span v-show="errors.has('responsiblePersonIdNumber')" class="error-tip">{{errors.first('responsiblePersonIdNumber')}}</span>
+            <input type="text" name="responsiblePersonIdNumber" v-model="responsiblePersonIdNumber" class="item-input" />
           </div>
         </div>
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
-            <div class="item-label">进场时间</div>
-            <date-picker class="item-input"
+            <div class="item-title">进场时间</div>
+            <date-picker class="item-input margin-left-ram"
                          :year="entryYear"
                          :month="entryMonth"
                          :day="entryDay"
@@ -68,8 +77,8 @@
         </div>
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
-            <div class="item-label">退场时间</div>
-            <date-picker class="item-input"
+            <div class="item-title">退场时间</div>
+            <date-picker class="item-input margin-left-ram"
                          :year="exitYear"
                          :month="exitMonth"
                          :day="exitDay"
@@ -78,39 +87,36 @@
         </div>
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
-            <div class="item-label">班组长姓名</div>
-            <input type="text" name="teamLeaderName" v-model="teamLeaderName" class="item-input" />
-            <span v-show="errors.has('teamLeaderName')" class="error-tip">{{errors.first('teamLeaderName')}}</span>
+            <div class="item-title">班组长姓名</div>
+            <input type="text" name="teamLeaderName" v-model="teamLeaderName" class="item-input margin-left-ram" />
           </div>
         </div>
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
             <div class="item-label">班组长联系电话</div>
-            <input type="text" name="teamLeaderPhone" v-model="teamLeaderPhone" v-validate="'mobile'" class="item-input" />
-            <span v-show="errors.has('teamLeaderPhone')" class="error-tip">{{errors.first('teamLeaderPhone')}}</span>
+            <input type="text" name="teamLeaderPhone" v-model="teamLeaderPhone" class="item-input margin-left-ram" />
           </div>
         </div>
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
             <div class="item-label">班组长证件类型</div>
             <select type="text" name="teamLeaderIdcardType" v-model="teamLeaderIdcardType" class="item-input">
+              <option selected="selected" value="">请选择班组长证件类型</option>
               <option v-for="item in cardTypeList" :key="item.dkey" :value="item.dkey">{{item.dvalue}}</option>
             </select>
             <i class="select-icon"></i>
-            <span v-show="errors.has('teamLeaderIdcardType')" class="error-tip">{{errors.first('teamLeaderIdcardType')}}</span>
           </div>
         </div>
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
             <div class="item-label">班组长证件号码</div>
-            <input type="text" name="teamLeaderIdNumber" v-model="teamLeaderIdNumber" class="item-input" />
-            <span v-show="errors.has('teamLeaderIdNumber')" class="error-tip">{{errors.first('teamLeaderIdNumber')}}</span>
+            <input type="text" name="teamLeaderIdNumber" v-model="teamLeaderIdNumber" class="item-input margin-left-ram" />
           </div>
         </div>
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
-            <div class="item-label">备注</div>
-            <input type="text" name="remark" v-model="remark" class="item-input" />
+            <div class="item-title">备注</div>
+            <input type="text" name="remark" v-model="remark" class="item-inpu margin-left-ram" />
             <span v-show="errors.has('remark')" class="error-tip">{{errors.first('remark')}}</span>
           </div>
         </div>
@@ -118,9 +124,10 @@
           <button @click="save">保存</button>
         </div>
       </div>
-    </scroll>
     <full-loading v-show="loadingFlag"></full-loading>
     <toast ref="toast" :text="toastText"></toast>
+    <ToHome></ToHome>
+    </scroll>
   </div>
 </template>
 <script>
@@ -132,6 +139,7 @@
   import { getClassDetail, getCropList, addClassInfo, editClassInfo } from 'api/biz';
   import { getDictList } from 'api/general';
   import { formatDate } from 'common/js/util';
+  import ToHome from 'base/toHome/toHome';
 
   export default {
     data() {
@@ -156,7 +164,8 @@
         corpList: [],
         cardTypeList: [],
         loadingFlag: true,
-        toastText: ''
+        toastText: '',
+        title: '',
       };
     },
     computed: {
@@ -174,6 +183,11 @@
       }
     },
     created() {
+      if(location.pathname == '/class/add'){
+        this.title = "新增班组";
+      }else{
+        this.title = "修改班组";
+      }
       this.pullUpLoad = null;
       let fetchList = [
         this.getCropList(),
@@ -278,7 +292,7 @@
         this.toastText = '保存成功';
         this.$refs.toast.show();
         setTimeout(() => {
-          this.$router.push('/class');
+          this.$router.push(`/class`);
         }, 1000);
       },
       getParams() {
@@ -297,15 +311,18 @@
           teamLeaderIdNumber: this.teamLeaderIdNumber,
           remark: this.remark
         };
-        if (!params.teamLeaderName) {
-          delete params.teamLeaderPhone;
-          delete params.teamLeaderIdcardType;
-          delete params.teamLeaderIdNumber;
-        }
+        // if (!params.teamLeaderName) {
+        //   delete params.teamLeaderPhone;
+        //   delete params.teamLeaderIdcardType;
+        //   delete params.teamLeaderIdNumber;
+        // }
         if (this.isEdit) {
           params.code = this.$route.params.code;
         }
         return params;
+      },
+      toBack() {
+        window.history.go(-1);
       },
       ...mapActions([
         'addClassInfo',
@@ -316,9 +333,51 @@
       Scroll,
       FullLoading,
       Toast,
-      DatePicker
+      DatePicker,
+      ToHome
     }
   };
 </script>
 <style lang="scss" scoped>
+  .faceCollectBanner{
+    position: relative;
+    height: 1.28rem;
+    width:100%;
+    background:#028EFF;
+    text-align: center;
+    font-size: 0.32rem;
+    color: #fff;
+    .faceCollectCenter{
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform:translateX(-50%) translateY(-50%);
+    }
+    .headerChange{
+      float: right;
+      margin-top: 0.5rem;
+      margin-right: .3rem;
+    }
+    .toBack{
+      float: left;
+      margin-left: 0.5rem;
+      margin-top: 0.5rem;
+    }
+  }
+  .item1{
+    width: 80%;
+  }
+  .item-title {
+    padding-left: 0;
+    color: #999;
+  }
+  .margin-left-ram{
+    margin-left: 0.2rem;
+  }
+  .item-must{
+    margin-right: 0.1rem;
+    color: darkred;
+  }
+  input::-ms-input-placeholder{text-align: center;}
+  input::-webkit-input-placeholder{text-align: center;}
 </style>

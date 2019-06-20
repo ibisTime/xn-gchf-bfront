@@ -1,8 +1,11 @@
 <template>
 <div class="full-screen-wrapper memberDetails-wrapper">
     <div class="card-wrapper">
+        <p class="toBack" @click="toBack">
+          首页
+        </p>
         <p class="detailsCenter">
-            人员详情
+          人员详情
         </p>
         <div class="card-container">
             <div class="card-photo">
@@ -11,7 +14,7 @@
             <div class="card-info">
             <div class="card-title">姓名：{{userInfo.workerName}}</div>
             <div class="card-tip">班组：{{userInfo.teamName}}</div>
-            <div class="card-time">{{userInfo.entryTime ? '离职时间' : '入职时间'}}: {{userInfo.entryTime && userFormatDate(userInfo.entryTime ? userInfo.entryTime : userInfo.exitTime)}}</div>
+            <div class="card-time">入职时间: {{userInfo.workDate ? userFormatDate(userInfo.workDate) : "暂无数据"}}</div>
             </div>
         </div>
     </div>
@@ -68,6 +71,7 @@ export default{
       this.code = code;
       teamUserDetail(code).then(data => {
         this.userInfo = data;
+        console.log(this.userInfo);
         this.isLoading = false;
       })
     }
@@ -91,10 +95,13 @@ export default{
         }
     },
     reRecordFn() {
-      this.$router.push(`/createRecord?code=${this.userInfo.workerCode}`);
+      this.$router.push(`/createRecord?code=${this.userInfo.workerCode}&userCode=${this.code}`);
     },
     toCard() {
       this.$router.push(`/bindCard?code=${this.code}`);
+    },
+    toBack() {
+      this.$router.replace('/home');
     }
   },
   components: {
@@ -124,7 +131,14 @@ export default{
         .detailsCenter{
             text-align: center;
             color: #fff;
-            font-size:0.36rem;
+            font-size:0.32rem;
+        }
+        .toBack{
+          position: relative;
+          font-size:0.32rem;
+          left: 0.1rem;
+          top: 0.3rem;
+          color: #fff;
         }
         padding: 0.4rem 0.3rem 0.21rem 0.3rem;
         @include bg-image('bg');

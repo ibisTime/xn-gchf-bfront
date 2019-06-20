@@ -1,10 +1,12 @@
 <template>
     <div class="full-screen-wrapper search-wrapper">
         <div class="seaBanner">
+            <p class="toBack" @click="toBack">返回</p>
             <p class="seaCenter">
                 搜索
             </p>
         </div>
+      <ToHome></ToHome>
         <div class="seaSelect">
             <div class="left">
               所在班组
@@ -50,6 +52,7 @@
   import { xmbzList } from 'api/deal';
   import{getDictList} from 'api/general';
   import {getUserId} from "common/js/util";
+  import ToHome from 'base/toHome/toHome';
   export default {
     data() {
       return {
@@ -94,8 +97,15 @@
           case 'filed': this.$router.push('/filed'); break;
           case 'entryRecord': this.$router.push('/isEntryRecord'); break;
           case 'inOut': this.$router.push('/in-out'); break;
+          case 'wage' : this.$router.push('/wage'); break;
         }
+      },
+      toBack() {
+        window.history.go(-1);
       }
+    },
+    components:{
+      ToHome
     }
   }
 </script>
@@ -113,7 +123,7 @@
     width:100%;
     background:#028EFF;
     text-align: center;
-    font-size: 0.36rem;
+    font-size: 0.32rem;
     color: #fff;
     .seaCenter{
         position: absolute;
@@ -121,6 +131,11 @@
         left: 50%;
         transform:translateX(-50%) translateY(-50%);
     }
+}
+.toBack{
+  float: left;
+  margin-left: 0.5rem;
+  margin-top: 0.5rem;
 }
 .seaSelect{
       position: relative;

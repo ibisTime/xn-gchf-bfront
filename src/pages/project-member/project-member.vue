@@ -1,6 +1,8 @@
 <template>
     <div class="full-screen-wrapper project-member-wrapper">
+      <scroll ref="scroll" :hasMore="hasMore" @pullingUp="getTeamList" :data="items">
       <div class="proBanner">
+        <p class="toBack" @click="toBack">返回</p>
         <p class="proCenter">
           项目人员
         </p>
@@ -10,35 +12,34 @@
           </router-link>
         </div>
       </div>
-        <scroll ref="scroll" :hasMore="hasMore" @pullingUp="getTeamList" :data="items">
-            <div>
-                <div class="detailItems">
-                    <div class="details" v-for="(item, index) in items" :key="index">
-                      <div @click="toUserDetail(item.code)">
-                        <p class="detailTop">
-                          <span>{{item.workerName}}</span>
-                          <span>{{item.teamName}}</span>
-                        </p>
-                        <p class="detailUnder">
-                          <span>身份证号:{{item.idcardNumber}}</span>
-                          <span>{{staticObj[item.workerPicUploadStatus]}}</span>
-                        </p>
-                        <div class="detailImg">
-                          <img src="./to@2x.png"/>
-                        </div>
-                      </div>
-                    </div>
+        <ToHome></ToHome>
+      <div>
+        <div class="detailItems">
+            <div class="details" v-for="(item, index) in items" :key="index">
+              <div @click="toUserDetail(item.code)">
+                <p class="detailTop">
+                  <span>{{item.workerName}}</span>
+                  <span>{{item.teamName}}</span>
+                  <span>{{staticObj[item.uploadStatus]}}</span>
+                </p>
+                <p class="detailUnder">
+                  <span>身份证号:{{item.idcardNumber}}</span>
+                </p>
+                <div class="detailImg">
+                  <img src="./to@2x.png"/>
                 </div>
+              </div>
             </div>
-          <noResult title="抱歉，暂无班组人员" v-if="items.length === 0 && !hasMore" style="margin-top: 0.8rem"/>
-        </scroll>
-        <router-link to="/createRecord">
-            <div class="footer">
-                        <div class="footer-wrapper">
-                            <img src="./addnew@2x.png"/>
-                        </div>
-            </div>
-        </router-link>
+        </div>
+        <noResult title="抱歉，暂无项目人员" v-if="items.length === 0 && !hasMore" style="margin-top: 0.8rem"/>
+      </div>
+        <div style="width: 100%;height: 1rem;"></div>
+      </scroll>
+      <div class="footer" @click="toAddMember()">
+        <div class="footer-wrapper">
+          <img src="./addnew@2x.png"/>
+        </div>
+      </div>
     </div>
 </template>
 
@@ -47,6 +48,7 @@ import Scroll from 'base/scroll/scroll';
 import NoResult from 'base/no-result/no-result';
 import {deal} from 'api/deal';
 import{getDictList} from 'api/general';
+import ToHome from 'base/toHome/toHome';
     export default{
         data(){
             return{
@@ -80,16 +82,31 @@ import{getDictList} from 'api/general';
             return deal(this.config).then(data => {
               this.hasMore = (data.pageNO < data.totalPage);
               this.config.start ++;
-              this.items = [...this.items, ...data.list];
+              let arr = data.list.map(item => ({
+                teamName : item.teamName.length > 4 ? item.teamName.substring(0,4) + "..." : item.teamName,
+                workerName : item.workerName,
+                uploadStatus : item.uploadStatus,
+                idcardNumber : item.idcardNumber,
+                code : item.code
+              }));
+              this.items = [...this.items, ...arr];
+              console.log(this.items);
             });
           },
         toUserDetail(code) {
           this.$router.push(`/memberDetails?code=${code}`);
+        },
+        toBack() {
+          window.history.go(-1);
+        },
+        toAddMember(){
+          this.$router.push(`/createRecord`);
         }
       },
       components:{
         scroll:Scroll,
-        noResult: NoResult
+        noResult: NoResult,
+        ToHome
       }
     }
 </script>
@@ -126,6 +143,11 @@ import{getDictList} from 'api/general';
                 height: .4rem;
             }
         }
+      .toBack{
+        float: left;
+        margin-left: 0.5rem;
+        margin-top: 0.5rem;
+      }
     }
     .detailItems{
         position: relative;
@@ -145,7 +167,12 @@ import{getDictList} from 'api/general';
                 :nth-child(2){
                     display: inline-block;
                     position: absolute;
-                    right: 0.5rem;
+                    right: 2.8rem;
+                }
+                :nth-child(3){
+                  display: inline-block;
+                  position: absolute;
+                  right: 0.5rem;
                 }
             }
             .detailUnder{
@@ -177,7 +204,6 @@ import{getDictList} from 'api/general';
         }
     }
     .footer{
-        box-shadow: 0 -1px 0 0 #E6E6E6;
         position: fixed;
         background: #fff;
         bottom: 0;
@@ -199,6 +225,28 @@ import{getDictList} from 'api/general';
             }
         }
     }
+}
+.footer{
+  position: fixed;
+  background: #fff;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1.9rem;
+  .footer-wrapper{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 92%;
+    height: 1.5rem;
+    background: #F5F5F5;
+    border-radius: 4px;
+    img{
+      width:100%;
+      height: 100%;
+    }
+  }
 }
 </style>
 

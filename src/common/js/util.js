@@ -213,7 +213,7 @@ export function getImgData(fileType, img, dir, next) {
     context.rotate(degree * Math.PI / 180);
     context.drawImage(this, 0, 0, drawWidth, drawHeight);
     // 返回校正图片
-    next(canvas.toDataURL(fileType, 0.8));
+    next(canvas.toDataURL(fileType, 0.3));
   };
   image.src = img;
 }
@@ -350,7 +350,7 @@ export function formattingBankCode(str) {
   let text = str;
   let rtn = '';
   let len = Math.floor(str.length / 4);
-  for (let i = 0; i < len; i++) {
+  for (let i = 0; i <= len; i++) {
     rtn += text.substring(i * 4, i * 4 + 4) + ' ';
   }
   return rtn;

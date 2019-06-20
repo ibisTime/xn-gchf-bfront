@@ -3,10 +3,12 @@
         <scroll ref="scroll" :hasMore="false">
             <div>
                 <div class="baseBanner">
+                    <p class="toBack" @click="toBack">返回</p>
                     <p class="baseCenter">
-                        进出详情
+                        进退详情
                     </p>
                 </div>
+              <ToHome></ToHome>
               <div class="detailItems" @click="toDetailItems">
                 <div class="details">
                   <p class="detailTop">
@@ -24,29 +26,30 @@
                   </router-link>
                 </div>
               </div>
-                <div class="empty"></div>
+              <div class="empty"></div>
               <scroll ref="scroll" :hasMore="false" :data="entryOutList">
                 <div class="pushAdd" v-for="(item, index) in entryOutList" :key="index">
                   <div class="item" @click="toDetailsText(item.code)">
                     <div class="entry">
-                      <span>{{item.type}}</span>
+                      <span :class="item.type != '1' ? 'out' : 'in'">{{item.type === 1 ? "进场" : "退场"}}</span>
                     </div>
                     <div class="entryImg">
-                      <span>{{item.date}}</span> <img src="./to@2x.png"/>
+                      <span :class="item.type != '1' ? 'out' : 'in'">{{item.date === "NaN-aN-aN" ? "暂无数据" : item.date }}</span> <img src="./to@2x.png"/>
                     </div>
                   </div>
                 </div>
-                <no-result title="抱歉，暂无进出记录" v-if="entryOutList.length === 0" style="margin-top: 0.8rem"/>
+                <no-result title="抱歉，暂无进退场记录" v-if="entryOutList.length === 0" style="margin-top: 0.8rem"/>
+                <div style="height:0.4rem;width:100%;"></div>
               </scroll>
             </div>
         </scroll>
-        <router-link to="/addProject">
-            <div class="footer">
+        <!--<router-link to="/addProject">-->
+            <div class="footer" @click="toAddProject()">
                         <div class="footer-wrapper">
                             <img src="./addnew@2x.png"/>
                         </div>
             </div>
-        </router-link>
+        <!--</router-link>-->
       <loading :title="'正在努力加载中...'" :isLoading="isLoading"></loading>
       <toast ref="toast" :text="toastText"></toast>
     </div>
@@ -59,50 +62,56 @@ import Toast from 'base/toast/toast';
 import {getEntryOutList} from 'api/deal';
 import{getDictList} from 'api/general';
 import { formatDate } from 'common/js/util';
+import ToHome from 'base/toHome/toHome';
 
 export default {
     data(){
         return{
-          entryOutList:[],
+          entryOutList: [],
           inOutData: [],
           isLoading: true,
+          uploadStatusLists: {},
           toastText: '',
           config: {
-            workerCode: ''
-          },
-          entryExitType: {}
+            workerCode: '',
+            orderColumn: 'date',
+            orderDir: 'desc'
+          }
         }
     },
   created() {
-      let inOutData = sessionStorage.getItem('inOutData') || '';
-      if(inOutData) {
-        this.inOutData.push(JSON.parse(inOutData));
-        this.config.workerCode = this.inOutData[0].workerCode;
-        Promise.all([
-          getDictList('entry_exit_type'),
-        ]).then(([data1]) => {
-          data1.forEach(item => {
-            this.entryExitType[item.dkey] = item.dvalue;
-          });
-          this.entryOutFn()
+    let inOutData = sessionStorage.getItem('inOutData') || '';
+    if(inOutData) {
+      this.inOutData.push(JSON.parse(inOutData));
+      this.config.workerCode = this.inOutData[0].code;
+      Promise.all([
+        getDictList('entry_exit_type')
+      ]).then(([data1]) => {
+        data1.forEach(item => {
+          this.uploadStatusLists[item.dkey] = item.dvalue;
         });
-      }else {
-        this.toastText = '访问异常';
-        this.$refs.toast.show();
-        setTimeout(() => {
-          this.$router.push('/filed');
-        }, 1000);
-      }
+      });
+      this.entryOutFn();
+    }else {
+      this.toastText = '访问异常';
+      this.$refs.toast.show();
+      setTimeout(() => {
+        this.$router.push('/filed');
+      }, 1000);
+    }
   },
   methods: {
     entryOutFn() {
       return getEntryOutList(this.config).then(data => {
-        this.entryOutList = data.map(item => {
-          item.type = this.entryExitType[item.type];
+        let arr = data.map(item => {
           // yyyy-MM-dd  hh-mm-ss
           item.date = formatDate(item.date, 'yyyy-MM-dd');
           return item;
         });
+        this.hasMore = (data.pageNO < data.totalPage);
+        this.config.start ++;
+        this.entryOutList = [...this.entryOutList, ...arr];
+        console.log(this.entryOutList);
         this.isLoading = false;
       });
     },
@@ -110,14 +119,21 @@ export default {
       this.$router.push(`/detailsText?code=${code}`);
     },
     toDetailItems() {
-      this.$router.push(`/memberDetails?code=${this.inOutData[0].workerCode}`);
+      this.$router.push(`/memberDetails?code=${this.inOutData[0].code}`);
+    },
+    toAddProject() {
+      this.$router.push(`/addProject?userCode=${this.inOutData[0].code}`);
+    },
+    toBack() {
+      window.history.go(-1);
     }
   },
   components: {
     scroll: Scroll,
     noResult: NoResult,
     loading: Loading,
-    toast: Toast
+    toast: Toast,
+    ToHome
   }
 }
 </script>
@@ -139,6 +155,11 @@ export default {
             transform:translateX(-50%) translateY(-50%);
             }
         }
+        .toBack{
+          float: left;
+          margin-left: 0.5rem;
+          margin-top: 0.5rem;
+        }
     .detailItems{
         position: relative;
         width:100%;
@@ -156,7 +177,7 @@ export default {
                 :nth-child(2){
                     display: inline-block;
                     position: absolute;
-                    right: 2.5rem;
+                    right: 3.2rem;
                 }
                 :nth-child(3){
                     display: inline-block;
@@ -216,7 +237,6 @@ export default {
         }
     }
     .footer{
-        box-shadow: 0 -1px 0 0 #E6E6E6;
         position: fixed;
         background: #fff;
         bottom: 0;
@@ -238,6 +258,12 @@ export default {
             }
         }
     }
+  .in{
+    color: #E93535 !important;
+  }
+  .out{
+    color: #28C71F !important;
+  }
 }
 </style>
 

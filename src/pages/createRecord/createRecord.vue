@@ -3,16 +3,17 @@
     <scroll ref="scroll" :hasMore='false'>
         <div>
             <div class="createBanner">
+                <p class="toBack" @click="toBack">返回</p>
                 <p class="createCenter">
                 人员建档
                 </p>
             </div>
             <div class="createTop">
-                <div class="positive">身份证正面</div>
+                <div class="positive">身份证正面<span class="clear-img" @click="clearImgZ">清除图片</span></div>
                 <div class="p-wrapper" @click="getMediaZm">
-                    <div class="cross" :style="{opacity: isVideoZm ? 1 : 0}">
-                        <img src="./upload.png"/>
-                    </div>
+                  <div class="cross" :style="{opacity: isVideoZm ? 1 : 0}">
+                      <img src="./upload.png"/>
+                  </div>
                   <div class="sfz_zm">
                     <canvas id="canvasZm" width="300" height="300"></canvas>
                   </div>
@@ -21,11 +22,11 @@
                 <div class="empty"></div>
             </div>
             <div class="createUnder">
-                <div class="other">身份证反面</div>
+                <div class="other">身份证反面<span class="clear-img" @click="clearImgF">清除图片</span></div>
                 <div class="o-wrapper" @click="getMediaFm">
-                    <div class="ucross" :style="{opacity: isVideoFm ? 1 : 0}">
-                        <img src="./upload.png"/>
-                    </div>
+                  <div class="ucross" :style="{opacity: isVideoFm ? 1 : 0}">
+                      <img src="./upload.png"/>
+                  </div>
                   <div class="sfz_zm">
                     <canvas id="canvasFm" width="300" height="300"></canvas>
                   </div>
@@ -41,7 +42,7 @@
         <input type="file" @change="upImage" accept="image/png,image/jpg" id="theFile">
         上传
       </div>
-      <div class="takePhoto" @click="getMedia">拍照</div>
+      <!--<div class="takePhoto" @click="getMedia">拍照</div>-->
       <div class="cancel">取消</div>
     </div>
   </div>
@@ -74,11 +75,15 @@ export default {
           sfzfm: '',
           toastText: '照片请上传完整',
           isLoading: false,
-          code: ''
+          Listcode: '',
+          userCode: ''
         }
     },
   created() {
     const {code} = this.$route.query;
+    const {userCode} = this.$route.query;
+    this.userCode = userCode;
+    this.Listcode = code;
     if(code) {
       this.isLoading = true;
       this.code = code;
@@ -108,12 +113,40 @@ export default {
           };
           //获得video摄像头区域
           let video = document.getElementById("video");
-          let promise = navigator.mediaDevices.getUserMedia(constraints);
+        let promise = null;
+        if(navigator.mediaDevices.getUserMedia) {
+          promise = navigator.mediaDevices.getUserMedia(constraints);
           promise.then((MediaStream) => {
             this.mediaStreamTrack = MediaStream;
             video.srcObject = MediaStream;
+            this.isLoading = false;
             video.play();
           });
+        }else if(navigator.webkitGetUserMedia){
+          promise = navigator.webkitGetUserMedia(constraints);
+          promise.then((stream) => {
+            this.mediaStreamTrack = stream;
+            video.src = stream;
+            this.isLoading = false;
+            video.play();
+          });
+        }else if(navigator.mozGetUserMedia){
+          promise = navigator.mozGetUserMedia(constraints);
+          promise.then((stream) => {
+            this.mediaStreamTrack = stream;
+            video.src = stream;
+            this.isLoading = false;
+            video.play();
+          });
+        }else if(navigator.getUserMedia){
+          promise = navigator.getUserMedia(constraints);
+          promise.then((stream) => {
+            this.mediaStreamTrack = stream;
+            video.src = stream;
+            this.isLoading = false;
+            video.play();
+          });
+        }
       },
       videoClick() {
         //获得Canvas对象
@@ -122,7 +155,7 @@ export default {
         let canvas = document.getElementById(canvasName);
         let ctx = canvas.getContext('2d');
         ctx.drawImage(video, 0, 0, 300, 300);
-        const dataUrl = canvas.toDataURL();
+        const dataUrl = canvas.toDataURL('image/jpeg',.6);
         this.isShow = true;
         this.isVideoSfz = true;
         if(this.pzType === '1') {
@@ -142,22 +175,34 @@ export default {
         let _this = this;
         fileReader.readAsDataURL(theFile);
         console.log(theFile.size);
-        if(theFile.size > 512000) {
-          this.toastText = '上传图片不得大于500KB';
-          this.$refs.toast.show();
+        // if(theFile.size > 512000) {
+        //   this.toastText = '上传图片不得大于500KB';
+        //   this.$refs.toast.show();
+        //   _this.isShow = true;
+        //   _this.isVideoSfz = true;
+        //   return false;
+        // }
+        let img = new Image(),
+            width = 1024,
+            quality = 0.5,
+            canvas = document.createElement("canvas"),
+            drawer = canvas.getContext("2d");
+        fileReader.onload = function () {
           _this.isShow = true;
           _this.isVideoSfz = true;
-          return false;
-        }
-        fileReader.onload = function() {
-          _this.isShow = true;
-          _this.isVideoSfz = true;
+          img.src = fileReader.result;
+        };
+        img.onload = function () {
+          canvas.width = width;
+          canvas.height = width * (img.height / img.width);
+          drawer.drawImage(img, 0, 0, canvas.width, canvas.height);
+          var base64 = canvas.toDataURL("image/jpeg", quality);
           if(_this.pzType === '1') {
             _this.isVideoZm = false;
-            _this.sfzzm = fileReader.result;
+            _this.sfzzm = base64;
           }else {
             _this.isVideoFm = false;
-            _this.sfzfm = fileReader.result;
+            _this.sfzfm = base64;
           }
         };
       },
@@ -169,24 +214,56 @@ export default {
           this.isLoading = true;
           orcIdNo({
             positiveImage: this.sfzzm,
-            negativeImage: this.sfzfm
+            negativeImage: this.sfzfm,
+            code: this.Listcode
           }).then((data) => {
             this.toastText = '操作成功';
             this.$refs.toast.show();
+            this.isLoading = false;
             setTimeout(() => {
               if(this.code) {
-                this.$router.push(`/photo?code=${this.code}`);
+                this.$router.push(`/photo?code=${this.code}&userCode=${this.userCode}`);
                 console.log(this.code);
               }else {
                 this.$router.push(`/photo?code=${data}`);
               }
             }, 1000);
           }, () => {
+            this.isLoading = false;
             this.toastText = '操作失败';
             this.$refs.toast.show();
           });
         }
-      }
+      },
+      toBack() {
+        window.history.go(-1);
+      },
+      clearImgZ() {
+        this.sfzzm = "";
+        this.isVideoZm = true;
+      },
+      clearImgF() {
+        this.sfzfm = "";
+        this.isVideoFm = true;
+      },
+      compress(img, size) {
+        let canvas = document.createElement('canvas')
+        let ctx = canvas.getContext('2d')
+        let initSize = img.src.length
+        let width = img.width
+        let height = img.height
+        canvas.width = width
+        canvas.height = height
+        // 铺底色
+        ctx.fillStyle = '#fff'
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+        ctx.drawImage(img, 0, 0, width, height)
+        //进行最小压缩
+        let ndata = canvas.toDataURL('image/jpeg', size)
+        console.log('*******压缩后的图片大小*******')
+        console.log(ndata.length / 1024)
+        return ndata
+      },
     },
     components: {
       scroll: Scroll,
@@ -200,11 +277,11 @@ export default {
 .create-wrapper{
     .createBanner{
         position: relative;
-        height:1.5rem;
+        height:1.28rem;
         width:100%;
         background:#028EFF;
         text-align: center;
-        font-size: 0.36rem;
+        font-size: 0.32rem;
         color: #fff;
         .createCenter{
             position: absolute;
@@ -394,5 +471,16 @@ export default {
     background-repeat: no-repeat;
     background-size: cover;
   }
+}
+.toBack{
+  float: left;
+  margin-left: 0.5rem;
+  margin-top: 0.5rem;
+}
+.clear-img{
+  border:1px solid darkred;
+  color:darkred;
+  margin-left: 0.2rem;
+  padding:2px;
 }
 </style>

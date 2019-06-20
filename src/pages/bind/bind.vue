@@ -2,12 +2,13 @@
     <div class="full-screen-wrapper supp-wrapper">
         <div class="wrapper form-wrapper">
             <div class="baseBanner">
+                <p class="toBack" @click="toBack">返回</p>
                 <p class="baseCenter">
                     绑定银行卡
                 </p>
             </div>
             <div class="bank form-item">
-                <div class="left">银行 <span class="red">*</span></div>
+                <div class="left"><span class="red">*</span>银行</div>
                 <div class="right">
                     <select v-model="config.bankCode">
                         <option value="">请选择</option>
@@ -16,26 +17,27 @@
                 </div>
             </div>
             <div class="bank">
-                <div class="left">开户支行 <span class="red">*</span></div>
+                <div class="left"><span class="red">*</span>开户支行</div>
                 <div class="right">
                   <input type="text" placeholder="请输入开户支行" v-model="config.subranch" v-validate="'required'" name="subranch"/>
                   <span v-show="errors.has('subranch')" class="error-tip">{{errors.first('subranch')}}</span>
                 </div>
             </div>
             <div class="bank">
-                <div class="left">银行卡号 <span class="red">*</span></div>
+                <div class="left"><span class="red">*</span>银行卡号</div>
                 <div class="right">
-                  <input type="number" placeholder="请输入银行卡号" v-model="config.bankNumber" v-validate="'bankCard'" name="bankNumber"/>
-                  <span v-show="errors.has('bankNumber')" class="error-tip">{{errors.first('bankNumber')}}</span>
+                  <input type="number" placeholder="请输入银行卡号" v-model="config.bankNumber" name="bankNumber"/>
+                  <!--<span v-show="errors.has('bankNumber')" class="error-tip">{{errors.first('bankNumber')}}</span>-->
+                  <!--<span v-show="errors.has('bankNumber')" class="error-tip">{{errors.first('bankNumber')}}</span>-->
                 </div>
             </div>
             <div class="bank">
-                <div class="left">银行联号 <span class="red">*</span></div>
+                <div class="left"><span class="red">*</span>银行联号</div>
                 <div class="right">
-                    <input type="number" placeholder="请输入银行联号" v-model="config.bankLinkNumber"/>
+                    <input type="text" placeholder="请输入银行联号" v-model="config.bankLinkNumber"/>
                 </div>
             </div>
-            <div class="footer" @click="bindBankCard">
+            <div class="next-step" @click="bindBankCard">
                 确定
             </div>
         </div>
@@ -96,6 +98,9 @@ export default{
             });
           }});
       }
+    },
+    toBack(){
+      window.history.go(-1);
     }
   },
   components: {
@@ -125,6 +130,11 @@ export default{
             left: 50%;
             transform:translateX(-50%) translateY(-50%);
             }
+        .toBack{
+          float: left;
+          margin-left: 0.5rem;
+          margin-top: 0.5rem;
+        }
     }
     .bank{
       display: flex;
@@ -171,6 +181,24 @@ export default{
      .error-tip{
        color: #ff0000;
      }
+     .next-step{
+       margin: 0 auto;
+       width: 92%;
+       height: 0.9rem;
+       text-align: center;
+       line-height: 0.9rem;
+       font-family: PingFangSC-Semibold;
+       font-size: 0.32rem;
+       color: #FFFFFF;
+       letter-spacing: 0;
+       margin: 1.5rem auto;
+       background: #028EFF;
+       border-radius: 4px;
+     }
    }
+    .red{
+      color: red;
+      margin-right: 0.1rem;
+    }
 }
 </style>

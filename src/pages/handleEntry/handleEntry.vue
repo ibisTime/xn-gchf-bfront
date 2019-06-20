@@ -10,10 +10,10 @@
             <div class="baseTop">
                 <div class="group">
                   <div class="g_left">
-                    所属班组 <span class="red">*</span>
+                    <span class="red">*</span>所属班组
                   </div>
                   <div class="group-sele">
-                    <select v-model="config.teamSysNo">
+                    <select class="font-size-ram" v-model="config.teamSysNo">
                       <option value="">请选择</option>
                       <option :value="item.key" v-for="(item, index) in teamList" :key="index">{{item.value}}</option>
                     </select>
@@ -24,10 +24,10 @@
                 </div>
                 <div class="group">
                   <div class="g_left">
-                    是否班长 <span class="red">*</span>
+                    <span class="red">*</span> 是否班长
                   </div>
                   <div class="group-sele">
-                    <select v-model="config.isTeamLeader">
+                    <select class="font-size-ram" v-model="config.isTeamLeader">
                       <option value="">请选择</option>
                       <option value="1">是</option>
                       <option value="0">否</option>
@@ -39,10 +39,10 @@
                 </div>
                 <div class="group">
                   <div class="g_left">
-                    工种 <span class="red">*</span>
+                    <span class="red">*</span>工种
                   </div>
                   <div class="group-sele">
-                    <select v-model="config.workType">
+                    <select class="font-size-ram" v-model="config.workType">
                       <option value="">请选择</option>
                       <option :value="item.key" v-for="(item, index) in workTypeList" :key="index">{{item.value}}</option>
                     </select>
@@ -53,10 +53,10 @@
                 </div>
                 <div class="group">
                   <div class="g_left">
-                    工人类型 <span class="red">*</span>
+                    <span class="red">*</span>工人类型
                   </div>
                   <div class="group-sele">
-                    <select v-model="config.workRole">
+                    <select class="font-size-ram" v-model="config.workRole">
                       <option value="">请选择</option>
                       <option :value="item.key" v-for="(item, index) in workList" :key="index">{{item.value}}</option>
                     </select>
@@ -73,7 +73,7 @@
                       是否购买保险
                     </div>
                   <div class="group-sele">
-                    <select v-model="config.hasBuyInsurance">
+                    <select class="font-size-ram" v-model="config.hasBuyInsurance">
                       <option value="">请选择</option>
                       <option value="1">是</option>
                       <option value="0">否</option>
@@ -116,7 +116,8 @@ export default {
           workList: [],
           code: '',
           from: '',
-          isLoading: true
+          isLoading: true,
+          status: true
         }
     },
   created() {
@@ -156,26 +157,45 @@ export default {
   },
     methods:{
       inputtingOk() {
-        if(this.from === 'baseInfo') {
-          addUserRz({
-            ...this.config,
-            workerCode: this.code
-          }).then(() => {
-            this.$refs.toast.show();
-            setTimeout(() => {
-              this.$router.push('/home');
-            }, 1000);
-          });
-        } else {
-          userInOut({
-            ...this.config,
-            workerCode: this.code
-          }).then(() => {
-            this.$refs.toast.show();
-            setTimeout(() => {
-              this.$router.push('/home');
-            }, 1000);
-          });
+        this.isLoading = true;
+        this.loadingName = ""
+        if(this.config.teamSysNo != "" && this.config.isTeamLeader != "" && this.config.workType != "" && this.config.workRole != ""){
+          this.toastText = "";
+          if(this.from === 'baseInfo') {
+            if(this.status){
+              addUserRz({
+                ...this.config,
+                workerCode: this.code
+              }).then(() => {
+                this.status = false;
+                this.isLoading = false;
+                this.toastText = "操作成功";
+                this.$refs.toast.show();
+                setTimeout(() => {
+                  this.$router.push('/home');
+                }, 1000);
+              }).catch(() => {
+                this.loadingFlag = false;
+                this.status = true;
+              });
+            }
+          } else {
+            userInOut({
+              ...this.config,
+              workerCode: this.code
+            }).then(() => {
+              this.$refs.toast.show();
+              setTimeout(() => {
+                this.$router.push('/home');
+              }, 1000);
+            }).catch(() => {
+              this.loadingFlag = false;
+            });;
+          }
+        }else{
+          this.toastText = "请将信息填写完整";
+          this.$refs.toast.show();
+          this.isLoading = false;
         }
       }
     },
@@ -269,6 +289,10 @@ export default {
   }
   .red{
     color: red;
+    margin-right: 0.1rem;
+  }
+  .font-size-ram{
+    font-size: 0.28rem;
   }
 }
 </style>
